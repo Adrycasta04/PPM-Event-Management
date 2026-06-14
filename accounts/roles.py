@@ -6,10 +6,19 @@ class Role(StrEnum):
     ORGANIZER = "Organizer"
 
 
-def user_has_role(user, role):
+def get_user_roles(user):
     if not user.is_authenticated:
-        return False
-    return user.groups.filter(name=role.value).exists()
+        return frozenset()
+
+    if not hasattr(user, "_ppm_role_names"):
+        user._ppm_role_names = frozenset(
+            user.groups.values_list("name", flat=True)
+        )
+    return user._ppm_role_names
+
+
+def user_has_role(user, role):
+    return role.value in get_user_roles(user)
 
 
 def is_attendee(user):
