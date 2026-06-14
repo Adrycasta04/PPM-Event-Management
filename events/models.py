@@ -70,6 +70,10 @@ class Event(models.Model):
     def get_absolute_url(self):
         return reverse("events:detail", kwargs={"pk": self.pk})
 
+    @property
+    def is_public(self):
+        return self.status == self.Status.PUBLISHED
+
 
 class Registration(models.Model):
     event = models.ForeignKey(

@@ -30,3 +30,6 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
+# Local project planning documents
+PPM_Backend_2026_Project_Brief.md
+PPM_Backend_2026_Workflow.md
