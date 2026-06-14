@@ -1,0 +1,7 @@
+{% if event.status == "published" %}
+    <span class="badge rounded-pill text-bg-success">Pubblicato</span>
+{% elif event.status == "cancelled" %}
+    <span class="badge rounded-pill text-bg-danger">Cancellato</span>
+{% else %}
+    <span class="badge rounded-pill text-bg-secondary">Bozza</span>
+{% endif %}

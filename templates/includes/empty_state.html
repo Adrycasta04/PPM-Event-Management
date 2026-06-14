@@ -1,0 +1,10 @@
+<div class="empty-state text-center">
+    <div class="empty-state-mark" aria-hidden="true">{{ mark|default:"-" }}</div>
+    <h2 class="h4">{{ title }}</h2>
+    <p class="text-body-secondary mb-0">{{ description }}</p>
+    {% if action_url and action_label %}
+        <a class="btn btn-primary mt-3" href="{{ action_url }}">
+            {{ action_label }}
+        </a>
+    {% endif %}
+</div>

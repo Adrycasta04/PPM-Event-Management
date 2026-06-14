@@ -1,64 +1,73 @@
 {% extends "base.html" %}
 
-{% block title %}My events | PPM Events{% endblock %}
+{% block title %}I miei eventi | PPM Events{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center gap-3 mb-4">
+<header class="page-header d-flex flex-column flex-sm-row justify-content-between align-items-sm-end gap-3">
     <div>
-        <h1 class="mb-1">My events</h1>
+        <p class="page-kicker mb-2">Dashboard Organizer</p>
+        <h1 class="display-6 fw-bold mb-2">I miei eventi</h1>
         <p class="text-body-secondary mb-0">
             Gestisci gli eventi che hai creato.
         </p>
     </div>
-    <a class="btn btn-primary" href="{% url 'events:create' %}">
+    <a class="btn btn-primary page-actions" href="{% url 'events:create' %}">
         Crea evento
     </a>
-</div>
+</header>
 
 {% if events %}
-    <div class="table-responsive">
+    <div class="table-card table-responsive">
         <table class="table table-hover align-middle">
             <thead>
                 <tr>
                     <th scope="col">Titolo</th>
                     <th scope="col">Inizio</th>
                     <th scope="col">Stato</th>
+                    <th scope="col">Iscritti</th>
                     <th scope="col" class="text-end">Azioni</th>
                 </tr>
             </thead>
             <tbody>
                 {% for event in events %}
                     <tr>
-                        <td>{{ event.title }}</td>
+                        <td class="fw-semibold">{{ event.title }}</td>
                         <td>{{ event.starts_at|date:"d/m/Y H:i" }}</td>
-                        <td>{{ event.get_status_display }}</td>
+                        <td>{% include "includes/event_status_badge.html" %}</td>
+                        <td>
+                            <span class="badge text-bg-light">
+                                {{ event.registration_count }}/{{ event.capacity }}
+                            </span>
+                        </td>
                         <td class="text-end">
-                            {% if event.is_public %}
+                            <div class="d-flex flex-wrap justify-content-end gap-1 responsive-actions">
+                                {% if event.is_public %}
+                                    <a
+                                        class="btn btn-sm btn-outline-secondary"
+                                        href="{{ event.get_absolute_url }}"
+                                    >
+                                        Visualizza
+                                    </a>
+                                {% endif %}
                                 <a
                                     class="btn btn-sm btn-outline-secondary"
-                                    href="{{ event.get_absolute_url }}"
+                                    href="{% url 'events:attendees' event.pk %}"
                                 >
-                                    Visualizza
+                                    Partecipanti
                                 </a>
-                            {% endif %}
-                            <a
-                                class="btn btn-sm btn-outline-secondary"
-                                href="{% url 'events:attendees' event.pk %}"
-                            >
-                                Partecipanti
-                            </a>
-                            <a
-                                class="btn btn-sm btn-outline-primary"
-                                href="{% url 'events:update' event.pk %}"
-                            >
-                                Modifica
-                            </a>
-                            <a
-                                class="btn btn-sm btn-outline-danger"
-                                href="{% url 'events:delete' event.pk %}"
-                            >
-                                Elimina
-                            </a>
+                                <a
+                                    class="btn btn-sm btn-outline-primary"
+                                    href="{% url 'events:update' event.pk %}"
+                                >
+                                    Modifica
+                                </a>
+                                <a
+                                    class="btn btn-sm btn-outline-danger"
+                                    href="{% url 'events:delete' event.pk %}"
+                                >
+                                    Elimina
+                                </a>
+                            </div>
                         </td>
                     </tr>
                 {% endfor %}
@@ -66,8 +75,7 @@
         </table>
     </div>
 {% else %}
-    <div class="alert alert-info" role="status">
-        Non hai ancora creato eventi.
-    </div>
+    {% url "events:create" as create_event_url %}
+    {% include "includes/empty_state.html" with mark="+" title="Nessun evento creato" description="Non hai ancora creato eventi. Inizia preparando la tua prima proposta." action_url=create_event_url action_label="Crea il primo evento" %}
 {% endif %}
 {% endblock %}

@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -81,7 +82,11 @@ class EventListView(ListView):
     context_object_name = "events"
 
     def get_queryset(self):
-        return Event.objects.public().select_related("organizer")
+        return (
+            Event.objects.public()
+            .select_related("organizer")
+            .annotate(registration_count=Count("registrations"))
+        )
 
 
 class EventDetailView(DetailView):
@@ -90,7 +95,11 @@ class EventDetailView(DetailView):
     context_object_name = "event"
 
     def get_queryset(self):
-        return Event.objects.public().select_related("organizer")
+        return (
+            Event.objects.public()
+            .select_related("organizer")
+            .annotate(registration_count=Count("registrations"))
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -106,7 +115,7 @@ class EventDetailView(DetailView):
             ).first()
             context["registration"] = registration
             context["event_is_full"] = (
-                self.object.registrations.count() >= self.object.capacity
+                self.object.registration_count >= self.object.capacity
             )
         return context
 
@@ -117,7 +126,9 @@ class MyEventListView(OrganizerRequiredMixin, ListView):
     context_object_name = "events"
 
     def get_queryset(self):
-        return Event.objects.filter(organizer=self.request.user)
+        return Event.objects.filter(
+            organizer=self.request.user,
+        ).annotate(registration_count=Count("registrations"))
 
 
 class EventCreateView(OrganizerRequiredMixin, CreateView):

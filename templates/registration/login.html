@@ -5,9 +5,13 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-7 col-lg-5">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <h1 class="h3 mb-4">Accedi</h1>
+        <div class="card form-card shadow-sm">
+            <div class="card-body p-4 p-lg-5">
+                <p class="page-kicker mb-2">Area riservata</p>
+                <h1 class="h2 mb-2">Bentornato</h1>
+                <p class="text-body-secondary mb-4">
+                    Accedi per gestire eventi o iscrizioni.
+                </p>
 
                 {% if form.errors %}
                     <div class="alert alert-danger" role="alert">
@@ -34,7 +38,7 @@
                         >
                     </div>
 
-                    <div class="mb-3">
+                    <div class="mb-4">
                         <label class="form-label" for="{{ form.password.id_for_label }}">
                             Password
                         </label>

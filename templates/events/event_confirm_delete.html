@@ -5,28 +5,35 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-7">
-        <div class="card border-danger shadow-sm">
+        <div class="card border-danger shadow-sm overflow-hidden">
+            <div class="bg-danger-subtle border-bottom border-danger-subtle p-4">
+                <p class="page-kicker text-danger mb-2">Azione irreversibile</p>
+                <h1 class="h2 mb-0">Elimina evento</h1>
+            </div>
             <div class="card-body p-4">
-                <h1 class="h3">Elimina evento</h1>
-                <p>
+                <p class="lead">
                     Confermi l'eliminazione di
                     <strong>{{ object.title }}</strong>?
                 </p>
                 <p class="text-body-secondary">
-                    L'operazione non puo essere annullata.
+                    L'operazione non può essere annullata. Verranno eliminate
+                    anche le registrazioni collegate all'evento.
                 </p>
 
-                <form method="post">
+                <form
+                    method="post"
+                    class="d-flex flex-column-reverse flex-sm-row gap-2"
+                >
                     {% csrf_token %}
-                    <button class="btn btn-danger" type="submit">
-                        Elimina
-                    </button>
                     <a
                         class="btn btn-outline-secondary"
                         href="{% url 'events:my_events' %}"
                     >
                         Annulla
                     </a>
+                    <button class="btn btn-danger" type="submit">
+                        Elimina definitivamente
+                    </button>
                 </form>
             </div>
         </div>

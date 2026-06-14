@@ -7,11 +7,16 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-8">
-        <div class="card shadow-sm">
-            <div class="card-body p-4">
-                <h1 class="h3 mb-4">
+        <div class="card form-card shadow-sm">
+            <div class="card-body p-4 p-lg-5">
+                <p class="page-kicker mb-2">Dashboard Organizer</p>
+                <h1 class="h2 mb-2">
                     {% if object %}Modifica evento{% else %}Crea evento{% endif %}
                 </h1>
+                <p class="text-body-secondary mb-4">
+                    Inserisci informazioni chiare per aiutare gli utenti a
+                    decidere se partecipare.
+                </p>
 
                 <form method="post" novalidate>
                     {% csrf_token %}
@@ -42,16 +47,16 @@
                         </div>
                     {% endfor %}
 
-                    <div class="d-flex gap-2">
-                        <button class="btn btn-primary" type="submit">
-                            Salva
-                        </button>
+                    <div class="d-flex flex-column-reverse flex-sm-row gap-2 pt-2">
                         <a
                             class="btn btn-outline-secondary"
                             href="{% url 'events:my_events' %}"
                         >
                             Annulla
                         </a>
+                        <button class="btn btn-primary" type="submit">
+                            {% if object %}Salva modifiche{% else %}Crea evento{% endif %}
+                        </button>
                     </div>
                 </form>
             </div>

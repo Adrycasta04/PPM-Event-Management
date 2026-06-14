@@ -1,6 +1,9 @@
-<nav class="navbar navbar-expand-lg bg-dark" data-bs-theme="dark">
+<nav class="navbar navbar-expand-lg navbar-dark site-navbar sticky-top">
     <div class="container">
-        <a class="navbar-brand" href="{% url 'events:home' %}">PPM Events</a>
+        <a class="navbar-brand fw-bold" href="{% url 'events:home' %}">
+            <span class="brand-mark" aria-hidden="true">P</span>
+            PPM Events
+        </a>
         <button
             class="navbar-toggler"
             type="button"
@@ -13,55 +16,75 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="mainNavigation">
-            <ul class="navbar-nav ms-auto">
+            <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-1">
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'events:home' %}">Home</a>
+                    <a
+                        class="nav-link{% if request.resolver_match.url_name == 'home' %} active{% endif %}"
+                        href="{% url 'events:home' %}"
+                    >
+                        Home
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'events:list' %}">
-                        Events
+                    <a
+                        class="nav-link{% if request.resolver_match.url_name == 'list' or request.resolver_match.url_name == 'detail' %} active{% endif %}"
+                        href="{% url 'events:list' %}"
+                    >
+                        Eventi
                     </a>
                 </li>
                 {% if user_is_organizer %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'events:my_events' %}">
-                            My events
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'events:create' %}">
-                            Create event
+                        <a
+                            class="nav-link{% if request.resolver_match.url_name == 'my_events' or request.resolver_match.url_name == 'create' or request.resolver_match.url_name == 'update' or request.resolver_match.url_name == 'delete' or request.resolver_match.url_name == 'attendees' %} active{% endif %}"
+                            href="{% url 'events:my_events' %}"
+                        >
+                            I miei eventi
                         </a>
                     </li>
                 {% endif %}
                 {% if user_is_attendee %}
                     <li class="nav-item">
                         <a
-                            class="nav-link"
+                            class="nav-link{% if request.resolver_match.url_name == 'my_registrations' %} active{% endif %}"
                             href="{% url 'events:my_registrations' %}"
                         >
-                            My registrations
+                            Le mie iscrizioni
+                        </a>
+                    </li>
+                {% endif %}
+                {% if user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin:index' %}">
+                            Admin
                         </a>
                     </li>
                 {% endif %}
                 {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <span class="navbar-text me-lg-3">
-                            {{ user.get_username }}
+                    <li class="nav-item ms-lg-2">
+                        <span class="navbar-text user-chip">
+                            <span>{{ user.get_username }}</span>
+                            {% if user.is_superuser %}
+                                <span class="badge text-bg-warning">Admin</span>
+                            {% elif user_is_organizer %}
+                                <span class="badge text-bg-primary">Organizer</span>
+                            {% elif user_is_attendee %}
+                                <span class="badge text-bg-info">Attendee</span>
+                            {% endif %}
                         </span>
                     </li>
                     <li class="nav-item">
                         <form method="post" action="{% url 'accounts:logout' %}">
                             {% csrf_token %}
-                            <button class="btn btn-link nav-link" type="submit">
-                                Logout
+                            <button class="btn btn-outline-light btn-sm ms-lg-2" type="submit">
+                                Esci
                             </button>
                         </form>
                     </li>
                 {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'accounts:login' %}">
-                            Login
+                            Accedi
                         </a>
                     </li>
                 {% endif %}

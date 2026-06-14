@@ -3,18 +3,27 @@
 {% block title %}{{ event.title }} | PPM Events{% endblock %}
 
 {% block content %}
-<div class="mb-4">
-    <a class="link-secondary" href="{% url 'events:list' %}">
-        Torna agli eventi
+<div class="mb-3">
+    <a class="link-secondary text-decoration-none" href="{% url 'events:list' %}">
+        &larr; Torna agli eventi
     </a>
 </div>
 
 <article class="card shadow-sm">
     <div class="card-body p-4 p-lg-5">
-        <div class="d-flex justify-content-between gap-3 mb-4">
-            <h1 class="display-6 mb-0">{{ event.title }}</h1>
+        <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
+            <div>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    {% include "includes/event_status_badge.html" %}
+                    <span class="badge rounded-pill text-bg-light">
+                        {{ event.registration_count }}/{{ event.capacity }}
+                        iscritti
+                    </span>
+                </div>
+                <h1 class="display-6 fw-bold mb-0">{{ event.title }}</h1>
+            </div>
             {% if user == event.organizer %}
-                <div class="d-flex gap-2 align-items-start">
+                <div class="d-flex gap-2 align-items-start page-actions">
                     <a
                         class="btn btn-outline-primary"
                         href="{% url 'events:update' event.pk %}"
@@ -33,65 +42,81 @@
 
         <div class="row g-4">
             <div class="col-lg-8">
-                <h2 class="h5">Descrizione</h2>
+                <h2 class="h4 mb-3">Informazioni sull'evento</h2>
                 <div class="event-description">
                     {{ event.description|linebreaks }}
                 </div>
 
                 {% if user_is_attendee %}
-                    <div class="mt-4">
+                    <div class="info-panel mt-4">
                         {% if registration %}
-                            <div class="alert alert-success" role="status">
-                                Sei registrato a questo evento.
-                            </div>
-                            <form
-                                method="post"
-                                action="{% url 'events:cancel_registration' registration.pk %}"
-                            >
-                                {% csrf_token %}
-                                <button
-                                    class="btn btn-outline-danger"
-                                    type="submit"
+                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                                <div>
+                                    <h2 class="h5 mb-1">Iscrizione confermata</h2>
+                                    <p class="text-body-secondary mb-0">
+                                        Sei registrato a questo evento.
+                                    </p>
+                                </div>
+                                <form
+                                    method="post"
+                                    action="{% url 'events:cancel_registration' registration.pk %}"
                                 >
-                                    Cancella registrazione
-                                </button>
-                            </form>
-                        {% elif event_is_full %}
-                            <div class="alert alert-warning" role="status">
-                                L'evento ha raggiunto la capacita massima.
+                                    {% csrf_token %}
+                                    <button
+                                        class="btn btn-outline-danger"
+                                        type="submit"
+                                    >
+                                        Cancella iscrizione
+                                    </button>
+                                </form>
                             </div>
+                        {% elif event_is_full %}
+                            <h2 class="h5">Evento al completo</h2>
+                            <p class="text-body-secondary mb-0">
+                                L'evento ha raggiunto la capacita massima.
+                            </p>
                         {% else %}
-                            <form
-                                method="post"
-                                action="{% url 'events:register' event.pk %}"
-                            >
-                                {% csrf_token %}
-                                <button class="btn btn-primary" type="submit">
-                                    Registrati
-                                </button>
-                            </form>
+                            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                                <div>
+                                    <h2 class="h5 mb-1">Partecipa all'evento</h2>
+                                    <p class="text-body-secondary mb-0">
+                                        Conferma la tua presenza con un solo passaggio.
+                                    </p>
+                                </div>
+                                <form
+                                    method="post"
+                                    action="{% url 'events:register' event.pk %}"
+                                >
+                                    {% csrf_token %}
+                                    <button class="btn btn-primary" type="submit">
+                                        Registrati
+                                    </button>
+                                </form>
+                            </div>
                         {% endif %}
                     </div>
                 {% endif %}
             </div>
             <div class="col-lg-4">
-                <h2 class="h5">Informazioni</h2>
-                <dl>
-                    <dt>Inizio</dt>
-                    <dd>{{ event.starts_at|date:"d/m/Y H:i" }}</dd>
+                <aside class="info-panel">
+                    <h2 class="h5 mb-3">Dettagli</h2>
+                    <dl class="mb-0">
+                        <dt>Inizio</dt>
+                        <dd>{{ event.starts_at|date:"d/m/Y H:i" }}</dd>
 
-                    <dt>Fine</dt>
-                    <dd>{{ event.ends_at|date:"d/m/Y H:i" }}</dd>
+                        <dt>Fine</dt>
+                        <dd>{{ event.ends_at|date:"d/m/Y H:i" }}</dd>
 
-                    <dt>Luogo</dt>
-                    <dd>{{ event.location }}</dd>
+                        <dt>Luogo</dt>
+                        <dd>{{ event.location }}</dd>
 
-                    <dt>Capacità</dt>
-                    <dd>{{ event.capacity }} partecipanti</dd>
+                        <dt>Capacità</dt>
+                        <dd>{{ event.capacity }} partecipanti</dd>
 
-                    <dt>Organizzatore</dt>
-                    <dd>{{ event.organizer.get_username }}</dd>
-                </dl>
+                        <dt>Organizzatore</dt>
+                        <dd>{{ event.organizer.get_username }}</dd>
+                    </dl>
+                </aside>
             </div>
         </div>
     </div>
