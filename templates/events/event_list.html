@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Events | PPM Events{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="mb-1">Events</h1>
+        <p class="text-body-secondary mb-0">
+            Scopri gli eventi attualmente pubblicati.
+        </p>
+    </div>
+</div>
+
+{% if events %}
+    <div class="row g-4">
+        {% for event in events %}
+            <div class="col-md-6 col-xl-4">
+                <article class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
+                        <h2 class="h4 card-title">{{ event.title }}</h2>
+                        <dl class="row small mb-4">
+                            <dt class="col-4">Inizio</dt>
+                            <dd class="col-8">
+                                {{ event.starts_at|date:"d/m/Y H:i" }}
+                            </dd>
+                            <dt class="col-4">Luogo</dt>
+                            <dd class="col-8">{{ event.location }}</dd>
+                        </dl>
+                        <a
+                            class="btn btn-outline-primary mt-auto align-self-start"
+                            href="{{ event.get_absolute_url }}"
+                        >
+                            Dettagli
+                        </a>
+                    </div>
+                </article>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info" role="status">
+        Non ci sono eventi pubblicati al momento.
+    </div>
+{% endif %}
+{% endblock %}

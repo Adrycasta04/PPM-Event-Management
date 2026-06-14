@@ -6,6 +6,11 @@ from django.db.models import F, Q
 from django.urls import reverse
 
 
+class EventQuerySet(models.QuerySet):
+    def public(self):
+        return self.filter(status=Event.Status.PUBLISHED)
+
+
 class Event(models.Model):
     class Status(models.TextChoices):
         DRAFT = "draft", "Draft"
@@ -32,6 +37,8 @@ class Event(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects = EventQuerySet.as_manager()
 
     class Meta:
         ordering = ["starts_at", "title"]

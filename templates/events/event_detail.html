@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}{{ event.title }} | PPM Events{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a class="link-secondary" href="{% url 'events:list' %}">
+        Torna agli eventi
+    </a>
+</div>
+
+<article class="card shadow-sm">
+    <div class="card-body p-4 p-lg-5">
+        <h1 class="display-6 mb-4">{{ event.title }}</h1>
+
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <h2 class="h5">Descrizione</h2>
+                <div class="event-description">
+                    {{ event.description|linebreaks }}
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <h2 class="h5">Informazioni</h2>
+                <dl>
+                    <dt>Inizio</dt>
+                    <dd>{{ event.starts_at|date:"d/m/Y H:i" }}</dd>
+
+                    <dt>Fine</dt>
+                    <dd>{{ event.ends_at|date:"d/m/Y H:i" }}</dd>
+
+                    <dt>Luogo</dt>
+                    <dd>{{ event.location }}</dd>
+
+                    <dt>Capacità</dt>
+                    <dd>{{ event.capacity }} partecipanti</dd>
+
+                    <dt>Organizzatore</dt>
+                    <dd>{{ event.organizer.get_username }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</article>
+{% endblock %}
