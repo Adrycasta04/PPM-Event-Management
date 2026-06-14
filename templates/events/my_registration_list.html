@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}My registrations | PPM Events{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="mb-1">My registrations</h1>
+    <p class="text-body-secondary mb-0">
+        Consulta e gestisci le tue registrazioni agli eventi.
+    </p>
+</div>
+
+{% if registrations %}
+    <div class="row g-4">
+        {% for registration in registrations %}
+            <div class="col-md-6">
+                <article class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h2 class="h4">{{ registration.event.title }}</h2>
+                        <dl class="row small">
+                            <dt class="col-4">Inizio</dt>
+                            <dd class="col-8">
+                                {{ registration.event.starts_at|date:"d/m/Y H:i" }}
+                            </dd>
+                            <dt class="col-4">Luogo</dt>
+                            <dd class="col-8">
+                                {{ registration.event.location }}
+                            </dd>
+                        </dl>
+                        <div class="d-flex gap-2">
+                            {% if registration.event.is_public %}
+                                <a
+                                    class="btn btn-outline-secondary"
+                                    href="{{ registration.event.get_absolute_url }}"
+                                >
+                                    Dettagli
+                                </a>
+                            {% endif %}
+                            <form
+                                method="post"
+                                action="{% url 'events:cancel_registration' registration.pk %}"
+                            >
+                                {% csrf_token %}
+                                <button
+                                    class="btn btn-outline-danger"
+                                    type="submit"
+                                >
+                                    Cancella
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info" role="status">
+        Non hai ancora registrazioni.
+    </div>
+{% endif %}
+{% endblock %}

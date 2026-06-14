@@ -8,7 +8,7 @@ from django.utils import timezone
 
 from accounts.roles import Role
 
-from .models import Event
+from .models import Event, Registration
 
 
 class HomePageTests(TestCase):
@@ -257,4 +257,233 @@ class OrganizerEventCrudTests(TestCase):
         self.assertContains(
             response,
             "Non puoi modificare o eliminare eventi di altri organizzatori.",
+        )
+
+
+class AttendeeRegistrationWorkflowTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        attendee_group = Group.objects.create(name=Role.ATTENDEE.value)
+        organizer_group = Group.objects.create(name=Role.ORGANIZER.value)
+
+        cls.attendee = get_user_model().objects.create_user(
+            username="registration-attendee",
+        )
+        cls.other_attendee = get_user_model().objects.create_user(
+            username="other-attendee",
+        )
+        cls.organizer = get_user_model().objects.create_user(
+            username="registration-organizer",
+        )
+        cls.attendee.groups.add(attendee_group)
+        cls.other_attendee.groups.add(attendee_group)
+        cls.organizer.groups.add(organizer_group)
+
+        starts_at = timezone.now() + timedelta(days=30)
+        event_fields = {
+            "organizer": cls.organizer,
+            "description": "Registration workflow event",
+            "starts_at": starts_at,
+            "ends_at": starts_at + timedelta(hours=2),
+            "location": "Florence",
+            "capacity": 2,
+        }
+        cls.published_event = Event.objects.create(
+            title="Registration event",
+            status=Event.Status.PUBLISHED,
+            **event_fields,
+        )
+        cls.draft_event = Event.objects.create(
+            title="Private draft event",
+            status=Event.Status.DRAFT,
+            **event_fields,
+        )
+        cls.cancelled_event = Event.objects.create(
+            title="Cancelled registration event",
+            status=Event.Status.CANCELLED,
+            **event_fields,
+        )
+
+    def test_attendee_can_register_for_published_event(self):
+        self.client.force_login(self.attendee)
+
+        response = self.client.post(
+            reverse("events:register", args=[self.published_event.pk]),
+            follow=True,
+        )
+
+        self.assertTrue(
+            Registration.objects.filter(
+                event=self.published_event,
+                attendee=self.attendee,
+            ).exists()
+        )
+        self.assertRedirects(
+            response,
+            self.published_event.get_absolute_url(),
+        )
+        self.assertContains(
+            response,
+            "Registrazione completata con successo.",
+        )
+
+    def test_duplicate_registration_is_prevented(self):
+        Registration.objects.create(
+            event=self.published_event,
+            attendee=self.attendee,
+        )
+        self.client.force_login(self.attendee)
+
+        response = self.client.post(
+            reverse("events:register", args=[self.published_event.pk]),
+            follow=True,
+        )
+
+        self.assertEqual(
+            Registration.objects.filter(
+                event=self.published_event,
+                attendee=self.attendee,
+            ).count(),
+            1,
+        )
+        self.assertContains(response, "Sei gia registrato a questo evento.")
+
+    def test_registration_is_blocked_when_event_is_full(self):
+        self.published_event.capacity = 1
+        self.published_event.save(update_fields=["capacity"])
+        Registration.objects.create(
+            event=self.published_event,
+            attendee=self.other_attendee,
+        )
+        self.client.force_login(self.attendee)
+
+        response = self.client.post(
+            reverse("events:register", args=[self.published_event.pk]),
+            follow=True,
+        )
+
+        self.assertFalse(
+            Registration.objects.filter(
+                event=self.published_event,
+                attendee=self.attendee,
+            ).exists()
+        )
+        self.assertContains(
+            response,
+            "L'evento ha raggiunto la capacita massima.",
+        )
+
+    def test_registration_is_blocked_for_non_public_events(self):
+        self.client.force_login(self.attendee)
+
+        for event in (self.draft_event, self.cancelled_event):
+            with self.subTest(status=event.status):
+                response = self.client.post(
+                    reverse("events:register", args=[event.pk]),
+                    follow=True,
+                )
+                self.assertFalse(
+                    Registration.objects.filter(
+                        event=event,
+                        attendee=self.attendee,
+                    ).exists()
+                )
+                self.assertRedirects(response, reverse("events:list"))
+                self.assertContains(
+                    response,
+                    "Le registrazioni sono disponibili solo per eventi pubblicati.",
+                )
+
+    def test_anonymous_user_cannot_register(self):
+        register_url = reverse(
+            "events:register",
+            args=[self.published_event.pk],
+        )
+
+        response = self.client.post(register_url)
+
+        self.assertRedirects(
+            response,
+            f"{reverse('accounts:login')}?next={register_url}",
+        )
+        self.assertEqual(Registration.objects.count(), 0)
+
+    def test_organizer_cannot_register_as_attendee(self):
+        self.client.force_login(self.organizer)
+
+        response = self.client.post(
+            reverse("events:register", args=[self.published_event.pk]),
+            follow=True,
+        )
+
+        self.assertFalse(
+            Registration.objects.filter(
+                event=self.published_event,
+                attendee=self.organizer,
+            ).exists()
+        )
+        self.assertRedirects(response, reverse("events:list"))
+        self.assertContains(
+            response,
+            "Questa azione e riservata agli attendee.",
+        )
+
+    def test_attendee_can_cancel_own_registration(self):
+        registration = Registration.objects.create(
+            event=self.published_event,
+            attendee=self.attendee,
+        )
+        self.client.force_login(self.attendee)
+
+        response = self.client.post(
+            reverse("events:cancel_registration", args=[registration.pk]),
+            follow=True,
+        )
+
+        self.assertFalse(
+            Registration.objects.filter(pk=registration.pk).exists()
+        )
+        self.assertRedirects(response, reverse("events:my_registrations"))
+        self.assertContains(
+            response,
+            "Registrazione cancellata con successo.",
+        )
+
+    def test_attendee_cannot_cancel_another_users_registration(self):
+        registration = Registration.objects.create(
+            event=self.published_event,
+            attendee=self.other_attendee,
+        )
+        self.client.force_login(self.attendee)
+
+        response = self.client.post(
+            reverse("events:cancel_registration", args=[registration.pk]),
+            follow=True,
+        )
+
+        self.assertTrue(
+            Registration.objects.filter(pk=registration.pk).exists()
+        )
+        self.assertContains(
+            response,
+            "Non puoi cancellare la registrazione di un altro utente.",
+        )
+
+    def test_my_registrations_contains_only_current_users_records(self):
+        own_registration = Registration.objects.create(
+            event=self.published_event,
+            attendee=self.attendee,
+        )
+        Registration.objects.create(
+            event=self.published_event,
+            attendee=self.other_attendee,
+        )
+        self.client.force_login(self.attendee)
+
+        response = self.client.get(reverse("events:my_registrations"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertQuerySetEqual(
+            response.context["registrations"],
+            [own_registration],
         )

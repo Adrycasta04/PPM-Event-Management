@@ -37,6 +37,42 @@
                 <div class="event-description">
                     {{ event.description|linebreaks }}
                 </div>
+
+                {% if user_is_attendee %}
+                    <div class="mt-4">
+                        {% if registration %}
+                            <div class="alert alert-success" role="status">
+                                Sei registrato a questo evento.
+                            </div>
+                            <form
+                                method="post"
+                                action="{% url 'events:cancel_registration' registration.pk %}"
+                            >
+                                {% csrf_token %}
+                                <button
+                                    class="btn btn-outline-danger"
+                                    type="submit"
+                                >
+                                    Cancella registrazione
+                                </button>
+                            </form>
+                        {% elif event_is_full %}
+                            <div class="alert alert-warning" role="status">
+                                L'evento ha raggiunto la capacita massima.
+                            </div>
+                        {% else %}
+                            <form
+                                method="post"
+                                action="{% url 'events:register' event.pk %}"
+                            >
+                                {% csrf_token %}
+                                <button class="btn btn-primary" type="submit">
+                                    Registrati
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% endif %}
             </div>
             <div class="col-lg-4">
                 <h2 class="h5">Informazioni</h2>
