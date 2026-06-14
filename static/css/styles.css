@@ -1,0 +1,9 @@
+body {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.hero-section {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+}
