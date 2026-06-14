@@ -98,4 +98,8 @@ MESSAGE_TAGS = {
     message_constants.ERROR: "danger",
 }
 
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "events:home"
+LOGOUT_REDIRECT_URL = "events:home"
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
