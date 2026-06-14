@@ -33,6 +33,10 @@ class OrganizerRequiredMixin(LoginRequiredMixin):
 
 
 class EventOwnerRequiredMixin(OrganizerRequiredMixin):
+    ownership_denied_message = (
+        "Non puoi modificare o eliminare eventi di altri organizzatori."
+    )
+
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated and is_organizer(request.user):
             event = (
@@ -43,7 +47,7 @@ class EventOwnerRequiredMixin(OrganizerRequiredMixin):
             if event is not None and event.organizer_id != request.user.pk:
                 messages.error(
                     request,
-                    "Non puoi modificare o eliminare eventi di altri organizzatori.",
+                    self.ownership_denied_message,
                 )
                 return redirect("events:my_events")
         return super().dispatch(request, *args, **kwargs)
@@ -147,6 +151,25 @@ class EventDeleteView(EventOwnerRequiredMixin, DeleteView):
     def form_valid(self, form):
         messages.success(self.request, "Evento eliminato con successo.")
         return super().form_valid(form)
+
+
+class EventAttendeeListView(EventOwnerRequiredMixin, DetailView):
+    model = Event
+    template_name = "events/event_attendee_list.html"
+    context_object_name = "event"
+    ownership_denied_message = (
+        "Non puoi visualizzare i partecipanti di eventi di altri organizzatori."
+    )
+
+    def get_queryset(self):
+        return Event.objects.filter(
+            organizer=self.request.user,
+        ).prefetch_related("registrations__attendee")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["registrations"] = self.object.registrations.all()
+        return context
 
 
 class MyRegistrationListView(AttendeeRequiredMixin, ListView):

@@ -42,6 +42,12 @@
                                 </a>
                             {% endif %}
                             <a
+                                class="btn btn-sm btn-outline-secondary"
+                                href="{% url 'events:attendees' event.pk %}"
+                            >
+                                Partecipanti
+                            </a>
+                            <a
                                 class="btn btn-sm btn-outline-primary"
                                 href="{% url 'events:update' event.pk %}"
                             >

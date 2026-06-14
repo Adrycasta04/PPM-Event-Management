@@ -487,3 +487,134 @@ class AttendeeRegistrationWorkflowTests(TestCase):
             response.context["registrations"],
             [own_registration],
         )
+
+
+class OrganizerAttendeeListTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        organizer_group = Group.objects.create(name=Role.ORGANIZER.value)
+        attendee_group = Group.objects.create(name=Role.ATTENDEE.value)
+
+        cls.owner = get_user_model().objects.create_user(
+            username="attendee-list-owner",
+        )
+        cls.other_organizer = get_user_model().objects.create_user(
+            username="attendee-list-other-organizer",
+        )
+        cls.attendee = get_user_model().objects.create_user(
+            username="listed-attendee",
+            first_name="Mario",
+            last_name="Rossi",
+            email="mario@example.com",
+        )
+        cls.other_attendee = get_user_model().objects.create_user(
+            username="other-listed-attendee",
+        )
+        cls.owner.groups.add(organizer_group)
+        cls.other_organizer.groups.add(organizer_group)
+        cls.attendee.groups.add(attendee_group)
+        cls.other_attendee.groups.add(attendee_group)
+
+        starts_at = timezone.now() + timedelta(days=40)
+        event_fields = {
+            "description": "Attendee list event",
+            "starts_at": starts_at,
+            "ends_at": starts_at + timedelta(hours=2),
+            "location": "Florence",
+            "capacity": 20,
+            "status": Event.Status.PUBLISHED,
+        }
+        cls.event = Event.objects.create(
+            organizer=cls.owner,
+            title="Owner attendee list event",
+            **event_fields,
+        )
+        cls.empty_event = Event.objects.create(
+            organizer=cls.owner,
+            title="Empty owner event",
+            **event_fields,
+        )
+        cls.other_event = Event.objects.create(
+            organizer=cls.other_organizer,
+            title="Other organizer attendee event",
+            **event_fields,
+        )
+        cls.registration = Registration.objects.create(
+            event=cls.event,
+            attendee=cls.attendee,
+        )
+        Registration.objects.create(
+            event=cls.other_event,
+            attendee=cls.other_attendee,
+        )
+
+    def test_owner_can_view_attendees_for_own_event(self):
+        self.client.force_login(self.owner)
+
+        response = self.client.get(
+            reverse("events:attendees", args=[self.event.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "events/event_attendee_list.html")
+        self.assertEqual(response.context["event"], self.event)
+        self.assertQuerySetEqual(
+            response.context["registrations"],
+            [self.registration],
+        )
+        self.assertContains(response, self.attendee.username)
+        self.assertContains(response, self.attendee.email)
+        self.assertNotContains(response, self.other_attendee.username)
+
+    def test_empty_event_has_clear_empty_state(self):
+        self.client.force_login(self.owner)
+
+        response = self.client.get(
+            reverse("events:attendees", args=[self.empty_event.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            "Questo evento non ha ancora partecipanti.",
+        )
+
+    def test_other_organizer_cannot_view_attendees(self):
+        self.client.force_login(self.other_organizer)
+
+        response = self.client.get(
+            reverse("events:attendees", args=[self.event.pk]),
+            follow=True,
+        )
+
+        self.assertRedirects(response, reverse("events:my_events"))
+        self.assertContains(
+            response,
+            "Non puoi visualizzare i partecipanti di eventi di altri organizzatori.",
+        )
+        self.assertNotContains(response, self.attendee.email)
+
+    def test_attendee_cannot_view_event_attendees(self):
+        self.client.force_login(self.attendee)
+
+        response = self.client.get(
+            reverse("events:attendees", args=[self.event.pk]),
+            follow=True,
+        )
+
+        self.assertRedirects(response, reverse("events:list"))
+        self.assertContains(
+            response,
+            "Questa sezione e riservata agli organizzatori.",
+        )
+        self.assertNotContains(response, self.other_attendee.username)
+
+    def test_anonymous_user_is_redirected_to_login(self):
+        attendee_url = reverse("events:attendees", args=[self.event.pk])
+
+        response = self.client.get(attendee_url)
+
+        self.assertRedirects(
+            response,
+            f"{reverse('accounts:login')}?next={attendee_url}",
+        )
