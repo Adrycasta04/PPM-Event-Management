@@ -212,7 +212,7 @@ URL namespaces and representative query efficiency.
 ## Deployment
 
 **Recommended platform:** Render
-**Deployment URL:** `[ADD THE REAL RENDER URL AFTER DEPLOYMENT]`
+**Deployment URL:** https://ppm-events.onrender.com
 
 The repository includes a Render Blueprint in `render.yaml` and a deployment
 build script in `build.sh`.
