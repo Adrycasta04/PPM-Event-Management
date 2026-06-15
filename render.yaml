@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: ppm-events
+    runtime: python
+    plan: free
+    buildCommand: bash build.sh
+    startCommand: gunicorn django_project.wsgi:application --bind 0.0.0.0:$PORT
+    healthCheckPath: /
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"

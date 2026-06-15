@@ -1,6 +1,6 @@
 # PPM Events
 
-**Student:** `[Nome e Cognome - inserire prima della consegna]`  
+**Student:** Adriano Castaldo
 **Course:** Progettazione e Produzione Multimediale - Back-end 2026  
 **Project type:** Full-Stack Web Application  
 **Framework:** Django 5.2 LTS  
@@ -63,6 +63,8 @@ Organizer role.
 
 - Python 3.12 recommended
 - Django 5.2.15
+- Gunicorn 26.0.0
+- WhiteNoise 6.12.0
 - SQLite
 - Bootstrap 5
 - Django Templates
@@ -209,7 +211,73 @@ URL namespaces and representative query efficiency.
 
 ## Deployment
 
-**Deployment URL:** `[TO BE ADDED IN PHASE 10]`
+**Recommended platform:** Render
+**Deployment URL:** `[ADD THE REAL RENDER URL AFTER DEPLOYMENT]`
 
-Production deployment configuration and the final online URL will be added in
-Phase 10.
+The repository includes a Render Blueprint in `render.yaml` and a deployment
+build script in `build.sh`.
+
+### Render deployment
+
+1. Push the final repository to GitHub.
+2. Create a Render account and open **Blueprints**.
+3. Select **New Blueprint Instance** and connect this repository.
+4. Confirm creation of the `ppm-events` Python web service.
+5. Wait for the build and deployment to complete.
+6. Open the generated `.onrender.com` URL.
+7. Run the complete browser-based testing scenario.
+8. Replace the deployment URL placeholder above with the real URL.
+
+The Blueprint uses:
+
+```text
+Build command: bash build.sh
+Start command: gunicorn django_project.wsgi:application --bind 0.0.0.0:$PORT
+Health check path: /
+```
+
+The build script performs:
+
+```bash
+python -m pip install -r requirements.txt
+python manage.py collectstatic --noinput
+python manage.py migrate
+```
+
+Render reads `.python-version` and uses the latest available Python 3.12 patch
+release.
+
+### Environment variables
+
+The committed `render.yaml` configures:
+
+| Variable | Required | Description |
+|---|---|---|
+| `DJANGO_SECRET_KEY` | Yes | Generated automatically by Render. Never commit its real value. |
+| `DJANGO_DEBUG` | Yes | Set to `False` in production. |
+
+The application also supports these optional variables:
+
+| Variable | Example | Description |
+|---|---|---|
+| `DJANGO_ALLOWED_HOSTS` | `example.com,www.example.com` | Additional comma-separated hosts, useful for custom domains. |
+| `DJANGO_CSRF_TRUSTED_ORIGINS` | `https://example.com` | Additional comma-separated HTTPS origins for CSRF. |
+| `DJANGO_SECURE_SSL_REDIRECT` | `True` | Controls HTTPS redirect when `DEBUG=False`. |
+| `DJANGO_SECURE_HSTS_SECONDS` | `3600` | HSTS duration in seconds; defaults to one hour in production. |
+
+Render automatically supplies `RENDER_EXTERNAL_HOSTNAME`; the application adds
+that hostname to `ALLOWED_HOSTS` and its HTTPS origin to
+`CSRF_TRUSTED_ORIGINS`.
+
+### SQLite persistence note
+
+The deployed service starts with the populated `db.sqlite3` committed in this
+repository, so all demo accounts and scenarios are immediately available.
+
+Render free web services use an ephemeral filesystem. Browser changes work
+during the running instance, but they can be reset to the committed demo
+database after a restart or redeploy. This behavior is acceptable for the
+course demo and keeps the repository SQLite-based as required.
+
+Persistent production data would require a paid Render persistent disk or a
+managed database. Neither is required for this academic deployment.
