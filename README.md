@@ -1,9 +1,13 @@
 # PPM Events
 
 **Student:** Adriano Castaldo
-**Course:** Progettazione e Produzione Multimediale - Back-end 2026  
-**Project type:** Full-Stack Web Application  
-**Framework:** Django 5.2 LTS  
+
+**Course:** Progettazione e Produzione Multimediale - Back-end 2026
+
+**Project type:** Full-Stack Web Application
+
+**Framework:** Django 5.2 LTS
+
 **Track:** Event Management System
 
 ## Description
@@ -212,6 +216,7 @@ URL namespaces and representative query efficiency.
 ## Deployment
 
 **Recommended platform:** Render
+
 **Deployment URL:** https://ppm-events.onrender.com
 
 The repository includes a Render Blueprint in `render.yaml` and a deployment
@@ -226,7 +231,6 @@ build script in `build.sh`.
 5. Wait for the build and deployment to complete.
 6. Open the generated `.onrender.com` URL.
 7. Run the complete browser-based testing scenario.
-8. Replace the deployment URL placeholder above with the real URL.
 
 The Blueprint uses:
 
