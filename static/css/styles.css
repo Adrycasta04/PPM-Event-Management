@@ -93,14 +93,17 @@ a {
     text-transform: uppercase;
 }
 
-.hero-step-number {
-    min-width: 2.35rem;
-    padding: 0.45rem 0.65rem;
+.hero-feature-icon {
+    display: inline-grid;
+    flex: 0 0 1.75rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    place-items: center;
     color: #172554;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 800;
-    letter-spacing: 0.04em;
     background: #fff;
+    border-radius: 50%;
     box-shadow: 0 0.35rem 0.9rem rgba(15, 23, 42, 0.18);
 }
 
