@@ -48,6 +48,51 @@ class EventFormTests(TestCase):
 
         self.assertTrue(form.is_valid(), form.errors)
 
+    def test_datetime_and_status_help_texts_are_clear(self):
+        form = EventForm()
+
+        self.assertIn("data sia l'orario", form.fields["starts_at"].help_text)
+        self.assertIn("data sia l'orario", form.fields["ends_at"].help_text)
+        self.assertIn("Draft = bozza non pubblica", form.fields["status"].help_text)
+        self.assertIn("Published = visibile", form.fields["status"].help_text)
+        self.assertIn("Cancelled = annullato", form.fields["status"].help_text)
+
+    def test_title_cannot_be_only_spaces(self):
+        form = EventForm(data=self.valid_data(title="     "))
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("title", form.errors)
+
+    def test_title_must_have_at_least_five_characters(self):
+        form = EventForm(data=self.valid_data(title="Abcd"))
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("title", form.errors)
+
+    def test_title_is_stripped_before_save(self):
+        form = EventForm(data=self.valid_data(title="  Valid title  "))
+
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["title"], "Valid title")
+
+    def test_location_cannot_be_only_spaces(self):
+        form = EventForm(data=self.valid_data(location="     "))
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("location", form.errors)
+
+    def test_location_must_have_at_least_three_characters(self):
+        form = EventForm(data=self.valid_data(location="AB"))
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("location", form.errors)
+
+    def test_location_is_stripped_before_save(self):
+        form = EventForm(data=self.valid_data(location="  Florence  "))
+
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["location"], "Florence")
+
     def test_end_must_be_after_start(self):
         starts_at = timezone.localtime(
             timezone.now() + timedelta(days=7)

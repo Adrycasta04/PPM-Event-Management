@@ -1,5 +1,7 @@
 <div class="empty-state text-center">
-    <div class="empty-state-mark" aria-hidden="true">{{ mark|default:"-" }}</div>
+    <div class="empty-state-mark" aria-hidden="true">
+        {% if mark %}{{ mark }}{% else %}&check;{% endif %}
+    </div>
     <h2 class="h4">{{ title }}</h2>
     <p class="text-body-secondary mb-0">{{ description }}</p>
     {% if action_url and action_label %}
