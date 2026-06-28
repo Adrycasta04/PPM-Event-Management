@@ -1,16 +1,19 @@
 # PPM Events
 
-**Student:** Adriano Castaldo
+[![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Django 5.2 LTS](https://img.shields.io/badge/Django-5.2_LTS-092E20?logo=django&logoColor=white)](https://www.djangoproject.com/)
+![SQLite](https://img.shields.io/badge/Database-SQLite-003B57?logo=sqlite&logoColor=white)
+[![Render deployment](https://img.shields.io/badge/Render-Live-46E3B7?logo=render&logoColor=white)](https://ppm-events.onrender.com)
 
-**Course:** Progettazione e Produzione Multimediale - Back-end 2026
+| Project information | Details |
+|---|---|
+| **Student** | Adriano Castaldo |
+| **Course** | Progettazione e Produzione Multimediale - Back-end 2026 |
+| **Project type** | Full-Stack Web Application |
+| **Framework** | Django 5.2 LTS |
+| **Track** | Event Management System |
 
-**Project type:** Full-Stack Web Application
-
-**Framework:** Django 5.2 LTS
-
-**Track:** Event Management System
-
-## Description
+## 📌 Project overview
 
 PPM Events is a server-rendered Django application for publishing events,
 managing registrations and separating the workflows of attendees and
@@ -21,7 +24,18 @@ Groups, server-side authorization checks, Bootstrap 5 and SQLite. It does not
 require a separate frontend or REST client and can be tested entirely from a
 browser.
 
-## Features by role
+### Main technologies
+
+- Python 3.12 recommended
+- Django 5.2.15
+- Gunicorn 26.0.0
+- WhiteNoise 6.12.0
+- SQLite
+- Bootstrap 5
+- Django Templates
+- Django built-in authentication and Groups
+
+## 👥 Features by role
 
 ### Anonymous user
 
@@ -63,18 +77,9 @@ another organizer.
 Admin status does not automatically grant the application-specific Attendee or
 Organizer role.
 
-## Main technologies
+## Local setup and demo data
 
-- Python 3.12 recommended
-- Django 5.2.15
-- Gunicorn 26.0.0
-- WhiteNoise 6.12.0
-- SQLite
-- Bootstrap 5
-- Django Templates
-- Django built-in authentication and Groups
-
-## Local installation
+### Local installation
 
 ```bash
 git clone <repository-url>
@@ -110,7 +115,7 @@ Open:
 http://127.0.0.1:8000/
 ```
 
-## SQLite demo database
+### SQLite demo database
 
 The repository includes a populated `db.sqlite3` containing demo users,
 groups, profiles, events and registrations. No initial data entry is required
@@ -132,7 +137,7 @@ unrelated application data intact:
 python manage.py seed_demo
 ```
 
-## Demo accounts
+### Demo accounts
 
 | Username | Password | Role |
 |---|---|---|
@@ -145,7 +150,7 @@ python manage.py seed_demo
 These credentials are intentionally public demo credentials and are not used
 for personal or production accounts.
 
-## Included demo scenarios
+### Included demo scenarios
 
 The database contains:
 
@@ -168,7 +173,9 @@ Notable events:
 - `Laboratorio Podcast - Bozza`: not publicly visible;
 - `Rassegna Cinema all'Aperto - Annullata`: not publicly visible.
 
-## Browser-based testing scenario
+## 🧪 Testing
+
+### Browser-based testing scenario
 
 1. Open the homepage and select `Eventi`.
 2. Verify that only published events appear.
@@ -189,7 +196,7 @@ Notable events:
     while events owned by `organizer_demo` do not.
 16. Log in as `admin_demo / admin12345` and open `/admin/`.
 
-## Automated tests
+### Automated tests
 
 Run the complete test suite:
 
@@ -203,7 +210,7 @@ The tests cover authentication, roles, permissions, ownership, forms, model
 constraints, event visibility, registration capacity, duplicate prevention,
 URL namespaces and representative query efficiency.
 
-## Security and authorization
+## 🔒 Security and authorization
 
 - all write forms use CSRF protection;
 - authentication uses Django built-in auth;
