@@ -43,7 +43,7 @@
                             </dd>
                             <dt class="col-4">Dove</dt>
                             <dd class="col-8">{{ event.location }}</dd>
-                            <dt class="col-4">Organizer</dt>
+                            <dt class="col-4">Organizzatore</dt>
                             <dd class="col-8">
                                 {{ event.organizer.get_username }}
                             </dd>
@@ -61,6 +61,6 @@
         {% endfor %}
     </div>
 {% else %}
-    {% include "includes/empty_state.html" with mark="0" title="Nessun evento disponibile" description="Non ci sono eventi pubblicati al momento. Torna presto per nuove proposte." %}
+    {% include "includes/empty_state.html" with title="Nessun evento disponibile" description="Non ci sono eventi pubblicati al momento. Torna presto per nuove proposte." %}
 {% endif %}
 {% endblock %}

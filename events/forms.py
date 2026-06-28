@@ -21,7 +21,7 @@ class EventForm(forms.ModelForm):
             "starts_at": "Data e ora di inizio",
             "ends_at": "Data e ora di fine",
             "location": "Luogo",
-            "capacity": "Capacita massima",
+            "capacity": "Capacità massima",
             "status": "Stato",
         }
         help_texts = {
@@ -89,7 +89,7 @@ class EventForm(forms.ModelForm):
     def clean_capacity(self):
         capacity = self.cleaned_data["capacity"]
         if capacity <= 0:
-            raise forms.ValidationError("La capacita deve essere positiva.")
+            raise forms.ValidationError("La capacità deve essere positiva.")
         return capacity
 
     def clean(self):

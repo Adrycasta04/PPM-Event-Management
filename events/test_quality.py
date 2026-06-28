@@ -85,7 +85,7 @@ class RoleAndPermissionQualityTests(TestCase):
                 self.assertRedirects(response, reverse("events:list"))
                 self.assertContains(
                     response,
-                    "Questa azione e riservata agli attendee.",
+                    "Questa azione è riservata ai partecipanti.",
                 )
 
     def test_user_with_both_roles_cannot_use_attendee_workflow(self):

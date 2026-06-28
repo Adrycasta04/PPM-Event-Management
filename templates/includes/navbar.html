@@ -21,6 +21,7 @@
                     <a
                         class="nav-link{% if request.resolver_match.url_name == 'home' %} active{% endif %}"
                         href="{% url 'events:home' %}"
+                        {% if request.resolver_match.url_name == "home" %}aria-current="page"{% endif %}
                     >
                         Home
                     </a>
@@ -29,6 +30,7 @@
                     <a
                         class="nav-link{% if request.resolver_match.url_name == 'list' or request.resolver_match.url_name == 'detail' %} active{% endif %}"
                         href="{% url 'events:list' %}"
+                        {% if request.resolver_match.url_name == "list" or request.resolver_match.url_name == "detail" %}aria-current="page"{% endif %}
                     >
                         Eventi
                     </a>
@@ -38,6 +40,7 @@
                         <a
                             class="nav-link{% if request.resolver_match.url_name == 'my_events' or request.resolver_match.url_name == 'create' or request.resolver_match.url_name == 'update' or request.resolver_match.url_name == 'delete' or request.resolver_match.url_name == 'attendees' %} active{% endif %}"
                             href="{% url 'events:my_events' %}"
+                            {% if request.resolver_match.url_name == "my_events" or request.resolver_match.url_name == "create" or request.resolver_match.url_name == "update" or request.resolver_match.url_name == "delete" or request.resolver_match.url_name == "attendees" %}aria-current="page"{% endif %}
                         >
                             I miei eventi
                         </a>
@@ -48,6 +51,7 @@
                         <a
                             class="nav-link{% if request.resolver_match.url_name == 'my_registrations' %} active{% endif %}"
                             href="{% url 'events:my_registrations' %}"
+                            {% if request.resolver_match.url_name == "my_registrations" %}aria-current="page"{% endif %}
                         >
                             Le mie iscrizioni
                         </a>
@@ -63,13 +67,13 @@
                 {% if user.is_authenticated %}
                     <li class="nav-item ms-lg-2">
                         <span class="navbar-text user-chip">
-                            <span>{{ user.get_username }}</span>
+                            <span class="user-name">{{ user.get_username }}</span>
                             {% if user.is_superuser %}
                                 <span class="badge text-bg-warning">Admin</span>
                             {% elif user_is_organizer %}
-                                <span class="badge text-bg-primary">Organizer</span>
+                                <span class="badge text-bg-primary">Organizzatore</span>
                             {% elif user_is_attendee %}
-                                <span class="badge text-bg-info">Attendee</span>
+                                <span class="badge text-bg-info">Partecipante</span>
                             {% endif %}
                         </span>
                     </li>
@@ -83,7 +87,11 @@
                     </li>
                 {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'accounts:login' %}">
+                        <a
+                            class="nav-link{% if request.resolver_match.url_name == 'login' %} active{% endif %}"
+                            href="{% url 'accounts:login' %}"
+                            {% if request.resolver_match.url_name == "login" %}aria-current="page"{% endif %}
+                        >
                             Accedi
                         </a>
                     </li>

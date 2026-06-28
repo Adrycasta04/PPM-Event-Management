@@ -149,7 +149,7 @@ class OrganizerEventCrudTests(TestCase):
         self.assertRedirects(response, reverse("events:list"))
         self.assertContains(
             response,
-            "Questa sezione e riservata agli organizzatori.",
+            "Questa sezione è riservata agli organizzatori.",
         )
 
     def test_organizer_can_create_event_and_becomes_owner(self):
@@ -324,7 +324,7 @@ class AttendeeRegistrationWorkflowTests(TestCase):
         )
         self.assertContains(
             response,
-            "Registrazione completata con successo.",
+            "Iscrizione completata con successo.",
         )
 
     def test_duplicate_registration_is_prevented(self):
@@ -346,7 +346,7 @@ class AttendeeRegistrationWorkflowTests(TestCase):
             ).count(),
             1,
         )
-        self.assertContains(response, "Sei gia registrato a questo evento.")
+        self.assertContains(response, "Sei già registrato a questo evento.")
 
     def test_registration_is_blocked_when_event_is_full(self):
         self.published_event.capacity = 1
@@ -370,7 +370,7 @@ class AttendeeRegistrationWorkflowTests(TestCase):
         )
         self.assertContains(
             response,
-            "L'evento ha raggiunto la capacita massima.",
+            "L'evento ha raggiunto la capacità massima.",
         )
 
     def test_registration_is_blocked_for_non_public_events(self):
@@ -425,7 +425,7 @@ class AttendeeRegistrationWorkflowTests(TestCase):
         self.assertRedirects(response, reverse("events:list"))
         self.assertContains(
             response,
-            "Questa azione e riservata agli attendee.",
+            "Questa azione è riservata ai partecipanti.",
         )
 
     def test_attendee_can_cancel_own_registration(self):
@@ -446,7 +446,7 @@ class AttendeeRegistrationWorkflowTests(TestCase):
         self.assertRedirects(response, reverse("events:my_registrations"))
         self.assertContains(
             response,
-            "Registrazione cancellata con successo.",
+            "Iscrizione annullata con successo.",
         )
 
     def test_attendee_cannot_cancel_another_users_registration(self):
@@ -466,7 +466,7 @@ class AttendeeRegistrationWorkflowTests(TestCase):
         )
         self.assertContains(
             response,
-            "Non puoi cancellare la registrazione di un altro utente.",
+            "Non puoi annullare iscrizioni di altri utenti.",
         )
 
     def test_my_registrations_contains_only_current_users_records(self):
@@ -605,7 +605,7 @@ class OrganizerAttendeeListTests(TestCase):
         self.assertRedirects(response, reverse("events:list"))
         self.assertContains(
             response,
-            "Questa sezione e riservata agli organizzatori.",
+            "Questa sezione è riservata agli organizzatori.",
         )
         self.assertNotContains(response, self.other_attendee.username)
 

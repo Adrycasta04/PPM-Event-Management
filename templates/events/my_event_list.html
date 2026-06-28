@@ -5,7 +5,7 @@
 {% block content %}
 <header class="page-header d-flex flex-column flex-sm-row justify-content-between align-items-sm-end gap-3">
     <div>
-        <p class="page-kicker mb-2">Dashboard Organizer</p>
+        <p class="page-kicker mb-2">Area organizzatore</p>
         <h1 class="display-6 fw-bold mb-2">I miei eventi</h1>
         <p class="text-body-secondary mb-0">
             Gestisci gli eventi che hai creato.
@@ -76,6 +76,6 @@
     </div>
 {% else %}
     {% url "events:create" as create_event_url %}
-    {% include "includes/empty_state.html" with mark="+" title="Nessun evento creato" description="Non hai ancora creato eventi. Inizia preparando la tua prima proposta." action_url=create_event_url action_label="Crea il primo evento" %}
+    {% include "includes/empty_state.html" with title="Nessun evento creato" description="Non hai ancora creato eventi. Inizia preparando la tua prima proposta." action_url=create_event_url action_label="Crea il primo evento" %}
 {% endif %}
 {% endblock %}

@@ -27,7 +27,7 @@ class OrganizerRequiredMixin(LoginRequiredMixin):
         if request.user.is_authenticated and not is_organizer(request.user):
             messages.error(
                 request,
-                "Questa sezione e riservata agli organizzatori.",
+                "Questa sezione è riservata agli organizzatori.",
             )
             return redirect(self.permission_denied_url)
         return super().dispatch(request, *args, **kwargs)
@@ -66,7 +66,7 @@ class AttendeeRequiredMixin(LoginRequiredMixin):
         ):
             messages.error(
                 request,
-                "Questa azione e riservata agli attendee.",
+                "Questa azione è riservata ai partecipanti.",
             )
             return redirect(self.permission_denied_url)
         return super().dispatch(request, *args, **kwargs)
@@ -223,12 +223,12 @@ class EventRegistrationCreateView(AttendeeRequiredMixin, View):
             ).exists():
                 messages.warning(
                     request,
-                    "Sei gia registrato a questo evento.",
+                    "Sei già registrato a questo evento.",
                 )
             elif event.registrations.count() >= event.capacity:
                 messages.error(
                     request,
-                    "L'evento ha raggiunto la capacita massima.",
+                    "L'evento ha raggiunto la capacità massima.",
                 )
             else:
                 Registration.objects.create(
@@ -237,7 +237,7 @@ class EventRegistrationCreateView(AttendeeRequiredMixin, View):
                 )
                 messages.success(
                     request,
-                    "Registrazione completata con successo.",
+                    "Iscrizione completata con successo.",
                 )
 
         return redirect(event.get_absolute_url())
@@ -250,17 +250,17 @@ class EventRegistrationDeleteView(AttendeeRequiredMixin, View):
         registration = Registration.objects.filter(pk=pk).first()
 
         if registration is None:
-            messages.error(request, "Registrazione non trovata.")
+            messages.error(request, "Iscrizione non trovata.")
         elif registration.attendee_id != request.user.pk:
             messages.error(
                 request,
-                "Non puoi cancellare la registrazione di un altro utente.",
+                "Non puoi annullare iscrizioni di altri utenti.",
             )
         else:
             registration.delete()
             messages.success(
                 request,
-                "Registrazione cancellata con successo.",
+                "Iscrizione annullata con successo.",
             )
 
         return redirect("events:my_registrations")

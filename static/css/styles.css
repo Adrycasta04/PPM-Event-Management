@@ -30,6 +30,14 @@ a {
     text-underline-offset: 0.18em;
 }
 
+a:focus-visible,
+button:focus-visible,
+.btn:focus-visible,
+.nav-link:focus-visible {
+    outline: 0.2rem solid rgba(37, 99, 235, 0.5);
+    outline-offset: 0.15rem;
+}
+
 .skip-link {
     position: fixed;
     top: 0.5rem;
@@ -72,8 +80,14 @@ a {
 
 .user-chip {
     display: inline-flex;
+    max-width: 100%;
     gap: 0.5rem;
     align-items: center;
+}
+
+.user-name,
+.attendee-username {
+    overflow-wrap: anywhere;
 }
 
 .hero-section {
@@ -261,5 +275,19 @@ textarea.form-control {
 
     .responsive-actions {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+
+    .event-card {
+        transition: none;
+    }
+
+    .event-card:hover {
+        transform: none;
     }
 }
