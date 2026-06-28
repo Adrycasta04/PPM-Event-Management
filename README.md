@@ -13,6 +13,12 @@
 | **Framework** | Django 5.2 LTS |
 | **Track** | Event Management System |
 
+## Evaluation links
+
+- **Live application:** [https://ppm-events.onrender.com](https://ppm-events.onrender.com)
+- **Demo accounts:** [View credentials](#demo-accounts)
+- **Testing scenario:** [Open the browser-based walkthrough](#browser-based-testing-scenario)
+
 ## 📌 Project overview
 
 PPM Events is a server-rendered Django application for publishing events,

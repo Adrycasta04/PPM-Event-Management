@@ -35,7 +35,7 @@
                         <td>{{ event.starts_at|date:"d/m/Y H:i" }}</td>
                         <td>{% include "includes/event_status_badge.html" %}</td>
                         <td>
-                            <span class="badge text-bg-light">
+                            <span class="badge {% if event.registration_count >= event.capacity %}text-bg-warning{% else %}text-bg-light{% endif %}">
                                 {{ event.registration_count }}/{{ event.capacity }}
                             </span>
                         </td>

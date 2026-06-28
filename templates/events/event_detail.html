@@ -15,7 +15,7 @@
             <div>
                 <div class="d-flex flex-wrap gap-2 mb-3">
                     {% include "includes/event_status_badge.html" %}
-                    <span class="badge rounded-pill text-bg-light">
+                    <span class="badge rounded-pill {% if event.registration_count >= event.capacity %}text-bg-warning{% else %}text-bg-light{% endif %}">
                         {{ event.registration_count }}/{{ event.capacity }}
                         iscritti
                     </span>

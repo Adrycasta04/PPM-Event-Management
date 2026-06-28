@@ -12,7 +12,7 @@
         <h1 class="display-6 fw-bold mb-1">Partecipanti</h1>
         <p class="text-body-secondary mb-0">{{ event.title }}</p>
     </div>
-    <span class="badge text-bg-primary fs-6 flex-shrink-0">
+    <span class="badge {% if registrations|length >= event.capacity %}text-bg-warning{% else %}text-bg-light{% endif %} fs-6 flex-shrink-0">
         {{ registrations|length }} / {{ event.capacity }}
     </span>
 </header>

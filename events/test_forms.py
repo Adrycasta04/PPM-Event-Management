@@ -1,10 +1,11 @@
 from datetime import timedelta
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils import timezone
 
 from .forms import EventForm
-from .models import Event
+from .models import Event, Registration
 
 
 class EventFormTests(TestCase):
@@ -25,6 +26,14 @@ class EventFormTests(TestCase):
         }
         data.update(overrides)
         return data
+
+    def create_event(self, organizer):
+        form = EventForm(data=self.valid_data())
+        self.assertTrue(form.is_valid(), form.errors)
+        event = form.save(commit=False)
+        event.organizer = organizer
+        event.save()
+        return event
 
     def test_form_exposes_only_explicit_editable_fields(self):
         form = EventForm()
@@ -51,8 +60,8 @@ class EventFormTests(TestCase):
     def test_datetime_and_status_help_texts_are_clear(self):
         form = EventForm()
 
-        self.assertIn("data sia l'orario", form.fields["starts_at"].help_text)
-        self.assertIn("data sia l'orario", form.fields["ends_at"].help_text)
+        self.assertIn("data sia l'ora", form.fields["starts_at"].help_text)
+        self.assertIn("data sia l'ora", form.fields["ends_at"].help_text)
         self.assertIn("Draft = bozza non pubblica", form.fields["status"].help_text)
         self.assertIn("Published = visibile", form.fields["status"].help_text)
         self.assertIn("Cancelled = annullato", form.fields["status"].help_text)
@@ -112,6 +121,42 @@ class EventFormTests(TestCase):
 
         self.assertFalse(form.is_valid())
         self.assertIn("capacity", form.errors)
+
+    def test_capacity_cannot_be_reduced_below_existing_registrations(self):
+        organizer = get_user_model().objects.create_user(username="organizer")
+        event = self.create_event(organizer)
+        for index in range(2):
+            attendee = get_user_model().objects.create_user(
+                username=f"attendee-{index}"
+            )
+            Registration.objects.create(event=event, attendee=attendee)
+
+        form = EventForm(
+            data=self.valid_data(capacity=1),
+            instance=event,
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors["capacity"],
+            [
+                "La capacità non può essere inferiore al numero attuale "
+                "di iscritti (2)."
+            ],
+        )
+
+    def test_capacity_can_equal_existing_registrations(self):
+        organizer = get_user_model().objects.create_user(username="organizer")
+        event = self.create_event(organizer)
+        attendee = get_user_model().objects.create_user(username="attendee")
+        Registration.objects.create(event=event, attendee=attendee)
+
+        form = EventForm(
+            data=self.valid_data(capacity=1),
+            instance=event,
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
 
     def test_status_must_be_a_defined_choice(self):
         form = EventForm(data=self.valid_data(status="unsupported"))

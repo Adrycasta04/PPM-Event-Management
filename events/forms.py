@@ -25,12 +25,8 @@ class EventForm(forms.ModelForm):
             "status": "Stato",
         }
         help_texts = {
-            "starts_at": (
-                "Inserisci sia la data sia l'orario, es. 11/09/2027 18:00."
-            ),
-            "ends_at": (
-                "Inserisci sia la data sia l'orario, es. 11/09/2027 20:00."
-            ),
+            "starts_at": "Seleziona sia la data sia l'ora di inizio.",
+            "ends_at": "Seleziona sia la data sia l'ora di fine.",
             "capacity": "Numero massimo di partecipanti ammessi.",
             "status": (
                 "Draft = bozza non pubblica; Published = visibile agli utenti; "
@@ -90,6 +86,13 @@ class EventForm(forms.ModelForm):
         capacity = self.cleaned_data["capacity"]
         if capacity <= 0:
             raise forms.ValidationError("La capacità deve essere positiva.")
+        if self.instance.pk:
+            registration_count = self.instance.registrations.count()
+            if capacity < registration_count:
+                raise forms.ValidationError(
+                    "La capacità non può essere inferiore al numero attuale "
+                    f"di iscritti ({registration_count})."
+                )
         return capacity
 
     def clean(self):
