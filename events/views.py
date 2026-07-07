@@ -75,6 +75,15 @@ class AttendeeRequiredMixin(LoginRequiredMixin):
 class HomeView(TemplateView):
     template_name = "events/home.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["featured_events"] = (
+            Event.objects.public()
+            .select_related("organizer")
+            .annotate(registration_count=Count("registrations"))[:3]
+        )
+        return context
+
 
 class EventListView(ListView):
     model = Event

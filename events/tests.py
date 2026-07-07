@@ -18,6 +18,39 @@ class HomePageTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "events/home.html")
 
+    def test_home_page_features_only_published_events(self):
+        organizer = get_user_model().objects.create_user(
+            username="home-organizer",
+        )
+        starts_at = timezone.now() + timedelta(days=7)
+        common_fields = {
+            "organizer": organizer,
+            "description": "Event description",
+            "starts_at": starts_at,
+            "ends_at": starts_at + timedelta(hours=2),
+            "location": "Naples",
+            "capacity": 30,
+        }
+        published_event = Event.objects.create(
+            title="Homepage published event",
+            status=Event.Status.PUBLISHED,
+            **common_fields,
+        )
+        draft_event = Event.objects.create(
+            title="Homepage draft event",
+            status=Event.Status.DRAFT,
+            **common_fields,
+        )
+
+        response = self.client.get(reverse("events:home"))
+
+        self.assertContains(response, published_event.title)
+        self.assertNotContains(response, draft_event.title)
+        self.assertQuerySetEqual(
+            response.context["featured_events"],
+            [published_event],
+        )
+
 
 class PublicEventViewTests(TestCase):
     @classmethod
