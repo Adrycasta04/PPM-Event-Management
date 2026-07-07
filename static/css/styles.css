@@ -91,6 +91,45 @@ button:focus-visible,
     overflow-wrap: anywhere;
 }
 
+.hero-section {
+    overflow: hidden;
+    color: #fff;
+    background:
+        radial-gradient(circle at top right, rgba(147, 197, 253, 0.28), transparent 18rem),
+        linear-gradient(120deg, rgba(23, 37, 84, 0.98), rgba(37, 99, 235, 0.92));
+    border: 0;
+    box-shadow: 0 1.25rem 3rem rgba(30, 64, 175, 0.2);
+}
+
+.hero-eyebrow {
+    color: #bfdbfe;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.hero-feature-icon {
+    display: inline-grid;
+    flex: 0 0 1.75rem;
+    width: 1.75rem;
+    height: 1.75rem;
+    place-items: center;
+    color: #172554;
+    font-size: 0.85rem;
+    font-weight: 800;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0.35rem 0.9rem rgba(15, 23, 42, 0.18);
+}
+
+.hero-feature-panel {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 1rem 2.5rem rgba(15, 23, 42, 0.16);
+    backdrop-filter: blur(0.7rem);
+}
+
 .btn {
     transition:
         color 160ms ease,
@@ -147,6 +186,14 @@ button:focus-visible,
 
 .info-panel dd:last-child {
     margin-bottom: 0;
+}
+
+.home-role-card {
+    padding: 1.25rem;
+    background: var(--ppm-surface);
+    border: 1px solid var(--ppm-border);
+    border-radius: 1rem;
+    box-shadow: 0 0.5rem 1.5rem rgba(15, 23, 42, 0.04);
 }
 
 .table-card {
@@ -248,6 +295,10 @@ textarea.form-control {
 }
 
 @media (max-width: 575.98px) {
+    .hero-section {
+        padding: 2rem !important;
+    }
+
     .page-actions {
         width: 100%;
     }
