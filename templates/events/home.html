@@ -3,176 +3,104 @@
 {% block title %}Home | PPM Events{% endblock %}
 
 {% block content %}
-<section class="hero-section rounded-4 p-4 p-md-5">
-    <div class="row align-items-center g-4">
-        <div class="col-lg-8">
-            <p class="hero-eyebrow mb-2">Event Management System</p>
-            <h1 class="display-4 fw-bold">
-                Eventi semplici da creare, trovare e vivere.
+<header class="page-header">
+    <p class="page-kicker mb-2">PPM Events</p>
+    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+        <div>
+            <h1 class="display-6 fw-bold mb-2">
+                Eventi pubblicati
             </h1>
-            <p class="lead text-white-50 mb-4">
-                Una piattaforma Django per organizzatori e partecipanti,
-                completa di iscrizioni e gestione presenze.
+            <p class="lead text-body-secondary mb-0">
+                Consulta gli eventi disponibili oppure accedi con un account
+                demo per provare le funzioni da partecipante o organizzatore.
             </p>
-            <p class="text-white-50 mb-4">
-                Il progetto copre il ciclo principale: pubblicazione degli
-                eventi, iscrizioni dei partecipanti, controllo della
-                capacit&agrave; e lista presenze per l'organizzatore.
-            </p>
-            <div class="d-flex flex-wrap gap-2">
-                <a class="btn btn-light btn-lg" href="{% url 'events:list' %}">
-                    Esplora gli eventi
-                </a>
-                {% if user_is_organizer %}
-                    <a
-                        class="btn btn-outline-light btn-lg"
-                        href="{% url 'events:create' %}"
-                    >
-                        Crea un evento
-                    </a>
-                {% elif user_is_attendee %}
-                    <a
-                        class="btn btn-outline-light btn-lg"
-                        href="{% url 'events:my_registrations' %}"
-                    >
-                        Le mie iscrizioni
-                    </a>
-                {% elif not user.is_authenticated %}
-                    <a
-                        class="btn btn-outline-light btn-lg"
-                        href="{% url 'accounts:login' %}"
-                    >
-                        Accedi
-                    </a>
-                {% endif %}
-            </div>
         </div>
-        <div class="col-lg-4">
-            <div class="hero-feature-panel rounded-4 p-4">
-                <p class="fw-semibold mb-3">Cosa puoi fare</p>
-                <div class="d-flex gap-3 mb-3">
-                    <span class="hero-feature-icon" aria-hidden="true">&check;</span>
-                    <div>
-                        <div class="fw-semibold">Eventi pubblicati</div>
-                        <div class="small text-white-50">
-                            Consulta eventi visibili e dettagli aggiornati.
-                        </div>
-                    </div>
-                </div>
-                <div class="d-flex gap-3 mb-3">
-                    <span class="hero-feature-icon" aria-hidden="true">&check;</span>
-                    <div>
-                        <div class="fw-semibold">Iscrizioni semplici</div>
-                        <div class="small text-white-50">
-                            Registrati agli eventi o annulla una partecipazione.
-                        </div>
-                    </div>
-                </div>
-                <div class="d-flex gap-3">
-                    <span class="hero-feature-icon" aria-hidden="true">&check;</span>
-                    <div>
-                        <div class="fw-semibold">Partecipanti e capacit&agrave;</div>
-                        <div class="small text-white-50">
-                            Gli organizzatori monitorano iscritti e posti disponibili.
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<section class="mt-5">
-    <div class="row g-4">
-        <div class="col-lg-4">
-            <div class="info-panel h-100">
-                <p class="page-kicker mb-2">Ruoli</p>
-                <h2 class="h4 fw-bold">Accesso chiaro per ogni utente</h2>
-                <p class="text-body-secondary mb-0">
-                    La navigazione cambia in base al ruolo, mentre i permessi
-                    principali restano controllati server-side.
-                </p>
-            </div>
-        </div>
-        <div class="col-md-4 col-lg">
-            <article class="home-role-card h-100">
-                <h3 class="h5">Partecipante</h3>
-                <p class="text-body-secondary mb-0">
-                    Consulta eventi pubblicati, gestisce le proprie iscrizioni
-                    e annulla una partecipazione quando serve.
-                </p>
-            </article>
-        </div>
-        <div class="col-md-4 col-lg">
-            <article class="home-role-card h-100">
-                <h3 class="h5">Organizzatore</h3>
-                <p class="text-body-secondary mb-0">
-                    Crea e aggiorna eventi, controlla posti disponibili e vede
-                    la lista dei partecipanti iscritti.
-                </p>
-            </article>
-        </div>
-        <div class="col-md-4 col-lg">
-            <article class="home-role-card h-100">
-                <h3 class="h5">Admin</h3>
-                <p class="text-body-secondary mb-0">
-                    Usa il pannello Django per supervisionare utenti, gruppi,
-                    eventi e registrazioni demo.
-                </p>
-            </article>
-        </div>
-    </div>
-</section>
-
-<section class="mt-5">
-    <div class="d-flex flex-column flex-sm-row justify-content-between gap-3 mb-4">
-        <div>
-            <p class="page-kicker mb-2">Eventi in evidenza</p>
-            <h2 class="h3 fw-bold mb-0">Prossimi eventi pubblicati</h2>
-        </div>
-        <div>
-            <a class="btn btn-outline-primary" href="{% url 'events:list' %}">
-                Vedi tutti gli eventi
+        <div class="page-actions d-flex flex-wrap align-items-start gap-2">
+            <a class="btn btn-primary" href="{% url 'events:list' %}">
+                Esplora eventi
             </a>
+            {% if user_is_organizer %}
+                <a class="btn btn-outline-primary" href="{% url 'events:create' %}">
+                    Crea evento
+                </a>
+            {% elif user_is_attendee %}
+                <a
+                    class="btn btn-outline-primary"
+                    href="{% url 'events:my_registrations' %}"
+                >
+                    Le mie iscrizioni
+                </a>
+            {% elif not user.is_authenticated %}
+                <a class="btn btn-outline-primary" href="{% url 'accounts:login' %}">
+                    Accedi
+                </a>
+            {% endif %}
         </div>
     </div>
+</header>
 
-    {% if featured_events %}
-        <div class="row g-4">
-            {% for event in featured_events %}
-                <div class="col-md-6 col-xl-4">
-                    <article class="card event-card h-100 shadow-sm">
-                        <div class="card-body d-flex flex-column p-4">
-                            <div class="d-flex justify-content-between gap-2 mb-3">
-                                {% include "includes/event_status_badge.html" %}
-                                <span class="badge rounded-pill {% if event.registration_count >= event.capacity %}text-bg-warning{% else %}text-bg-light{% endif %}">
-                                    {{ event.registration_count }}/{{ event.capacity }}
-                                    iscritti
-                                </span>
-                            </div>
-                            <h3 class="h5 card-title mb-3">{{ event.title }}</h3>
-                            <dl class="row event-meta small mb-4">
-                                <dt class="col-4">Quando</dt>
-                                <dd class="col-8">
-                                    {{ event.starts_at|date:"d/m/Y H:i" }}
-                                </dd>
-                                <dt class="col-4">Dove</dt>
-                                <dd class="col-8">{{ event.location }}</dd>
-                            </dl>
-                            <a
-                                class="btn btn-outline-primary mt-auto stretched-link"
-                                href="{{ event.get_absolute_url }}"
-                                aria-label="Visualizza dettagli di {{ event.title }}"
-                            >
-                                Dettagli evento
-                            </a>
+{% if featured_events %}
+    <div class="row g-4">
+        {% for event in featured_events %}
+            <div class="col-md-6 col-xl-4">
+                <article class="card event-card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column p-4">
+                        <div class="d-flex justify-content-between gap-2 mb-3">
+                            {% include "includes/event_status_badge.html" %}
+                            <span class="badge rounded-pill {% if event.registration_count >= event.capacity %}text-bg-warning{% else %}text-bg-light{% endif %}">
+                                {{ event.registration_count }}/{{ event.capacity }}
+                                iscritti
+                            </span>
                         </div>
-                    </article>
-                </div>
-            {% endfor %}
+                        <h2 class="h4 card-title mb-3">{{ event.title }}</h2>
+                        <dl class="row event-meta small mb-4">
+                            <dt class="col-4">Quando</dt>
+                            <dd class="col-8">
+                                {{ event.starts_at|date:"d/m/Y H:i" }}
+                            </dd>
+                            <dt class="col-4">Dove</dt>
+                            <dd class="col-8">{{ event.location }}</dd>
+                            <dt class="col-4">Organizzatore</dt>
+                            <dd class="col-8">
+                                {{ event.organizer.get_username }}
+                            </dd>
+                        </dl>
+                        <a
+                            class="btn btn-outline-primary mt-auto stretched-link"
+                            href="{{ event.get_absolute_url }}"
+                            aria-label="Visualizza dettagli di {{ event.title }}"
+                        >
+                            Dettagli evento
+                        </a>
+                    </div>
+                </article>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    {% include "includes/empty_state.html" with title="Nessun evento pubblicato" description="Quando un organizzatore pubblica un evento, comparir&agrave; anche in questa pagina." action_url=None action_label=None %}
+{% endif %}
+
+<section class="info-panel mt-5">
+    <div class="row g-3 align-items-center">
+        <div class="col-lg">
+            <h2 class="h5 fw-bold mb-2">Account demo</h2>
+            <p class="text-body-secondary mb-0">
+                Gli organizzatori possono creare eventi e vedere i partecipanti.
+                I partecipanti possono iscriversi agli eventi pubblicati.
+            </p>
         </div>
-    {% else %}
-        {% include "includes/empty_state.html" with title="Nessun evento pubblicato" description="Quando un organizzatore pubblica un evento, comparir&agrave; anche in questa sezione." action_url=None action_label=None %}
-    {% endif %}
+        <div class="col-lg-auto">
+            {% if user.is_authenticated %}
+                <span class="badge text-bg-light">
+                    Utente connesso: {{ user.get_username }}
+                </span>
+            {% else %}
+                <a class="btn btn-sm btn-outline-primary" href="{% url 'accounts:login' %}">
+                    Accedi per provare
+                </a>
+            {% endif %}
+        </div>
+    </div>
 </section>
 {% endblock %}
