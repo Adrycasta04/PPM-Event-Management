@@ -17,6 +17,7 @@ body {
     display: flex;
     flex-direction: column;
     color: #1e293b;
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     background:
         radial-gradient(circle at top left, #e8efff 0, transparent 28rem),
         var(--ppm-background);
@@ -94,7 +95,8 @@ button:focus-visible,
     overflow: hidden;
     color: #fff;
     background:
-        linear-gradient(120deg, rgba(23, 37, 84, 0.97), rgba(37, 99, 235, 0.9));
+        radial-gradient(circle at top right, rgba(147, 197, 253, 0.28), transparent 18rem),
+        linear-gradient(120deg, rgba(23, 37, 84, 0.98), rgba(37, 99, 235, 0.92));
     border: 0;
     box-shadow: 0 1.25rem 3rem rgba(30, 64, 175, 0.2);
 }
@@ -121,6 +123,26 @@ button:focus-visible,
     box-shadow: 0 0.35rem 0.9rem rgba(15, 23, 42, 0.18);
 }
 
+.hero-feature-panel {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 1rem 2.5rem rgba(15, 23, 42, 0.16);
+    backdrop-filter: blur(0.7rem);
+}
+
+.btn {
+    transition:
+        color 160ms ease,
+        background-color 160ms ease,
+        border-color 160ms ease,
+        box-shadow 160ms ease,
+        transform 160ms ease;
+}
+
+.btn:hover {
+    transform: translateY(-0.08rem);
+}
+
 .page-header {
     margin-bottom: 2rem;
 }
@@ -139,10 +161,14 @@ button:focus-visible,
 }
 
 .event-card {
-    transition: transform 160ms ease, box-shadow 160ms ease;
+    transition:
+        border-color 160ms ease,
+        transform 160ms ease,
+        box-shadow 160ms ease;
 }
 
 .event-card:hover {
+    border-color: rgba(37, 99, 235, 0.22);
     transform: translateY(-0.2rem);
     box-shadow: 0 1rem 2rem rgba(15, 23, 42, 0.1) !important;
 }
@@ -293,6 +319,14 @@ textarea.form-control {
 
     .event-card {
         transition: none;
+    }
+
+    .btn {
+        transition: none;
+    }
+
+    .btn:hover {
+        transform: none;
     }
 
     .event-card:hover {
