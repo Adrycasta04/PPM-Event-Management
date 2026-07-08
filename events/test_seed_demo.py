@@ -31,8 +31,8 @@ class SeedDemoCommandTests(TestCase):
             set(DEMO_USERS),
         )
         self.assertEqual(Profile.objects.filter(user__username__in=DEMO_USERS).count(), 5)
-        self.assertEqual(Event.objects.count(), 6)
-        self.assertEqual(Registration.objects.count(), 5)
+        self.assertEqual(Event.objects.count(), 9)
+        self.assertEqual(Registration.objects.count(), 7)
         self.assertEqual(
             set(Group.objects.values_list("name", flat=True)),
             {Role.ATTENDEE.value, Role.ORGANIZER.value},

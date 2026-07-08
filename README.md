@@ -166,7 +166,7 @@ The database contains:
 - a draft event;
 - a cancelled event;
 - events owned by two different organizers;
-- existing registrations for both attendee accounts.
+- existing registrations for attendee accounts and one organizer account.
 
 Notable events:
 
@@ -176,6 +176,9 @@ Notable events:
 - `Multimedia Production Open Day`: published with no initial registrations;
 - `Summer Audiovisual Festival 2026`: published and owned by
   `organizer2_demo`;
+- `Digital Design Conference`: published with available capacity;
+- `Backend Development Bootcamp`: published with an organizer registration;
+- `Creative Technology Career Day`: published with high capacity;
 - `Podcast Lab - Draft`: not publicly visible;
 - `Open-Air Cinema Review - Cancelled`: not publicly visible.
 

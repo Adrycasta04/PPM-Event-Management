@@ -199,6 +199,48 @@ class Command(BaseCommand):
                 "status": Event.Status.PUBLISHED,
             },
             {
+                "key": "design_conference",
+                "organizer": users["organizer_demo"],
+                "title": "Digital Design Conference",
+                "description": (
+                    "A one-day conference about interface design, accessibility "
+                    "and practical workflows for web projects."
+                ),
+                "starts_at": start + timedelta(days=34),
+                "ends_at": start + timedelta(days=34, hours=4),
+                "location": "Design Campus Florence",
+                "capacity": 60,
+                "status": Event.Status.PUBLISHED,
+            },
+            {
+                "key": "backend_bootcamp",
+                "organizer": users["organizer2_demo"],
+                "title": "Backend Development Bootcamp",
+                "description": (
+                    "Hands-on session focused on Django models, forms, "
+                    "permissions and deployment basics."
+                ),
+                "starts_at": start + timedelta(days=36),
+                "ends_at": start + timedelta(days=36, hours=5),
+                "location": "Tech Lab Auditorium",
+                "capacity": 35,
+                "status": Event.Status.PUBLISHED,
+            },
+            {
+                "key": "career_day",
+                "organizer": users["organizer_demo"],
+                "title": "Creative Technology Career Day",
+                "description": (
+                    "Meeting with professionals and project teams working "
+                    "across software, media production and digital events."
+                ),
+                "starts_at": start + timedelta(days=40),
+                "ends_at": start + timedelta(days=40, hours=3),
+                "location": "Student Center Hall",
+                "capacity": 120,
+                "status": Event.Status.PUBLISHED,
+            },
+            {
                 "key": "draft",
                 "organizer": users["organizer_demo"],
                 "title": "Podcast Lab - Draft",
@@ -248,6 +290,8 @@ class Command(BaseCommand):
             (events["full_workshop"], users["attendee_demo"]),
             (events["full_workshop"], users["attendee2_demo"]),
             (events["second_organizer"], users["attendee_demo"]),
+            (events["design_conference"], users["attendee2_demo"]),
+            (events["backend_bootcamp"], users["organizer_demo"]),
         ]
         desired_pairs = {
             (event.pk, attendee.pk)

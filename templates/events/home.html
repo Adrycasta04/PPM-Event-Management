@@ -11,12 +11,8 @@
                 Events that are easy to create, find and join.
             </h1>
             <p class="lead text-white-50 mb-4">
-                A Django platform to publish events, manage registrations
-                and track attendees.
-            </p>
-            <p class="text-white-50 mb-4">
-                Attendees can register for events. Organizers can do the same
-                and also manage their own events. Admins can manage everything.
+                Browse published events, register online and manage attendance
+                with dedicated organizer tools.
             </p>
             <div class="d-flex flex-wrap gap-2">
                 <a class="btn btn-light btn-lg" href="{% url 'events:list' %}">
@@ -100,8 +96,7 @@
                 <div class="col-md-6 col-xl-4">
                     <article class="card event-card h-100 shadow-sm">
                         <div class="card-body d-flex flex-column p-4">
-                            <div class="d-flex justify-content-between gap-2 mb-3">
-                                {% include "includes/event_status_badge.html" %}
+                            <div class="d-flex justify-content-end gap-2 mb-3">
                                 <span class="badge rounded-pill {% if event.registration_count >= event.capacity %}text-bg-warning{% else %}text-bg-light{% endif %}">
                                     {{ event.registration_count }}/{{ event.capacity }}
                                     registered
