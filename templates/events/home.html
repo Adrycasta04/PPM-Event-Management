@@ -11,13 +11,12 @@
                 Eventi semplici da creare, trovare e vivere.
             </h1>
             <p class="lead text-white-50 mb-4">
-                Una piattaforma Django per organizzatori e partecipanti,
-                completa di iscrizioni e gestione presenze.
+                Una piattaforma Django per pubblicare eventi, gestire
+                iscrizioni e seguire le presenze.
             </p>
             <p class="text-white-50 mb-4">
-                Il progetto copre il ciclo principale: pubblicazione degli
-                eventi, iscrizioni dei partecipanti, controllo della
-                capacit&agrave; e lista presenze per l'organizzatore.
+                Accedi con gli account demo per provare i flussi da
+                partecipante, organizzatore e admin.
             </p>
             <div class="d-flex flex-wrap gap-2">
                 <a class="btn btn-light btn-lg" href="{% url 'events:list' %}">
@@ -53,27 +52,27 @@
                 <div class="d-flex gap-3 mb-3">
                     <span class="hero-feature-icon" aria-hidden="true">&check;</span>
                     <div>
-                        <div class="fw-semibold">Eventi pubblicati</div>
+                        <div class="fw-semibold">Consulta eventi</div>
                         <div class="small text-white-50">
-                            Consulta eventi visibili e dettagli aggiornati.
+                            Vedi data, luogo, disponibilit&agrave; e dettagli.
                         </div>
                     </div>
                 </div>
                 <div class="d-flex gap-3 mb-3">
                     <span class="hero-feature-icon" aria-hidden="true">&check;</span>
                     <div>
-                        <div class="fw-semibold">Iscrizioni semplici</div>
+                        <div class="fw-semibold">Gestisci iscrizioni</div>
                         <div class="small text-white-50">
-                            Registrati agli eventi o annulla una partecipazione.
+                            Registrati o annulla la tua partecipazione.
                         </div>
                     </div>
                 </div>
                 <div class="d-flex gap-3">
                     <span class="hero-feature-icon" aria-hidden="true">&check;</span>
                     <div>
-                        <div class="fw-semibold">Partecipanti e capacit&agrave;</div>
+                        <div class="fw-semibold">Controlla presenze</div>
                         <div class="small text-white-50">
-                            Gli organizzatori monitorano iscritti e posti disponibili.
+                            Monitora iscritti e posti disponibili.
                         </div>
                     </div>
                 </div>
@@ -87,10 +86,9 @@
         <div class="col-lg-4">
             <div class="info-panel h-100">
                 <p class="page-kicker mb-2">Ruoli</p>
-                <h2 class="h4 fw-bold">Accesso chiaro per ogni utente</h2>
+                <h2 class="h4 fw-bold">Tre accessi demo</h2>
                 <p class="text-body-secondary mb-0">
-                    La navigazione cambia in base al ruolo, mentre i permessi
-                    principali restano controllati server-side.
+                    Ogni account mostra un percorso diverso dell'app.
                 </p>
             </div>
         </div>
@@ -98,8 +96,7 @@
             <article class="home-role-card h-100">
                 <h3 class="h5">Partecipante</h3>
                 <p class="text-body-secondary mb-0">
-                    Consulta eventi pubblicati, gestisce le proprie iscrizioni
-                    e annulla una partecipazione quando serve.
+                    Prova iscrizione, riepilogo personale e annullamento.
                 </p>
             </article>
         </div>
@@ -107,8 +104,7 @@
             <article class="home-role-card h-100">
                 <h3 class="h5">Organizzatore</h3>
                 <p class="text-body-secondary mb-0">
-                    Crea e aggiorna eventi, controlla posti disponibili e vede
-                    la lista dei partecipanti iscritti.
+                    Crea eventi, aggiorna i dati e consulta i partecipanti.
                 </p>
             </article>
         </div>
@@ -116,8 +112,8 @@
             <article class="home-role-card h-100">
                 <h3 class="h5">Admin</h3>
                 <p class="text-body-secondary mb-0">
-                    Usa il pannello Django per supervisionare utenti, gruppi,
-                    eventi e registrazioni demo.
+                    Controlla utenti, gruppi, eventi e registrazioni dal
+                    pannello Django.
                 </p>
             </article>
         </div>
