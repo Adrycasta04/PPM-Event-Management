@@ -32,6 +32,15 @@ class SeedDemoCommandTests(TestCase):
         )
         self.assertEqual(Profile.objects.filter(user__username__in=DEMO_USERS).count(), 5)
         self.assertEqual(Event.objects.count(), 9)
+        self.assertEqual(
+            Event.objects.filter(status=Event.Status.PUBLISHED).count(),
+            6,
+        )
+        self.assertEqual(Event.objects.filter(status=Event.Status.DRAFT).count(), 1)
+        self.assertEqual(
+            Event.objects.filter(status=Event.Status.CANCELLED).count(),
+            2,
+        )
         self.assertEqual(Registration.objects.count(), 7)
         self.assertEqual(
             set(Group.objects.values_list("name", flat=True)),

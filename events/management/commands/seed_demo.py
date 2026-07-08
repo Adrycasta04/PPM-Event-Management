@@ -231,14 +231,14 @@ class Command(BaseCommand):
                 "organizer": users["organizer_demo"],
                 "title": "Creative Technology Career Day",
                 "description": (
-                    "Meeting with professionals and project teams working "
-                    "across software, media production and digital events."
+                    "Cancelled demo event about professional paths across "
+                    "software, media production and digital events."
                 ),
                 "starts_at": start + timedelta(days=40),
                 "ends_at": start + timedelta(days=40, hours=3),
                 "location": "Student Center Hall",
                 "capacity": 120,
-                "status": Event.Status.PUBLISHED,
+                "status": Event.Status.CANCELLED,
             },
             {
                 "key": "draft",

@@ -164,7 +164,7 @@ The database contains:
 - a published event at full capacity;
 - a published event without participants;
 - a draft event;
-- a cancelled event;
+- two cancelled events;
 - events owned by two different organizers;
 - existing registrations for attendee accounts and one organizer account.
 
@@ -178,7 +178,7 @@ Notable events:
   `organizer2_demo`;
 - `Digital Design Conference`: published with available capacity;
 - `Backend Development Bootcamp`: published with an organizer registration;
-- `Creative Technology Career Day`: published with high capacity;
+- `Creative Technology Career Day`: cancelled and not publicly visible;
 - `Podcast Lab - Draft`: not publicly visible;
 - `Open-Air Cinema Review - Cancelled`: not publicly visible.
 
