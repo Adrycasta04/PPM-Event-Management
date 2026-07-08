@@ -169,35 +169,6 @@ button:focus-visible,
     color: var(--ppm-muted);
 }
 
-.home-section-intro {
-    max-width: 34rem;
-}
-
-.flow-card {
-    transition:
-        border-color 160ms ease,
-        transform 160ms ease,
-        box-shadow 160ms ease;
-}
-
-.flow-card:hover {
-    border-color: rgba(37, 99, 235, 0.22);
-    transform: translateY(-0.16rem);
-    box-shadow: 0 1rem 2rem rgba(15, 23, 42, 0.08) !important;
-}
-
-.flow-step {
-    display: inline-grid;
-    width: 2.25rem;
-    height: 2.25rem;
-    place-items: center;
-    color: #fff;
-    font-size: 0.9rem;
-    font-weight: 800;
-    background: var(--ppm-blue);
-    border-radius: 50%;
-}
-
 .btn {
     transition:
         color 160ms ease,
@@ -381,10 +352,6 @@ textarea.form-control {
         transition: none;
     }
 
-    .flow-card {
-        transition: none;
-    }
-
     .btn {
         transition: none;
     }
@@ -397,7 +364,4 @@ textarea.form-control {
         transform: none;
     }
 
-    .flow-card:hover {
-        transform: none;
-    }
 }

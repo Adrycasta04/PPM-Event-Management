@@ -70,68 +70,6 @@
 </section>
 
 <section class="mt-5">
-    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
-        <div>
-            <p class="page-kicker mb-2">How it works</p>
-            <h2 class="h3 fw-bold mb-0">Choose the right path</h2>
-        </div>
-        <p class="text-muted mb-0 home-section-intro">
-            The public area shows available events. Extra actions appear after
-            login according to the user role.
-        </p>
-    </div>
-
-    <div class="row g-4">
-        <div class="col-md-6">
-            <article class="card flow-card h-100 shadow-sm">
-                <div class="card-body p-4">
-                    <span class="flow-step" aria-hidden="true">1</span>
-                    <h3 class="h5 mt-3">Participants</h3>
-                    <p class="text-muted mb-4">
-                        Browse published events, check availability and manage
-                        your own registrations.
-                    </p>
-                    {% if user_is_attendee %}
-                        <a class="btn btn-outline-primary" href="{% url 'events:my_registrations' %}">
-                            My registrations
-                        </a>
-                    {% else %}
-                        <a class="btn btn-outline-primary" href="{% url 'events:list' %}">
-                            Browse events
-                        </a>
-                    {% endif %}
-                </div>
-            </article>
-        </div>
-        <div class="col-md-6">
-            <article class="card flow-card h-100 shadow-sm">
-                <div class="card-body p-4">
-                    <span class="flow-step" aria-hidden="true">2</span>
-                    <h3 class="h5 mt-3">Organizers</h3>
-                    <p class="text-muted mb-4">
-                        Create events, keep details updated and view the
-                        attendee list for each event you manage.
-                    </p>
-                    {% if user_is_organizer %}
-                        <a class="btn btn-primary" href="{% url 'events:my_events' %}">
-                            Manage events
-                        </a>
-                    {% elif not user.is_authenticated %}
-                        <a class="btn btn-primary" href="{% url 'accounts:signup' %}">
-                            Create an account
-                        </a>
-                    {% else %}
-                        <a class="btn btn-primary" href="{% url 'events:list' %}">
-                            View events
-                        </a>
-                    {% endif %}
-                </div>
-            </article>
-        </div>
-    </div>
-</section>
-
-<section class="mt-5">
     <div class="d-flex flex-column flex-sm-row justify-content-between gap-3 mb-4">
         <div>
             <p class="page-kicker mb-2">Featured events</p>
