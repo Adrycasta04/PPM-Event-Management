@@ -20,7 +20,7 @@ DEMO_USERS = {
         "is_staff": True,
         "is_superuser": True,
         "role": None,
-        "bio": "Account amministratore dimostrativo.",
+        "bio": "Demo administrator account.",
     },
     "attendee_demo": {
         "password": "attendee12345",
@@ -30,7 +30,7 @@ DEMO_USERS = {
         "is_staff": False,
         "is_superuser": False,
         "role": Role.ATTENDEE,
-        "bio": "Partecipante interessata a tecnologia e multimedia.",
+        "bio": "Attendee interested in technology and multimedia.",
     },
     "attendee2_demo": {
         "password": "attendee212345",
@@ -40,7 +40,7 @@ DEMO_USERS = {
         "is_staff": False,
         "is_superuser": False,
         "role": Role.ATTENDEE,
-        "bio": "Partecipante interessato a fotografia e podcast.",
+        "bio": "Attendee interested in photography and podcasting.",
     },
     "organizer_demo": {
         "password": "organizer12345",
@@ -50,7 +50,7 @@ DEMO_USERS = {
         "is_staff": False,
         "is_superuser": False,
         "role": Role.ORGANIZER,
-        "bio": "Organizzatrice di eventi culturali e formativi.",
+        "bio": "Organizer of cultural and educational events.",
     },
     "organizer2_demo": {
         "password": "organizer212345",
@@ -60,7 +60,7 @@ DEMO_USERS = {
         "is_staff": False,
         "is_superuser": False,
         "role": Role.ORGANIZER,
-        "bio": "Organizzatore di eventi audiovisivi.",
+        "bio": "Organizer of audiovisual events.",
     },
 }
 
@@ -145,10 +145,10 @@ class Command(BaseCommand):
             {
                 "key": "meetup",
                 "organizer": users["organizer_demo"],
-                "title": "Django Community Meetup Firenze",
+                "title": "Django Community Meetup Florence",
                 "description": (
-                    "Incontro aperto alla community Django con talk brevi, "
-                    "sessione domande e networking finale."
+                    "Open meetup for the Django community with short talks, "
+                    "a Q&A session and final networking."
                 ),
                 "starts_at": start + timedelta(days=10),
                 "ends_at": start + timedelta(days=10, hours=3),
@@ -159,52 +159,52 @@ class Command(BaseCommand):
             {
                 "key": "full_workshop",
                 "organizer": users["organizer_demo"],
-                "title": "Workshop di Fotografia Urbana",
+                "title": "Urban Photography Workshop",
                 "description": (
-                    "Laboratorio pratico dedicato a composizione, luce e "
-                    "narrazione fotografica negli spazi urbani."
+                    "Practical workshop about composition, light and "
+                    "photographic storytelling in urban spaces."
                 ),
                 "starts_at": start + timedelta(days=17),
                 "ends_at": start + timedelta(days=17, hours=4),
-                "location": "Spazio Creativo Santa Croce",
+                "location": "Santa Croce Creative Space",
                 "capacity": 2,
                 "status": Event.Status.PUBLISHED,
             },
             {
                 "key": "empty_event",
                 "organizer": users["organizer_demo"],
-                "title": "Open Day Produzione Multimediale",
+                "title": "Multimedia Production Open Day",
                 "description": (
-                    "Presentazione di progetti multimediali, strumenti e "
-                    "opportunita formative con ingresso su registrazione."
+                    "Presentation of multimedia projects, tools and learning "
+                    "opportunities with registration required."
                 ),
                 "starts_at": start + timedelta(days=24),
                 "ends_at": start + timedelta(days=24, hours=2),
-                "location": "Campus Novoli - Aula Magna",
+                "location": "Novoli Campus - Main Hall",
                 "capacity": 30,
                 "status": Event.Status.PUBLISHED,
             },
             {
                 "key": "second_organizer",
                 "organizer": users["organizer2_demo"],
-                "title": "Festival Audio-Visuale Estate 2026",
+                "title": "Summer Audiovisual Festival 2026",
                 "description": (
-                    "Serata di performance audiovisive, installazioni "
-                    "interattive e proiezioni curate da giovani autori."
+                    "Evening with audiovisual performances, interactive "
+                    "installations and screenings curated by young authors."
                 ),
                 "starts_at": start + timedelta(days=31),
                 "ends_at": start + timedelta(days=31, hours=5),
-                "location": "Manifattura Tabacchi Firenze",
+                "location": "Manifattura Tabacchi Florence",
                 "capacity": 80,
                 "status": Event.Status.PUBLISHED,
             },
             {
                 "key": "draft",
                 "organizer": users["organizer_demo"],
-                "title": "Laboratorio Podcast - Bozza",
+                "title": "Podcast Lab - Draft",
                 "description": (
-                    "Evento in preparazione su scrittura, registrazione e "
-                    "montaggio di un episodio podcast."
+                    "Event in preparation about writing, recording and "
+                    "editing a podcast episode."
                 ),
                 "starts_at": start + timedelta(days=38),
                 "ends_at": start + timedelta(days=38, hours=3),
@@ -215,14 +215,14 @@ class Command(BaseCommand):
             {
                 "key": "cancelled",
                 "organizer": users["organizer2_demo"],
-                "title": "Rassegna Cinema all'Aperto - Annullata",
+                "title": "Open-Air Cinema Review - Cancelled",
                 "description": (
-                    "Proiezione cinematografica annullata per indisponibilita "
-                    "temporanea della sede."
+                    "Film screening cancelled because the venue is "
+                    "temporarily unavailable."
                 ),
                 "starts_at": start + timedelta(days=45),
                 "ends_at": start + timedelta(days=45, hours=3),
-                "location": "Giardino delle Rose",
+                "location": "Rose Garden",
                 "capacity": 100,
                 "status": Event.Status.CANCELLED,
             },

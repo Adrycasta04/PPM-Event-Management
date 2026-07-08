@@ -1,21 +1,21 @@
 {% extends "base.html" %}
 
-{% block title %}Eventi | PPM Events{% endblock %}
+{% block title %}Events | PPM Events{% endblock %}
 
 {% block content %}
 <header class="page-header">
-    <p class="page-kicker mb-2">Calendario pubblico</p>
+    <p class="page-kicker mb-2">Public calendar</p>
     <div class="d-flex flex-column flex-sm-row justify-content-between gap-3">
         <div>
-            <h1 class="display-6 fw-bold mb-2">Eventi</h1>
+            <h1 class="display-6 fw-bold mb-2">Events</h1>
             <p class="text-body-secondary mb-0">
-                Scopri gli eventi attualmente pubblicati.
+                Browse currently published events.
             </p>
         </div>
         {% if user_is_organizer %}
             <div class="page-actions">
                 <a class="btn btn-primary" href="{% url 'events:create' %}">
-                    Crea evento
+                    Create event
                 </a>
             </div>
         {% endif %}
@@ -32,18 +32,18 @@
                             {% include "includes/event_status_badge.html" %}
                             <span class="badge rounded-pill {% if event.registration_count >= event.capacity %}text-bg-warning{% else %}text-bg-light{% endif %}">
                                 {{ event.registration_count }}/{{ event.capacity }}
-                                iscritti
+                                registered
                             </span>
                         </div>
                         <h2 class="h4 card-title mb-3">{{ event.title }}</h2>
                         <dl class="row event-meta small mb-4">
-                            <dt class="col-4">Quando</dt>
+                            <dt class="col-4">When</dt>
                             <dd class="col-8">
                                 {{ event.starts_at|date:"d/m/Y H:i" }}
                             </dd>
-                            <dt class="col-4">Dove</dt>
+                            <dt class="col-4">Where</dt>
                             <dd class="col-8">{{ event.location }}</dd>
-                            <dt class="col-4">Organizzatore</dt>
+                            <dt class="col-4">Organizer</dt>
                             <dd class="col-8">
                                 {{ event.organizer.get_username }}
                             </dd>
@@ -51,9 +51,9 @@
                         <a
                             class="btn btn-outline-primary mt-auto stretched-link"
                             href="{{ event.get_absolute_url }}"
-                            aria-label="Visualizza dettagli di {{ event.title }}"
+                            aria-label="View details for {{ event.title }}"
                         >
-                            Visualizza dettagli
+                            View details
                         </a>
                     </div>
                 </article>
@@ -61,6 +61,6 @@
         {% endfor %}
     </div>
 {% else %}
-    {% include "includes/empty_state.html" with title="Nessun evento disponibile" description="Non ci sono eventi pubblicati al momento. Torna presto per nuove proposte." %}
+    {% include "includes/empty_state.html" with title="No events available" description="There are no published events at the moment. Check back later for new events." %}
 {% endif %}
 {% endblock %}

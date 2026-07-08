@@ -1,23 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}Elimina evento | PPM Events{% endblock %}
+{% block title %}Delete event | PPM Events{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-7">
         <div class="card border-danger shadow-sm overflow-hidden">
             <div class="bg-danger-subtle border-bottom border-danger-subtle p-4">
-                <p class="page-kicker text-danger mb-2">Azione irreversibile</p>
-                <h1 class="h2 mb-0">Elimina evento</h1>
+                <p class="page-kicker text-danger mb-2">Irreversible action</p>
+                <h1 class="h2 mb-0">Delete event</h1>
             </div>
             <div class="card-body p-4">
                 <p class="lead">
-                    Confermi l'eliminazione di
+                    Confirm deletion of
                     <strong>{{ object.title }}</strong>?
                 </p>
                 <p class="text-body-secondary">
-                    L'operazione non può essere annullata. Verranno eliminate
-                    anche le registrazioni collegate all'evento.
+                    This action cannot be undone. Registrations linked to this
+                    event will also be deleted.
                 </p>
 
                 <form
@@ -29,10 +29,10 @@
                         class="btn btn-outline-secondary"
                         href="{% url 'events:my_events' %}"
                     >
-                        Annulla
+                        Cancel
                     </a>
                     <button class="btn btn-danger" type="submit">
-                        Elimina definitivamente
+                        Delete permanently
                     </button>
                 </form>
             </div>

@@ -16,31 +16,31 @@ class EventForm(forms.ModelForm):
             "status",
         ]
         labels = {
-            "title": "Titolo",
-            "description": "Descrizione",
-            "starts_at": "Data e ora di inizio",
-            "ends_at": "Data e ora di fine",
-            "location": "Luogo",
-            "capacity": "Capacità massima",
-            "status": "Stato",
+            "title": "Title",
+            "description": "Description",
+            "starts_at": "Start date and time",
+            "ends_at": "End date and time",
+            "location": "Location",
+            "capacity": "Maximum capacity",
+            "status": "Status",
         }
         help_texts = {
-            "starts_at": "Seleziona sia la data sia l'ora di inizio.",
-            "ends_at": "Seleziona sia la data sia l'ora di fine.",
-            "capacity": "Numero massimo di partecipanti ammessi.",
+            "starts_at": "Select both the start date and time.",
+            "ends_at": "Select both the end date and time.",
+            "capacity": "Maximum number of attendees allowed.",
             "status": (
-                "Draft = bozza non pubblica; Published = visibile agli utenti; "
-                "Cancelled = annullato/non visibile."
+                "Draft = not public; Published = visible to users; "
+                "Cancelled = not visible."
             ),
         }
         widgets = {
             "title": forms.TextInput(
-                attrs={"placeholder": "Nome dell'evento"},
+                attrs={"placeholder": "Event name"},
             ),
             "description": forms.Textarea(
                 attrs={
                     "rows": 6,
-                    "placeholder": "Descrivi il programma e le informazioni utili.",
+                    "placeholder": "Describe the program and useful details.",
                 },
             ),
             "starts_at": forms.DateTimeInput(
@@ -52,7 +52,7 @@ class EventForm(forms.ModelForm):
                 format="%Y-%m-%dT%H:%M",
             ),
             "location": forms.TextInput(
-                attrs={"placeholder": "Sede o indirizzo"},
+                attrs={"placeholder": "Venue or address"},
             ),
         }
 
@@ -70,7 +70,7 @@ class EventForm(forms.ModelForm):
         title = self.cleaned_data["title"].strip()
         if len(title) < 5:
             raise forms.ValidationError(
-                "Il titolo deve contenere almeno 5 caratteri."
+                "The title must contain at least 5 characters."
             )
         return title
 
@@ -78,20 +78,20 @@ class EventForm(forms.ModelForm):
         location = self.cleaned_data["location"].strip()
         if len(location) < 3:
             raise forms.ValidationError(
-                "Il luogo deve contenere almeno 3 caratteri."
+                "The location must contain at least 3 characters."
             )
         return location
 
     def clean_capacity(self):
         capacity = self.cleaned_data["capacity"]
         if capacity <= 0:
-            raise forms.ValidationError("La capacità deve essere positiva.")
+            raise forms.ValidationError("Capacity must be positive.")
         if self.instance.pk:
             registration_count = self.instance.registrations.count()
             if capacity < registration_count:
                 raise forms.ValidationError(
-                    "La capacità non può essere inferiore al numero attuale "
-                    f"di iscritti ({registration_count})."
+                    "Capacity cannot be lower than the current number "
+                    f"of registrations ({registration_count})."
                 )
         return capacity
 
@@ -103,7 +103,7 @@ class EventForm(forms.ModelForm):
         if starts_at and ends_at and ends_at <= starts_at:
             self.add_error(
                 "ends_at",
-                "La fine dell'evento deve essere successiva all'inizio.",
+                "The event must end after it starts.",
             )
 
         return cleaned_data

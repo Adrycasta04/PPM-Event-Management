@@ -5,7 +5,7 @@
 {% block content %}
 <div class="mb-3">
     <a class="link-secondary text-decoration-none" href="{% url 'events:list' %}">
-        &larr; Torna agli eventi
+        &larr; Back to events
     </a>
 </div>
 
@@ -17,24 +17,24 @@
                     {% include "includes/event_status_badge.html" %}
                     <span class="badge rounded-pill {% if event.registration_count >= event.capacity %}text-bg-warning{% else %}text-bg-light{% endif %}">
                         {{ event.registration_count }}/{{ event.capacity }}
-                        iscritti
+                        registered
                     </span>
                 </div>
                 <h1 class="display-6 fw-bold mb-0">{{ event.title }}</h1>
             </div>
-            {% if user == event.organizer %}
+            {% if user == event.organizer or user.is_staff %}
                 <div class="d-flex gap-2 align-items-start page-actions">
                     <a
                         class="btn btn-outline-primary"
                         href="{% url 'events:update' event.pk %}"
                     >
-                        Modifica
+                        Edit
                     </a>
                     <a
                         class="btn btn-outline-danger"
                         href="{% url 'events:delete' event.pk %}"
                     >
-                        Elimina
+                        Delete
                     </a>
                 </div>
             {% endif %}
@@ -42,7 +42,7 @@
 
         <div class="row g-4">
             <div class="col-lg-8">
-                <h2 class="h4 mb-3">Informazioni sull'evento</h2>
+                <h2 class="h4 mb-3">Event information</h2>
                 <div class="event-description">
                     {{ event.description|linebreaks }}
                 </div>
@@ -52,9 +52,9 @@
                         {% if registration %}
                             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
                                 <div>
-                                    <h2 class="h5 mb-1">Iscrizione confermata</h2>
+                                    <h2 class="h5 mb-1">Registration confirmed</h2>
                                     <p class="text-body-secondary mb-0">
-                                        Sei registrato a questo evento.
+                                        You are registered for this event.
                                     </p>
                                 </div>
                                 <form
@@ -66,21 +66,21 @@
                                         class="btn btn-outline-danger"
                                         type="submit"
                                     >
-                                        Annulla iscrizione
+                                        Cancel registration
                                     </button>
                                 </form>
                             </div>
                         {% elif event_is_full %}
-                            <h2 class="h5">Evento al completo</h2>
+                            <h2 class="h5">Event full</h2>
                             <p class="text-body-secondary mb-0">
-                                L'evento ha raggiunto la capacità massima.
+                                This event has reached its maximum capacity.
                             </p>
                         {% else %}
                             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
                                 <div>
-                                    <h2 class="h5 mb-1">Partecipa all'evento</h2>
+                                    <h2 class="h5 mb-1">Join this event</h2>
                                     <p class="text-body-secondary mb-0">
-                                        Conferma la tua presenza con un solo passaggio.
+                                        Confirm your attendance in one step.
                                     </p>
                                 </div>
                                 <form
@@ -89,7 +89,7 @@
                                 >
                                     {% csrf_token %}
                                     <button class="btn btn-primary" type="submit">
-                                        Registrati
+                                        Register
                                     </button>
                                 </form>
                             </div>
@@ -99,21 +99,21 @@
             </div>
             <div class="col-lg-4">
                 <aside class="info-panel">
-                    <h2 class="h5 mb-3">Dettagli</h2>
+                    <h2 class="h5 mb-3">Details</h2>
                     <dl class="mb-0">
-                        <dt>Inizio</dt>
+                        <dt>Starts</dt>
                         <dd>{{ event.starts_at|date:"d/m/Y H:i" }}</dd>
 
-                        <dt>Fine</dt>
+                        <dt>Ends</dt>
                         <dd>{{ event.ends_at|date:"d/m/Y H:i" }}</dd>
 
-                        <dt>Luogo</dt>
+                        <dt>Location</dt>
                         <dd>{{ event.location }}</dd>
 
-                        <dt>Capacità</dt>
-                        <dd>{{ event.capacity }} partecipanti</dd>
+                        <dt>Capacity</dt>
+                        <dd>{{ event.capacity }} attendees</dd>
 
-                        <dt>Organizzatore</dt>
+                        <dt>Organizer</dt>
                         <dd>{{ event.organizer.get_username }}</dd>
                     </dl>
                 </aside>

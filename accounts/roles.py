@@ -21,9 +21,17 @@ def user_has_role(user, role):
     return role.value in get_user_roles(user)
 
 
+def is_admin(user):
+    return user.is_authenticated and user.is_staff
+
+
 def is_attendee(user):
-    return user_has_role(user, Role.ATTENDEE)
+    return (
+        user_has_role(user, Role.ATTENDEE)
+        or user_has_role(user, Role.ORGANIZER)
+        or is_admin(user)
+    )
 
 
 def is_organizer(user):
-    return user_has_role(user, Role.ORGANIZER)
+    return user_has_role(user, Role.ORGANIZER) or is_admin(user)

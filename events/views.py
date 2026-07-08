@@ -27,7 +27,7 @@ class OrganizerRequiredMixin(LoginRequiredMixin):
         if request.user.is_authenticated and not is_organizer(request.user):
             messages.error(
                 request,
-                "Questa sezione è riservata agli organizzatori.",
+                "This section is reserved for organizers.",
             )
             return redirect(self.permission_denied_url)
         return super().dispatch(request, *args, **kwargs)
@@ -35,11 +35,15 @@ class OrganizerRequiredMixin(LoginRequiredMixin):
 
 class EventOwnerRequiredMixin(OrganizerRequiredMixin):
     ownership_denied_message = (
-        "Non puoi modificare o eliminare eventi di altri organizzatori."
+        "You cannot manage events created by other organizers."
     )
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated and is_organizer(request.user):
+        if (
+            request.user.is_authenticated
+            and is_organizer(request.user)
+            and not request.user.is_staff
+        ):
             event = (
                 Event.objects.filter(pk=kwargs.get("pk"))
                 .only("organizer_id")
@@ -54,6 +58,8 @@ class EventOwnerRequiredMixin(OrganizerRequiredMixin):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
+        if self.request.user.is_staff:
+            return Event.objects.all()
         return Event.objects.filter(organizer=self.request.user)
 
 
@@ -61,12 +67,10 @@ class AttendeeRequiredMixin(LoginRequiredMixin):
     permission_denied_url = "events:list"
 
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated and (
-            not is_attendee(request.user) or is_organizer(request.user)
-        ):
+        if request.user.is_authenticated and not is_attendee(request.user):
             messages.error(
                 request,
-                "Questa azione è riservata ai partecipanti.",
+                "This action is reserved for registered users.",
             )
             return redirect(self.permission_denied_url)
         return super().dispatch(request, *args, **kwargs)
@@ -113,11 +117,7 @@ class EventDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        if (
-            user.is_authenticated
-            and is_attendee(user)
-            and not is_organizer(user)
-        ):
+        if user.is_authenticated and is_attendee(user):
             registration = Registration.objects.filter(
                 event=self.object,
                 attendee=user,
@@ -135,9 +135,10 @@ class MyEventListView(OrganizerRequiredMixin, ListView):
     context_object_name = "events"
 
     def get_queryset(self):
-        return Event.objects.filter(
-            organizer=self.request.user,
-        ).annotate(registration_count=Count("registrations"))
+        queryset = Event.objects.all()
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(organizer=self.request.user)
+        return queryset.annotate(registration_count=Count("registrations"))
 
 
 class EventCreateView(OrganizerRequiredMixin, CreateView):
@@ -148,7 +149,7 @@ class EventCreateView(OrganizerRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.organizer = self.request.user
-        messages.success(self.request, "Evento creato con successo.")
+        messages.success(self.request, "Event created successfully.")
         return super().form_valid(form)
 
 
@@ -159,7 +160,7 @@ class EventUpdateView(EventOwnerRequiredMixin, UpdateView):
     success_url = reverse_lazy("events:my_events")
 
     def form_valid(self, form):
-        messages.success(self.request, "Evento aggiornato con successo.")
+        messages.success(self.request, "Event updated successfully.")
         return super().form_valid(form)
 
 
@@ -169,7 +170,7 @@ class EventDeleteView(EventOwnerRequiredMixin, DeleteView):
     success_url = reverse_lazy("events:my_events")
 
     def form_valid(self, form):
-        messages.success(self.request, "Evento eliminato con successo.")
+        messages.success(self.request, "Event deleted successfully.")
         return super().form_valid(form)
 
 
@@ -178,13 +179,14 @@ class EventAttendeeListView(EventOwnerRequiredMixin, DetailView):
     template_name = "events/event_attendee_list.html"
     context_object_name = "event"
     ownership_denied_message = (
-        "Non puoi visualizzare i partecipanti di eventi di altri organizzatori."
+        "You cannot view attendees for events created by other organizers."
     )
 
     def get_queryset(self):
-        return Event.objects.filter(
-            organizer=self.request.user,
-        ).prefetch_related("registrations__attendee")
+        queryset = Event.objects.all()
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(organizer=self.request.user)
+        return queryset.prefetch_related("registrations__attendee")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -213,7 +215,7 @@ class EventRegistrationCreateView(AttendeeRequiredMixin, View):
         if not event.is_public:
             messages.error(
                 request,
-                "Le registrazioni sono disponibili solo per eventi pubblicati.",
+                "Registrations are available only for published events.",
             )
             return redirect("events:list")
 
@@ -223,7 +225,7 @@ class EventRegistrationCreateView(AttendeeRequiredMixin, View):
             if not event.is_public:
                 messages.error(
                     request,
-                    "Le registrazioni sono disponibili solo per eventi pubblicati.",
+                    "Registrations are available only for published events.",
                 )
                 return redirect("events:list")
             if Registration.objects.filter(
@@ -232,12 +234,12 @@ class EventRegistrationCreateView(AttendeeRequiredMixin, View):
             ).exists():
                 messages.warning(
                     request,
-                    "Sei già registrato a questo evento.",
+                    "You are already registered for this event.",
                 )
             elif event.registrations.count() >= event.capacity:
                 messages.error(
                     request,
-                    "L'evento ha raggiunto la capacità massima.",
+                    "This event is full.",
                 )
             else:
                 Registration.objects.create(
@@ -246,7 +248,7 @@ class EventRegistrationCreateView(AttendeeRequiredMixin, View):
                 )
                 messages.success(
                     request,
-                    "Iscrizione completata con successo.",
+                    "Registration completed successfully.",
                 )
 
         return redirect(event.get_absolute_url())
@@ -259,17 +261,17 @@ class EventRegistrationDeleteView(AttendeeRequiredMixin, View):
         registration = Registration.objects.filter(pk=pk).first()
 
         if registration is None:
-            messages.error(request, "Iscrizione non trovata.")
+            messages.error(request, "Registration not found.")
         elif registration.attendee_id != request.user.pk:
             messages.error(
                 request,
-                "Non puoi annullare iscrizioni di altri utenti.",
+                "You cannot cancel registrations for other users.",
             )
         else:
             registration.delete()
             messages.success(
                 request,
-                "Iscrizione annullata con successo.",
+                "Registration cancelled successfully.",
             )
 
         return redirect("events:my_registrations")

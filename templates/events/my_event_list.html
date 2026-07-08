@@ -1,18 +1,22 @@
 {% extends "base.html" %}
 
-{% block title %}I miei eventi | PPM Events{% endblock %}
+{% block title %}Manage events | PPM Events{% endblock %}
 
 {% block content %}
 <header class="page-header d-flex flex-column flex-sm-row justify-content-between align-items-sm-end gap-3">
     <div>
-        <p class="page-kicker mb-2">Area organizzatore</p>
-        <h1 class="display-6 fw-bold mb-2">I miei eventi</h1>
+        <p class="page-kicker mb-2">Organizer area</p>
+        <h1 class="display-6 fw-bold mb-2">Manage events</h1>
         <p class="text-body-secondary mb-0">
-            Gestisci gli eventi che hai creato.
+            {% if user.is_staff %}
+                Review and manage all events in the application.
+            {% else %}
+                Manage the events you created.
+            {% endif %}
         </p>
     </div>
     <a class="btn btn-primary page-actions" href="{% url 'events:create' %}">
-        Crea evento
+        Create event
     </a>
 </header>
 
@@ -21,11 +25,11 @@
         <table class="table table-hover align-middle">
             <thead>
                 <tr>
-                    <th scope="col">Titolo</th>
-                    <th scope="col">Inizio</th>
-                    <th scope="col">Stato</th>
-                    <th scope="col">Iscritti</th>
-                    <th scope="col" class="text-end">Azioni</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Starts</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Registered</th>
+                    <th scope="col" class="text-end">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -46,26 +50,26 @@
                                         class="btn btn-sm btn-outline-secondary"
                                         href="{{ event.get_absolute_url }}"
                                     >
-                                        Visualizza
+                                        View
                                     </a>
                                 {% endif %}
                                 <a
                                     class="btn btn-sm btn-outline-secondary"
                                     href="{% url 'events:attendees' event.pk %}"
                                 >
-                                    Partecipanti
+                                    Attendees
                                 </a>
                                 <a
                                     class="btn btn-sm btn-outline-primary"
                                     href="{% url 'events:update' event.pk %}"
                                 >
-                                    Modifica
+                                    Edit
                                 </a>
                                 <a
                                     class="btn btn-sm btn-outline-danger"
                                     href="{% url 'events:delete' event.pk %}"
                                 >
-                                    Elimina
+                                    Delete
                                 </a>
                             </div>
                         </td>
@@ -76,6 +80,6 @@
     </div>
 {% else %}
     {% url "events:create" as create_event_url %}
-    {% include "includes/empty_state.html" with title="Nessun evento creato" description="Non hai ancora creato eventi. Inizia preparando la tua prima proposta." action_url=create_event_url action_label="Crea il primo evento" %}
+    {% include "includes/empty_state.html" with title="No events created" description="You have not created any events yet. Start by preparing your first event." action_url=create_event_url action_label="Create first event" %}
 {% endif %}
 {% endblock %}

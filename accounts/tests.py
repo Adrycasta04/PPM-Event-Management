@@ -8,6 +8,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from .context_processors import roles as role_context
+from .models import Profile
 from .roles import Role, get_user_roles, is_attendee, is_organizer
 
 
@@ -26,6 +27,12 @@ class AuthenticationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "registration/login.html")
 
+    def test_signup_page_is_available(self):
+        response = self.client.get(reverse("accounts:signup"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "registration/signup.html")
+
     def test_user_can_log_in(self):
         response = self.client.post(
             reverse("accounts:login"),
@@ -36,7 +43,7 @@ class AuthenticationTests(TestCase):
         self.assertTrue(response.wsgi_request.user.is_authenticated)
         self.assertRedirects(response, reverse("events:home"))
         self.assertIn(
-            "Login effettuato con successo.",
+            "Logged in successfully.",
             [str(message) for message in get_messages(response.wsgi_request)],
         )
 
@@ -48,7 +55,27 @@ class AuthenticationTests(TestCase):
         self.assertFalse(response.wsgi_request.user.is_authenticated)
         self.assertRedirects(response, reverse("events:home"))
         self.assertIn(
-            "Logout effettuato con successo.",
+            "Logged out successfully.",
+            [str(message) for message in get_messages(response.wsgi_request)],
+        )
+
+    def test_signup_creates_attendee_user_and_profile(self):
+        response = self.client.post(
+            reverse("accounts:signup"),
+            {
+                "username": "new-attendee",
+                "password1": "new-user-password-123",
+                "password2": "new-user-password-123",
+            },
+            follow=True,
+        )
+
+        user = get_user_model().objects.get(username="new-attendee")
+        self.assertRedirects(response, reverse("accounts:login"))
+        self.assertTrue(user.groups.filter(name=Role.ATTENDEE.value).exists())
+        self.assertTrue(Profile.objects.filter(user=user).exists())
+        self.assertIn(
+            "Account created successfully. You can now log in as an attendee.",
             [str(message) for message in get_messages(response.wsgi_request)],
         )
 
@@ -75,7 +102,7 @@ class RoleSetupTests(TestCase):
         user.groups.add(Group.objects.get(name=Role.ORGANIZER.value))
 
         self.assertTrue(is_organizer(user))
-        self.assertFalse(is_attendee(user))
+        self.assertTrue(is_attendee(user))
 
     def test_role_helpers_reuse_group_query_for_same_user_instance(self):
         call_command("setup_roles", verbosity=0)
@@ -84,7 +111,7 @@ class RoleSetupTests(TestCase):
 
         with self.assertNumQueries(1):
             self.assertTrue(is_organizer(user))
-            self.assertFalse(is_attendee(user))
+            self.assertTrue(is_attendee(user))
             self.assertEqual(get_user_roles(user), {Role.ORGANIZER.value})
 
     def test_anonymous_user_has_no_application_role(self):
@@ -96,7 +123,7 @@ class RoleSetupTests(TestCase):
             self.assertFalse(is_attendee(user))
             self.assertFalse(is_organizer(user))
 
-    def test_context_processor_prefers_organizer_for_dual_role_user(self):
+    def test_context_processor_exposes_hierarchical_roles(self):
         call_command("setup_roles", verbosity=0)
         user = get_user_model().objects.create_user(username="dual-role")
         user.groups.add(
@@ -108,4 +135,4 @@ class RoleSetupTests(TestCase):
         context = role_context(request)
 
         self.assertTrue(context["user_is_organizer"])
-        self.assertFalse(context["user_is_attendee"])
+        self.assertTrue(context["user_is_attendee"])

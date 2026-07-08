@@ -69,26 +69,27 @@ class RoleAndPermissionQualityTests(TestCase):
                     f"{reverse('accounts:login')}?next={url}",
                 )
 
-    def test_organizer_cannot_access_attendee_workflow(self):
+    def test_organizer_can_access_attendee_workflow(self):
         self.client.force_login(self.organizer)
 
-        for url in [
+        my_registrations_response = self.client.get(
             reverse("events:my_registrations"),
+        )
+        register_response = self.client.post(
             reverse("events:register", args=[self.event.pk]),
-            reverse(
-                "events:cancel_registration",
-                args=[self.registration.pk],
-            ),
-        ]:
-            with self.subTest(url=url):
-                response = self.client.post(url, follow=True)
-                self.assertRedirects(response, reverse("events:list"))
-                self.assertContains(
-                    response,
-                    "Questa azione è riservata ai partecipanti.",
-                )
+            follow=True,
+        )
 
-    def test_user_with_both_roles_cannot_use_attendee_workflow(self):
+        self.assertEqual(my_registrations_response.status_code, 200)
+        self.assertRedirects(register_response, self.event.get_absolute_url())
+        self.assertTrue(
+            Registration.objects.filter(
+                event=self.event,
+                attendee=self.organizer,
+            ).exists()
+        )
+
+    def test_user_with_both_roles_can_use_attendee_workflow(self):
         self.client.force_login(self.dual_role_user)
 
         response = self.client.post(
@@ -96,8 +97,8 @@ class RoleAndPermissionQualityTests(TestCase):
             follow=True,
         )
 
-        self.assertRedirects(response, reverse("events:list"))
-        self.assertFalse(
+        self.assertRedirects(response, self.event.get_absolute_url())
+        self.assertTrue(
             Registration.objects.filter(
                 event=self.event,
                 attendee=self.dual_role_user,
@@ -112,7 +113,7 @@ class RoleAndPermissionQualityTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "events/event_form.html")
 
-    def test_admin_has_admin_navigation_but_no_implicit_app_role(self):
+    def test_admin_has_admin_navigation_and_app_roles(self):
         self.client.force_login(self.admin)
 
         home_response = self.client.get(reverse("events:home"))
@@ -126,8 +127,8 @@ class RoleAndPermissionQualityTests(TestCase):
         )
 
         self.assertContains(home_response, reverse("admin:index"))
-        self.assertRedirects(organizer_response, reverse("events:list"))
-        self.assertRedirects(attendee_response, reverse("events:list"))
+        self.assertEqual(organizer_response.status_code, 200)
+        self.assertEqual(attendee_response.status_code, 200)
 
     def test_registration_mutations_reject_get_requests(self):
         self.client.force_login(self.attendee)
@@ -182,6 +183,7 @@ class NamespacedURLTests(TestCase):
         )
 
     def test_account_urls_are_namespaced(self):
+        self.assertEqual(reverse("accounts:signup"), "/accounts/signup/")
         self.assertEqual(reverse("accounts:login"), "/accounts/login/")
         self.assertEqual(reverse("accounts:logout"), "/accounts/logout/")
 

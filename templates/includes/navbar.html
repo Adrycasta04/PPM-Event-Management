@@ -19,7 +19,7 @@
             data-bs-target="#mainNavigation"
             aria-controls="mainNavigation"
             aria-expanded="false"
-            aria-label="Apri navigazione"
+            aria-label="Open navigation"
         >
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -40,7 +40,7 @@
                         href="{% url 'events:list' %}"
                         {% if request.resolver_match.url_name == "list" or request.resolver_match.url_name == "detail" %}aria-current="page"{% endif %}
                     >
-                        Eventi
+                        Events
                     </a>
                 </li>
                 {% if user_is_organizer %}
@@ -50,7 +50,7 @@
                             href="{% url 'events:my_events' %}"
                             {% if request.resolver_match.url_name == "my_events" or request.resolver_match.url_name == "create" or request.resolver_match.url_name == "update" or request.resolver_match.url_name == "delete" or request.resolver_match.url_name == "attendees" %}aria-current="page"{% endif %}
                         >
-                            I miei eventi
+                            Manage events
                         </a>
                     </li>
                 {% endif %}
@@ -61,7 +61,7 @@
                             href="{% url 'events:my_registrations' %}"
                             {% if request.resolver_match.url_name == "my_registrations" %}aria-current="page"{% endif %}
                         >
-                            Le mie iscrizioni
+                            My registrations
                         </a>
                     </li>
                 {% endif %}
@@ -79,9 +79,9 @@
                             {% if user.is_superuser %}
                                 <span class="badge text-bg-warning">Admin</span>
                             {% elif user_is_organizer %}
-                                <span class="badge text-bg-primary">Organizzatore</span>
+                                <span class="badge text-bg-primary">Organizer</span>
                             {% elif user_is_attendee %}
-                                <span class="badge text-bg-info">Partecipante</span>
+                                <span class="badge text-bg-info">Attendee</span>
                             {% endif %}
                         </span>
                     </li>
@@ -89,18 +89,27 @@
                         <form method="post" action="{% url 'accounts:logout' %}">
                             {% csrf_token %}
                             <button class="btn btn-outline-light btn-sm ms-lg-2" type="submit">
-                                Esci
+                                Log out
                             </button>
                         </form>
                     </li>
                 {% else %}
                     <li class="nav-item">
                         <a
+                            class="nav-link{% if request.resolver_match.url_name == 'signup' %} active{% endif %}"
+                            href="{% url 'accounts:signup' %}"
+                            {% if request.resolver_match.url_name == "signup" %}aria-current="page"{% endif %}
+                        >
+                            Sign up
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a
                             class="nav-link{% if request.resolver_match.url_name == 'login' %} active{% endif %}"
                             href="{% url 'accounts:login' %}"
                             {% if request.resolver_match.url_name == "login" %}aria-current="page"{% endif %}
                         >
-                            Accedi
+                            Log in
                         </a>
                     </li>
                 {% endif %}

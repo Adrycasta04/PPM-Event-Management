@@ -115,7 +115,7 @@ class EmptyEventListTests(TestCase):
         response = self.client.get(reverse("events:list"))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Non ci sono eventi pubblicati")
+        self.assertContains(response, "There are no published events")
 
 
 class OrganizerEventCrudTests(TestCase):
@@ -182,7 +182,7 @@ class OrganizerEventCrudTests(TestCase):
         self.assertRedirects(response, reverse("events:list"))
         self.assertContains(
             response,
-            "Questa sezione è riservata agli organizzatori.",
+            "This section is reserved for organizers.",
         )
 
     def test_organizer_can_create_event_and_becomes_owner(self):
@@ -211,7 +211,7 @@ class OrganizerEventCrudTests(TestCase):
         created_event = Event.objects.get(title="New event")
         self.assertEqual(created_event.organizer, self.owner)
         self.assertRedirects(response, reverse("events:my_events"))
-        self.assertContains(response, "Evento creato con successo.")
+        self.assertContains(response, "Event created successfully.")
 
     def test_my_events_contains_only_events_owned_by_current_user(self):
         starts_at = timezone.now() + timedelta(days=12)
@@ -246,7 +246,7 @@ class OrganizerEventCrudTests(TestCase):
         self.event.refresh_from_db()
         self.assertEqual(self.event.title, "Updated title")
         self.assertRedirects(response, reverse("events:my_events"))
-        self.assertContains(response, "Evento aggiornato con successo.")
+        self.assertContains(response, "Event updated successfully.")
 
     def test_other_organizer_cannot_update_event(self):
         self.client.force_login(self.other_organizer)
@@ -262,7 +262,7 @@ class OrganizerEventCrudTests(TestCase):
         self.assertRedirects(response, reverse("events:my_events"))
         self.assertContains(
             response,
-            "Non puoi modificare o eliminare eventi di altri organizzatori.",
+            "You cannot manage events created by other organizers.",
         )
 
     def test_owner_can_delete_own_event(self):
@@ -275,7 +275,7 @@ class OrganizerEventCrudTests(TestCase):
 
         self.assertFalse(Event.objects.filter(pk=self.event.pk).exists())
         self.assertRedirects(response, reverse("events:my_events"))
-        self.assertContains(response, "Evento eliminato con successo.")
+        self.assertContains(response, "Event deleted successfully.")
 
     def test_other_organizer_cannot_delete_event(self):
         self.client.force_login(self.other_organizer)
@@ -289,7 +289,7 @@ class OrganizerEventCrudTests(TestCase):
         self.assertRedirects(response, reverse("events:my_events"))
         self.assertContains(
             response,
-            "Non puoi modificare o eliminare eventi di altri organizzatori.",
+            "You cannot manage events created by other organizers.",
         )
 
 
@@ -357,7 +357,7 @@ class AttendeeRegistrationWorkflowTests(TestCase):
         )
         self.assertContains(
             response,
-            "Iscrizione completata con successo.",
+            "Registration completed successfully.",
         )
 
     def test_duplicate_registration_is_prevented(self):
@@ -379,7 +379,7 @@ class AttendeeRegistrationWorkflowTests(TestCase):
             ).count(),
             1,
         )
-        self.assertContains(response, "Sei già registrato a questo evento.")
+        self.assertContains(response, "You are already registered for this event.")
 
     def test_registration_is_blocked_when_event_is_full(self):
         self.published_event.capacity = 1
@@ -403,7 +403,7 @@ class AttendeeRegistrationWorkflowTests(TestCase):
         )
         self.assertContains(
             response,
-            "L'evento ha raggiunto la capacità massima.",
+            "This event is full.",
         )
 
     def test_registration_is_blocked_for_non_public_events(self):
@@ -424,7 +424,7 @@ class AttendeeRegistrationWorkflowTests(TestCase):
                 self.assertRedirects(response, reverse("events:list"))
                 self.assertContains(
                     response,
-                    "Le registrazioni sono disponibili solo per eventi pubblicati.",
+                    "Registrations are available only for published events.",
                 )
 
     def test_anonymous_user_cannot_register(self):
@@ -441,7 +441,7 @@ class AttendeeRegistrationWorkflowTests(TestCase):
         )
         self.assertEqual(Registration.objects.count(), 0)
 
-    def test_organizer_cannot_register_as_attendee(self):
+    def test_organizer_can_register_as_attendee(self):
         self.client.force_login(self.organizer)
 
         response = self.client.post(
@@ -449,16 +449,16 @@ class AttendeeRegistrationWorkflowTests(TestCase):
             follow=True,
         )
 
-        self.assertFalse(
+        self.assertTrue(
             Registration.objects.filter(
                 event=self.published_event,
                 attendee=self.organizer,
             ).exists()
         )
-        self.assertRedirects(response, reverse("events:list"))
+        self.assertRedirects(response, self.published_event.get_absolute_url())
         self.assertContains(
             response,
-            "Questa azione è riservata ai partecipanti.",
+            "Registration completed successfully.",
         )
 
     def test_attendee_can_cancel_own_registration(self):
@@ -479,7 +479,7 @@ class AttendeeRegistrationWorkflowTests(TestCase):
         self.assertRedirects(response, reverse("events:my_registrations"))
         self.assertContains(
             response,
-            "Iscrizione annullata con successo.",
+            "Registration cancelled successfully.",
         )
 
     def test_attendee_cannot_cancel_another_users_registration(self):
@@ -499,7 +499,7 @@ class AttendeeRegistrationWorkflowTests(TestCase):
         )
         self.assertContains(
             response,
-            "Non puoi annullare iscrizioni di altri utenti.",
+            "You cannot cancel registrations for other users.",
         )
 
     def test_my_registrations_contains_only_current_users_records(self):
@@ -609,7 +609,7 @@ class OrganizerAttendeeListTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(
             response,
-            "Questo evento non ha ancora partecipanti.",
+            "This event has no attendees yet.",
         )
 
     def test_other_organizer_cannot_view_attendees(self):
@@ -623,7 +623,7 @@ class OrganizerAttendeeListTests(TestCase):
         self.assertRedirects(response, reverse("events:my_events"))
         self.assertContains(
             response,
-            "Non puoi visualizzare i partecipanti di eventi di altri organizzatori.",
+            "You cannot view attendees for events created by other organizers.",
         )
         self.assertNotContains(response, self.attendee.email)
 
@@ -638,7 +638,7 @@ class OrganizerAttendeeListTests(TestCase):
         self.assertRedirects(response, reverse("events:list"))
         self.assertContains(
             response,
-            "Questa sezione è riservata agli organizzatori.",
+            "This section is reserved for organizers.",
         )
         self.assertNotContains(response, self.other_attendee.username)
 

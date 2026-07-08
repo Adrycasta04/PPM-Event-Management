@@ -8,114 +8,75 @@
         <div class="col-lg-8">
             <p class="hero-eyebrow mb-2">Event Management System</p>
             <h1 class="display-4 fw-bold">
-                Eventi semplici da creare, trovare e vivere.
+                Events that are easy to create, find and join.
             </h1>
             <p class="lead text-white-50 mb-4">
-                Una piattaforma Django per pubblicare eventi, gestire
-                iscrizioni e seguire le presenze.
+                A Django platform to publish events, manage registrations
+                and track attendees.
             </p>
             <p class="text-white-50 mb-4">
-                Accedi con gli account demo per provare i flussi da
-                partecipante, organizzatore e admin.
+                Attendees can register for events. Organizers can do the same
+                and also manage their own events. Admins can manage everything.
             </p>
             <div class="d-flex flex-wrap gap-2">
                 <a class="btn btn-light btn-lg" href="{% url 'events:list' %}">
-                    Esplora gli eventi
+                    Browse events
                 </a>
                 {% if user_is_organizer %}
                     <a
                         class="btn btn-outline-light btn-lg"
                         href="{% url 'events:create' %}"
                     >
-                        Crea un evento
+                        Create an event
                     </a>
                 {% elif user_is_attendee %}
                     <a
                         class="btn btn-outline-light btn-lg"
                         href="{% url 'events:my_registrations' %}"
                     >
-                        Le mie iscrizioni
+                        My registrations
                     </a>
                 {% elif not user.is_authenticated %}
                     <a
                         class="btn btn-outline-light btn-lg"
                         href="{% url 'accounts:login' %}"
                     >
-                        Accedi
+                        Log in
                     </a>
                 {% endif %}
             </div>
         </div>
         <div class="col-lg-4">
             <div class="hero-feature-panel rounded-4 p-4">
-                <p class="fw-semibold mb-3">Cosa puoi fare</p>
+                <p class="fw-semibold mb-3">What you can do</p>
                 <div class="d-flex gap-3 mb-3">
                     <span class="hero-feature-icon" aria-hidden="true">&check;</span>
                     <div>
-                        <div class="fw-semibold">Consulta eventi</div>
+                        <div class="fw-semibold">Browse events</div>
                         <div class="small text-white-50">
-                            Vedi data, luogo, disponibilit&agrave; e dettagli.
+                            Check date, venue, availability and details.
                         </div>
                     </div>
                 </div>
                 <div class="d-flex gap-3 mb-3">
                     <span class="hero-feature-icon" aria-hidden="true">&check;</span>
                     <div>
-                        <div class="fw-semibold">Gestisci iscrizioni</div>
+                        <div class="fw-semibold">Manage registrations</div>
                         <div class="small text-white-50">
-                            Registrati o annulla la tua partecipazione.
+                            Register or cancel your participation.
                         </div>
                     </div>
                 </div>
                 <div class="d-flex gap-3">
                     <span class="hero-feature-icon" aria-hidden="true">&check;</span>
                     <div>
-                        <div class="fw-semibold">Controlla presenze</div>
+                        <div class="fw-semibold">Track attendance</div>
                         <div class="small text-white-50">
-                            Monitora iscritti e posti disponibili.
+                            Monitor attendees and remaining capacity.
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
-
-<section class="mt-5">
-    <div class="row g-4">
-        <div class="col-lg-4">
-            <div class="info-panel h-100">
-                <p class="page-kicker mb-2">Ruoli</p>
-                <h2 class="h4 fw-bold">Tre accessi demo</h2>
-                <p class="text-body-secondary mb-0">
-                    Ogni account mostra un percorso diverso dell'app.
-                </p>
-            </div>
-        </div>
-        <div class="col-md-4 col-lg">
-            <article class="home-role-card h-100">
-                <h3 class="h5">Partecipante</h3>
-                <p class="text-body-secondary mb-0">
-                    Prova iscrizione, riepilogo personale e annullamento.
-                </p>
-            </article>
-        </div>
-        <div class="col-md-4 col-lg">
-            <article class="home-role-card h-100">
-                <h3 class="h5">Organizzatore</h3>
-                <p class="text-body-secondary mb-0">
-                    Crea eventi, aggiorna i dati e consulta i partecipanti.
-                </p>
-            </article>
-        </div>
-        <div class="col-md-4 col-lg">
-            <article class="home-role-card h-100">
-                <h3 class="h5">Admin</h3>
-                <p class="text-body-secondary mb-0">
-                    Controlla utenti, gruppi, eventi e registrazioni dal
-                    pannello Django.
-                </p>
-            </article>
         </div>
     </div>
 </section>
@@ -123,12 +84,12 @@
 <section class="mt-5">
     <div class="d-flex flex-column flex-sm-row justify-content-between gap-3 mb-4">
         <div>
-            <p class="page-kicker mb-2">Eventi in evidenza</p>
-            <h2 class="h3 fw-bold mb-0">Prossimi eventi pubblicati</h2>
+            <p class="page-kicker mb-2">Featured events</p>
+            <h2 class="h3 fw-bold mb-0">Upcoming published events</h2>
         </div>
         <div>
             <a class="btn btn-outline-primary" href="{% url 'events:list' %}">
-                Vedi tutti gli eventi
+                View all events
             </a>
         </div>
     </div>
@@ -143,24 +104,24 @@
                                 {% include "includes/event_status_badge.html" %}
                                 <span class="badge rounded-pill {% if event.registration_count >= event.capacity %}text-bg-warning{% else %}text-bg-light{% endif %}">
                                     {{ event.registration_count }}/{{ event.capacity }}
-                                    iscritti
+                                    registered
                                 </span>
                             </div>
                             <h3 class="h5 card-title mb-3">{{ event.title }}</h3>
                             <dl class="row event-meta small mb-4">
-                                <dt class="col-4">Quando</dt>
+                                <dt class="col-4">When</dt>
                                 <dd class="col-8">
                                     {{ event.starts_at|date:"d/m/Y H:i" }}
                                 </dd>
-                                <dt class="col-4">Dove</dt>
+                                <dt class="col-4">Where</dt>
                                 <dd class="col-8">{{ event.location }}</dd>
                             </dl>
                             <a
                                 class="btn btn-outline-primary mt-auto stretched-link"
                                 href="{{ event.get_absolute_url }}"
-                                aria-label="Visualizza dettagli di {{ event.title }}"
+                                aria-label="View details for {{ event.title }}"
                             >
-                                Dettagli evento
+                                Event details
                             </a>
                         </div>
                     </article>
@@ -168,7 +129,7 @@
             {% endfor %}
         </div>
     {% else %}
-        {% include "includes/empty_state.html" with title="Nessun evento pubblicato" description="Quando un organizzatore pubblica un evento, comparir&agrave; anche in questa sezione." action_url=None action_label=None %}
+        {% include "includes/empty_state.html" with title="No published events" description="When an organizer publishes an event, it will appear in this section." action_url=None action_label=None %}
     {% endif %}
 </section>
 {% endblock %}

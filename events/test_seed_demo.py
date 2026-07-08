@@ -53,12 +53,12 @@ class SeedDemoCommandTests(TestCase):
             Event.objects.filter(status=Event.Status.CANCELLED).exists()
         )
 
-        full_event = Event.objects.get(title="Workshop di Fotografia Urbana")
+        full_event = Event.objects.get(title="Urban Photography Workshop")
         empty_event = Event.objects.get(
-            title="Open Day Produzione Multimediale"
+            title="Multimedia Production Open Day"
         )
         available_event = Event.objects.get(
-            title="Django Community Meetup Firenze"
+            title="Django Community Meetup Florence"
         )
 
         self.assertEqual(full_event.registrations.count(), full_event.capacity)

@@ -48,7 +48,7 @@ browser.
 - view the homepage;
 - browse published events;
 - open the detail page of a published event;
-- access the login page.
+- access the login and sign-up pages.
 
 Draft and cancelled events are not visible in the public event list.
 
@@ -66,6 +66,7 @@ Attendees cannot access organizer CRUD pages or attendee lists.
 ### Organizer
 
 - login and logout;
+- use attendee features, including event registration;
 - create events;
 - view all owned events, including drafts and cancelled events;
 - update or delete only owned events;
@@ -78,10 +79,9 @@ another organizer.
 ### Admin
 
 - access Django Admin;
-- manage users, groups, profiles, events and registrations.
-
-Admin status does not automatically grant the application-specific Attendee or
-Organizer role.
+- use attendee and organizer features;
+- manage all events from the frontend;
+- manage users, groups, profiles, events and registrations from Django Admin.
 
 ## Local setup and demo data
 
@@ -170,37 +170,40 @@ The database contains:
 
 Notable events:
 
-- `Django Community Meetup Firenze`: published, places available, existing
+- `Django Community Meetup Florence`: published, places available, existing
   attendees;
-- `Workshop di Fotografia Urbana`: published and full;
-- `Open Day Produzione Multimediale`: published with no initial registrations;
-- `Festival Audio-Visuale Estate 2026`: published and owned by
+- `Urban Photography Workshop`: published and full;
+- `Multimedia Production Open Day`: published with no initial registrations;
+- `Summer Audiovisual Festival 2026`: published and owned by
   `organizer2_demo`;
-- `Laboratorio Podcast - Bozza`: not publicly visible;
-- `Rassegna Cinema all'Aperto - Annullata`: not publicly visible.
+- `Podcast Lab - Draft`: not publicly visible;
+- `Open-Air Cinema Review - Cancelled`: not publicly visible.
 
 ## 🧪 Testing
 
 ### Browser-based testing scenario
 
-1. Open the homepage and select `Eventi`.
+1. Open the homepage and select `Events`.
 2. Verify that only published events appear.
-3. Open `Workshop di Fotografia Urbana` and verify that its capacity is full.
+3. Open `Urban Photography Workshop` and verify that its capacity is full.
 4. Log in as `attendee_demo / attendee12345`.
-5. Open `Open Day Produzione Multimediale` and register.
-6. Open `Le mie iscrizioni` and verify that the new registration appears.
+5. Open `Multimedia Production Open Day` and register.
+6. Open `My registrations` and verify that the new registration appears.
 7. Cancel the Open Day registration.
 8. Log out and log in as `organizer_demo / organizer12345`.
-9. Open `I miei eventi`.
+9. Open `Manage events`.
 10. Create a new draft event, then update its title and publish it.
-11. Open the attendee list for `Django Community Meetup Firenze`.
+11. Open the attendee list for `Django Community Meetup Florence`.
 12. Verify that the two demo attendees are listed.
-13. Open the public detail of `Festival Audio-Visuale Estate 2026`, which is
-    owned by `organizer2_demo`, and verify that edit/delete actions are absent.
+13. Open the public detail of `Summer Audiovisual Festival 2026`, which is
+    owned by `organizer2_demo`, and verify that edit/delete actions are absent
+    for another non-admin organizer.
 14. Log out and log in as `organizer2_demo / organizer212345`.
-15. Verify that `Festival Audio-Visuale Estate 2026` appears in `I miei eventi`
+15. Verify that `Summer Audiovisual Festival 2026` appears in `Manage events`
     while events owned by `organizer_demo` do not.
-16. Log in as `admin_demo / admin12345` and open `/admin/`.
+16. Log in as `admin_demo / admin12345`, open `Manage events`, and verify that
+    all events are available from the frontend.
+17. Open `/admin/` to verify full Django administration access.
 
 ### Automated tests
 

@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
-{% block title %}Partecipanti | {{ event.title }}{% endblock %}
+{% block title %}Attendees | {{ event.title }}{% endblock %}
 
 {% block content %}
 <header class="page-header d-flex flex-column flex-sm-row justify-content-between align-items-start gap-3">
     <div>
         <a class="link-secondary text-decoration-none" href="{% url 'events:my_events' %}">
-            &larr; Torna ai miei eventi
+            &larr; Back to managed events
         </a>
-        <p class="page-kicker mt-3 mb-2">Gestione presenze</p>
-        <h1 class="display-6 fw-bold mb-1">Partecipanti</h1>
+        <p class="page-kicker mt-3 mb-2">Attendance management</p>
+        <h1 class="display-6 fw-bold mb-1">Attendees</h1>
         <p class="text-body-secondary mb-0">{{ event.title }}</p>
     </div>
     <span class="badge {% if registrations|length >= event.capacity %}text-bg-warning{% else %}text-bg-light{% endif %} fs-6 flex-shrink-0">
@@ -23,9 +23,9 @@
             <thead>
                 <tr>
                     <th scope="col">Username</th>
-                    <th scope="col">Nome</th>
+                    <th scope="col">Name</th>
                     <th scope="col">Email</th>
-                    <th scope="col">Registrazione</th>
+                    <th scope="col">Registration</th>
                 </tr>
             </thead>
             <tbody>
@@ -47,6 +47,6 @@
         </table>
     </div>
 {% else %}
-    {% include "includes/empty_state.html" with title="Nessun partecipante" description="Questo evento non ha ancora partecipanti. Le nuove iscrizioni compariranno qui." %}
+    {% include "includes/empty_state.html" with title="No attendees" description="This event has no attendees yet. New registrations will appear here." %}
 {% endif %}
 {% endblock %}

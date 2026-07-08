@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Le mie iscrizioni | PPM Events{% endblock %}
+{% block title %}My registrations | PPM Events{% endblock %}
 
 {% block content %}
 <header class="page-header">
-    <p class="page-kicker mb-2">Area partecipante</p>
-    <h1 class="display-6 fw-bold mb-2">Le mie iscrizioni</h1>
+    <p class="page-kicker mb-2">Attendee area</p>
+    <h1 class="display-6 fw-bold mb-2">My registrations</h1>
     <p class="text-body-secondary mb-0">
-        Consulta e gestisci le tue iscrizioni agli eventi.
+        Review and manage your event registrations.
     </p>
 </header>
 
@@ -22,15 +22,15 @@
                         </div>
                         <h2 class="h4">{{ registration.event.title }}</h2>
                         <dl class="row event-meta small mb-4">
-                            <dt class="col-4">Inizio</dt>
+                            <dt class="col-4">Starts</dt>
                             <dd class="col-8">
                                 {{ registration.event.starts_at|date:"d/m/Y H:i" }}
                             </dd>
-                            <dt class="col-4">Luogo</dt>
+                            <dt class="col-4">Location</dt>
                             <dd class="col-8">
                                 {{ registration.event.location }}
                             </dd>
-                            <dt class="col-4">Iscritto il</dt>
+                            <dt class="col-4">Registered</dt>
                             <dd class="col-8">
                                 {{ registration.created_at|date:"d/m/Y H:i" }}
                             </dd>
@@ -41,7 +41,7 @@
                                     class="btn btn-outline-secondary"
                                     href="{{ registration.event.get_absolute_url }}"
                                 >
-                                    Dettagli
+                                    Details
                                 </a>
                             {% endif %}
                             <form
@@ -53,7 +53,7 @@
                                     class="btn btn-outline-danger"
                                     type="submit"
                                 >
-                                    Annulla iscrizione
+                                    Cancel registration
                                 </button>
                             </form>
                         </div>
@@ -64,6 +64,6 @@
     </div>
 {% else %}
     {% url "events:list" as public_events_url %}
-    {% include "includes/empty_state.html" with title="Nessuna iscrizione" description="Non hai ancora iscrizioni. Esplora gli eventi pubblicati e scegli a cosa partecipare." action_url=public_events_url action_label="Esplora gli eventi" %}
+    {% include "includes/empty_state.html" with title="No registrations" description="You have no registrations yet. Browse published events and choose one to attend." action_url=public_events_url action_label="Browse events" %}
 {% endif %}
 {% endblock %}

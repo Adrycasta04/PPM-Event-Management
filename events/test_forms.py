@@ -60,11 +60,11 @@ class EventFormTests(TestCase):
     def test_datetime_and_status_help_texts_are_clear(self):
         form = EventForm()
 
-        self.assertIn("data sia l'ora", form.fields["starts_at"].help_text)
-        self.assertIn("data sia l'ora", form.fields["ends_at"].help_text)
-        self.assertIn("Draft = bozza non pubblica", form.fields["status"].help_text)
-        self.assertIn("Published = visibile", form.fields["status"].help_text)
-        self.assertIn("Cancelled = annullato", form.fields["status"].help_text)
+        self.assertIn("start date and time", form.fields["starts_at"].help_text)
+        self.assertIn("end date and time", form.fields["ends_at"].help_text)
+        self.assertIn("Draft = not public", form.fields["status"].help_text)
+        self.assertIn("Published = visible", form.fields["status"].help_text)
+        self.assertIn("Cancelled = not visible", form.fields["status"].help_text)
 
     def test_title_cannot_be_only_spaces(self):
         form = EventForm(data=self.valid_data(title="     "))
@@ -140,8 +140,8 @@ class EventFormTests(TestCase):
         self.assertEqual(
             form.errors["capacity"],
             [
-                "La capacità non può essere inferiore al numero attuale "
-                "di iscritti (2)."
+                "Capacity cannot be lower than the current number "
+                "of registrations (2)."
             ],
         )
 
