@@ -89,6 +89,10 @@ class HomeView(TemplateView):
         return context
 
 
+class ContactView(TemplateView):
+    template_name = "events/contact.html"
+
+
 class EventListView(ListView):
     model = Event
     template_name = "events/event_list.html"

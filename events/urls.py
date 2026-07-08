@@ -9,6 +9,7 @@ from .views import (
     EventRegistrationCreateView,
     EventRegistrationDeleteView,
     EventUpdateView,
+    ContactView,
     HomeView,
     MyEventListView,
     MyRegistrationListView,
@@ -19,6 +20,7 @@ app_name = "events"
 
 urlpatterns = [
     path("", HomeView.as_view(), name="home"),
+    path("contact/", ContactView.as_view(), name="contact"),
     path("events/", EventListView.as_view(), name="list"),
     path("events/mine/", MyEventListView.as_view(), name="my_events"),
     path(

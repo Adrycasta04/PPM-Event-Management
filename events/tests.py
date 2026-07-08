@@ -18,6 +18,12 @@ class HomePageTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "events/home.html")
 
+    def test_contact_page_is_available(self):
+        response = self.client.get(reverse("events:contact"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "events/contact.html")
+
     def test_home_page_features_only_published_events(self):
         organizer = get_user_model().objects.create_user(
             username="home-organizer",

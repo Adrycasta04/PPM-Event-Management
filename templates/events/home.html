@@ -119,4 +119,16 @@
         {% include "includes/empty_state.html" with title="No published events" description="When an organizer publishes an event, it will appear in this section." action_url=None action_label=None %}
     {% endif %}
 </section>
+
+<section class="contact-cta mt-5 rounded-4 p-4 p-md-5 text-center">
+    <p class="page-kicker mb-2">Need help?</p>
+    <h2 class="h4 fw-bold mb-3">Questions about the demo?</h2>
+    <p class="text-muted mx-auto mb-4">
+        Use the contact page to find the reference information for this
+        university project.
+    </p>
+    <a class="btn btn-primary" href="{% url 'events:contact' %}">
+        Contact
+    </a>
+</section>
 {% endblock %}
