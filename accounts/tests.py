@@ -7,6 +7,7 @@ from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
 
+from .context_processors import roles as role_context
 from .roles import Role, get_user_roles, is_attendee, is_organizer
 
 
@@ -94,3 +95,17 @@ class RoleSetupTests(TestCase):
         with self.assertNumQueries(0):
             self.assertFalse(is_attendee(user))
             self.assertFalse(is_organizer(user))
+
+    def test_context_processor_prefers_organizer_for_dual_role_user(self):
+        call_command("setup_roles", verbosity=0)
+        user = get_user_model().objects.create_user(username="dual-role")
+        user.groups.add(
+            Group.objects.get(name=Role.ATTENDEE.value),
+            Group.objects.get(name=Role.ORGANIZER.value),
+        )
+        request = type("Request", (), {"user": user})()
+
+        context = role_context(request)
+
+        self.assertTrue(context["user_is_organizer"])
+        self.assertFalse(context["user_is_attendee"])

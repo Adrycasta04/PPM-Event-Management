@@ -1,7 +1,15 @@
+{% load static %}
+
 <nav class="navbar navbar-expand-lg navbar-dark site-navbar sticky-top">
     <div class="container">
         <a class="navbar-brand fw-bold" href="{% url 'events:home' %}">
-            <span class="brand-mark" aria-hidden="true">P</span>
+            <span class="brand-logo-wrap" aria-hidden="true">
+                <img
+                    class="brand-logo"
+                    src="{% static 'img/ppm-events-logo.png' %}"
+                    alt=""
+                >
+            </span>
             PPM Events
         </a>
         <button

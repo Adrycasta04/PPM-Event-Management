@@ -104,6 +104,14 @@ class RoleAndPermissionQualityTests(TestCase):
             ).exists()
         )
 
+    def test_user_with_both_roles_can_use_organizer_workflow(self):
+        self.client.force_login(self.dual_role_user)
+
+        response = self.client.get(reverse("events:create"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "events/event_form.html")
+
     def test_admin_has_admin_navigation_but_no_implicit_app_role(self):
         self.client.force_login(self.admin)
 
