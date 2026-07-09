@@ -230,36 +230,16 @@ button:focus-visible,
     max-width: 42rem;
 }
 
-.contact-card {
-    max-width: 44rem;
+.contact-simple {
+    max-width: 42rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid var(--ppm-border);
+    border-radius: 1rem;
 }
 
-.contact-list {
-    display: grid;
-    gap: 1.25rem;
-}
-
-.contact-list div {
-    padding-bottom: 1.25rem;
-    border-bottom: 1px solid var(--ppm-border);
-}
-
-.contact-list div:last-child {
-    padding-bottom: 0;
-    border-bottom: 0;
-}
-
-.contact-list dt {
-    margin-bottom: 0.25rem;
-    color: var(--ppm-muted);
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-
-.contact-list dd {
-    margin-bottom: 0;
+.contact-simple p {
+    margin-bottom: 0.75rem;
     overflow-wrap: anywhere;
 }
 

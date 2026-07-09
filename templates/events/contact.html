@@ -1,48 +1,42 @@
 {% extends "base.html" %}
 
-{% block title %}Contact | PPM Events{% endblock %}
+{% block title %}Help & Feedback | PPM Events{% endblock %}
 
 {% block content %}
-<section class="page-header text-center">
-    <p class="page-kicker mb-2">Contact</p>
-    <h1 class="display-6 fw-bold">Project information</h1>
-    <p class="lead text-muted mx-auto mb-0">
-        Reference details for the PPM Events university demo.
+<section class="page-header">
+    <p class="page-kicker mb-2">Help & Feedback</p>
+    <h1 class="display-6 fw-bold">Need help or want to give feedback?</h1>
+    <p class="lead text-muted mb-0">
+        Quick reference for testing the PPM Events demo and sharing comments.
     </p>
 </section>
 
-<section class="contact-card card shadow-sm mx-auto">
-    <div class="card-body p-4 p-md-5">
-        <dl class="contact-list mb-4">
-            <div>
-                <dt>Student</dt>
-                <dd>Adriano Castaldo</dd>
-            </div>
-            <div>
-                <dt>Project</dt>
-                <dd>PPM Events - Event Management System</dd>
-            </div>
-            <div>
-                <dt>Demo URL</dt>
-                <dd>
-                    <a href="https://ppm-events.onrender.com/">
-                        https://ppm-events.onrender.com/
-                    </a>
-                </dd>
-            </div>
-            <div>
-                <dt>Demo contact</dt>
-                <dd>ppm.events.demo@example.com</dd>
-            </div>
-        </dl>
-        <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
-            <a class="btn btn-primary" href="{% url 'events:home' %}">
-                Back to home
-            </a>
-            <a class="btn btn-outline-primary" href="{% url 'events:list' %}">
-                Browse events
-            </a>
-        </div>
+<section class="contact-simple">
+    <h2 class="h5 fw-bold mb-3">Demo support</h2>
+    <p>
+        Use the demo accounts in the README to test the attendee, organizer
+        and admin workflows.
+    </p>
+    <p>
+        For feedback about the project, use:
+        <a href="mailto:ppm.events.demo@example.com">
+            ppm.events.demo@example.com
+        </a>
+    </p>
+    <p>
+        Live demo:
+        <a href="https://ppm-events.onrender.com/">
+            https://ppm-events.onrender.com/
+        </a>
+    </p>
+
+    <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
+        <a class="btn btn-primary" href="{% url 'events:home' %}">
+            Back to home
+        </a>
+        <a class="btn btn-outline-primary" href="{% url 'events:list' %}">
+            Browse events
+        </a>
     </div>
 </section>
 {% endblock %}
