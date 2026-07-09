@@ -9,7 +9,7 @@
         <div>
             <h1 class="display-6 fw-bold mb-2">Events</h1>
             <p class="text-body-secondary mb-0">
-                Browse currently published events.
+                Discover published university and student community events.
             </p>
         </div>
         {% if user_is_organizer %}
@@ -21,6 +21,57 @@
         {% endif %}
     </div>
 </header>
+
+<section class="filter-panel card shadow-sm mb-4">
+    <div class="card-body p-4">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-lg-7">
+                <label class="form-label" for="event-search">
+                    Search events
+                </label>
+                <input
+                    class="form-control"
+                    id="event-search"
+                    name="q"
+                    type="search"
+                    value="{{ search_query }}"
+                    placeholder="Search by title, description or location"
+                >
+            </div>
+            <div class="col-sm-6 col-lg-3">
+                <label class="form-label" for="event-time-filter">
+                    Time
+                </label>
+                <select
+                    class="form-select"
+                    id="event-time-filter"
+                    name="when"
+                >
+                    {% for value, label in time_filter_options %}
+                        <option
+                            value="{{ value }}"
+                            {% if selected_when == value %}selected{% endif %}
+                        >
+                            {{ label }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-sm-6 col-lg-2 d-grid">
+                <button class="btn btn-primary" type="submit">
+                    Apply
+                </button>
+            </div>
+            {% if filters_active %}
+                <div class="col-12">
+                    <a class="link-secondary" href="{% url 'events:list' %}">
+                        Reset filters
+                    </a>
+                </div>
+            {% endif %}
+        </form>
+    </div>
+</section>
 
 {% if events %}
     <div class="row g-4">
@@ -60,6 +111,10 @@
         {% endfor %}
     </div>
 {% else %}
-    {% include "includes/empty_state.html" with title="No events available" description="There are no published events at the moment. Check back later for new events." %}
+    {% if filters_active %}
+        {% include "includes/empty_state.html" with title="No matching events" description="No published events match the current search or time filter. Reset filters to see all available events." action_url=None action_label=None %}
+    {% else %}
+        {% include "includes/empty_state.html" with title="No events available" description="There are no published events at the moment. Check back later for new events." %}
+    {% endif %}
 {% endif %}
 {% endblock %}

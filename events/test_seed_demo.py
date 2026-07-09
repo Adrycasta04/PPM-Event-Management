@@ -31,10 +31,10 @@ class SeedDemoCommandTests(TestCase):
             set(DEMO_USERS),
         )
         self.assertEqual(Profile.objects.filter(user__username__in=DEMO_USERS).count(), 5)
-        self.assertEqual(Event.objects.count(), 9)
+        self.assertEqual(Event.objects.count(), 14)
         self.assertEqual(
             Event.objects.filter(status=Event.Status.PUBLISHED).count(),
-            6,
+            11,
         )
         self.assertEqual(Event.objects.filter(status=Event.Status.DRAFT).count(), 1)
         self.assertEqual(
@@ -62,12 +62,24 @@ class SeedDemoCommandTests(TestCase):
             Event.objects.filter(status=Event.Status.CANCELLED).exists()
         )
 
-        full_event = Event.objects.get(title="Urban Photography Workshop")
+        full_event = Event.objects.get(title="CV and LinkedIn Lab")
         empty_event = Event.objects.get(
-            title="Multimedia Production Open Day"
+            title="Erasmus Welcome Aperitivo"
         )
         available_event = Event.objects.get(
-            title="Django Community Meetup Florence"
+            title="Django Workshop for Beginners"
+        )
+        organizer_demo_events = Event.objects.filter(
+            organizer__username="organizer_demo",
+        )
+        organizer2_demo_events = Event.objects.filter(
+            organizer__username="organizer2_demo",
+        )
+        student_events = Event.objects.filter(
+            description__icontains="student",
+        )
+        university_events = Event.objects.filter(
+            description__icontains="university",
         )
 
         self.assertEqual(full_event.registrations.count(), full_event.capacity)
@@ -76,6 +88,16 @@ class SeedDemoCommandTests(TestCase):
             available_event.registrations.count(),
             available_event.capacity,
         )
+        self.assertGreaterEqual(organizer_demo_events.count(), 6)
+        self.assertGreaterEqual(organizer2_demo_events.count(), 5)
+        self.assertTrue(
+            Registration.objects.filter(
+                event__title="Hackathon: Build for Campus",
+                attendee__username="organizer_demo",
+            ).exists()
+        )
+        self.assertGreaterEqual(student_events.count(), 5)
+        self.assertGreaterEqual(university_events.count(), 3)
 
     def test_reset_removes_existing_application_data(self):
         user_model = get_user_model()

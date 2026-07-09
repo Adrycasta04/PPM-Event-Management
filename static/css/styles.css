@@ -216,6 +216,10 @@ button:focus-visible,
     color: var(--ppm-muted);
 }
 
+.filter-panel {
+    background: rgba(255, 255, 255, 0.84);
+}
+
 .contact-cta {
     background: rgba(255, 255, 255, 0.72);
     border: 1px solid var(--ppm-border);

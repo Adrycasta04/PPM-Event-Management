@@ -21,9 +21,10 @@
 
 ## 📌 Project overview
 
-PPM Events is a server-rendered Django application for publishing events,
-managing registrations and separating the workflows of attendees and
-organizers.
+PPM Events is a server-rendered Django application for university and student
+community events. It supports publishing workshops, seminars, study
+activities, career events, sport, social and cultural activities while
+separating the workflows of attendees and organizers.
 
 The application uses Django ORM, Forms, Templates, built-in authentication,
 Groups, server-side authorization checks, Bootstrap 5 and SQLite. It does not
@@ -46,7 +47,9 @@ browser.
 ### Anonymous user
 
 - view the homepage;
-- browse published events;
+- browse published university and student community events;
+- search events by title, description or location;
+- filter events by time period;
 - open the detail page of a published event;
 - access the login and sign-up pages.
 
@@ -56,6 +59,7 @@ Draft and cancelled events are not visible in the public event list.
 
 - login and logout;
 - browse published events;
+- use event search and time filtering;
 - register for an event with available capacity;
 - cancel an owned registration;
 - view the `My registrations` page;
@@ -160,9 +164,12 @@ for personal or production accounts.
 
 The database contains:
 
+- 11 published events with varied student community activities;
 - published events with available capacity;
 - a published event at full capacity;
 - a published event without participants;
+- university and student community activities across technology, study,
+  career, sport, social and cultural contexts;
 - a draft event;
 - two cancelled events;
 - events owned by two different organizers;
@@ -170,43 +177,50 @@ The database contains:
 
 Notable events:
 
-- `Django Community Meetup Florence`: published, places available, existing
+- `Django Workshop for Beginners`: published, places available, existing
   attendees;
-- `Urban Photography Workshop`: published and full;
-- `Multimedia Production Open Day`: published with no initial registrations;
-- `Summer Audiovisual Festival 2026`: published and owned by
+- `AI & Machine Learning Seminar`: published university seminar;
+- `Hackathon: Build for Campus`: published with an organizer registration;
+- `CV and LinkedIn Lab`: published and full;
+- `Erasmus Welcome Aperitivo`: published with no initial registrations;
+- `Student Five-a-Side Tournament`: published sport event;
+- `Algorithms Study Group`: published study activity;
+- `Summer Student Party`: published social evening;
+- `Photography Walk in Florence`: published creative activity;
+- `International Students Meetup`: published and owned by
   `organizer2_demo`;
-- `Digital Design Conference`: published with available capacity;
-- `Backend Development Bootcamp`: published with an organizer registration;
-- `Creative Technology Career Day`: cancelled and not publicly visible;
-- `Podcast Lab - Draft`: not publicly visible;
-- `Open-Air Cinema Review - Cancelled`: not publicly visible.
+- `Cinema Night at the Student Union`: published cultural event;
+- `UNIFI Career Day - Cancelled`: not publicly visible;
+- `Student Radio Podcast Lab - Draft`: not publicly visible;
+- `Campus Volunteering Fair - Cancelled`: not publicly visible.
 
 ## 🧪 Testing
 
 ### Browser-based testing scenario
 
 1. Open the homepage and select `Events`.
-2. Verify that only published events appear.
-3. Open `Urban Photography Workshop` and verify that its capacity is full.
-4. Log in as `attendee_demo / attendee12345`.
-5. Open `Multimedia Production Open Day` and register.
-6. Open `My registrations` and verify that the new registration appears.
-7. Cancel the Open Day registration.
-8. Log out and log in as `organizer_demo / organizer12345`.
-9. Open `Manage events`.
-10. Create a new draft event, then update its title and publish it.
-11. Open the attendee list for `Django Community Meetup Florence`.
-12. Verify that the two demo attendees are listed.
-13. Open the public detail of `Summer Audiovisual Festival 2026`, which is
+2. Search for `Django` or filter by `This month` and verify that only matching
+   published events appear.
+3. Verify that only published events appear.
+4. Open `CV and LinkedIn Lab` and verify that its capacity is full.
+5. Log in as `attendee_demo / attendee12345`.
+6. Open `Erasmus Welcome Aperitivo` and register.
+7. Open `My registrations` and verify that the new registration appears.
+8. Cancel the Erasmus Welcome registration.
+9. Log out and log in as `organizer_demo / organizer12345`.
+10. Open `Manage events`.
+11. Create a new draft event, then update its title and publish it.
+12. Open the attendee list for `Django Workshop for Beginners`.
+13. Verify that the two demo attendees are listed.
+14. Open the public detail of `International Students Meetup`, which is
     owned by `organizer2_demo`, and verify that edit/delete actions are absent
     for another non-admin organizer.
-14. Log out and log in as `organizer2_demo / organizer212345`.
-15. Verify that `Summer Audiovisual Festival 2026` appears in `Manage events`
+15. Log out and log in as `organizer2_demo / organizer212345`.
+16. Verify that `International Students Meetup` appears in `Manage events`
     while events owned by `organizer_demo` do not.
-16. Log in as `admin_demo / admin12345`, open `Manage events`, and verify that
+17. Log in as `admin_demo / admin12345`, open `Manage events`, and verify that
     all events are available from the frontend.
-17. Open `/admin/` to verify full Django administration access.
+18. Open `/admin/` to verify full Django administration access.
 
 ### Automated tests
 
@@ -220,7 +234,8 @@ python manage.py makemigrations --check
 
 The tests cover authentication, roles, permissions, ownership, forms, model
 constraints, event visibility, registration capacity, duplicate prevention,
-URL namespaces and representative query efficiency.
+event search, time filtering, URL namespaces and representative query
+efficiency.
 
 ## 🔒 Security and authorization
 

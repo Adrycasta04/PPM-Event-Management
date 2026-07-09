@@ -1,9 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from datetime import datetime, time, timedelta
+
 from django.db import transaction
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -97,13 +100,93 @@ class EventListView(ListView):
     model = Event
     template_name = "events/event_list.html"
     context_object_name = "events"
+    time_filter_options = (
+        ("all", "All events"),
+        ("today", "Today"),
+        ("this_week", "This week"),
+        ("this_month", "This month"),
+    )
 
     def get_queryset(self):
-        return (
+        queryset = (
             Event.objects.public()
             .select_related("organizer")
             .annotate(registration_count=Count("registrations"))
         )
+        search_query = self.request.GET.get("q", "").strip()
+        if search_query:
+            queryset = queryset.filter(
+                Q(title__icontains=search_query)
+                | Q(description__icontains=search_query)
+                | Q(location__icontains=search_query)
+            )
+
+        selected_when = self._get_selected_when()
+        date_range = self._get_date_range(selected_when)
+        if date_range is not None:
+            starts_at, ends_at = date_range
+            queryset = queryset.filter(
+                starts_at__gte=starts_at,
+                starts_at__lt=ends_at,
+            )
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        search_query = self.request.GET.get("q", "").strip()
+        selected_when = self._get_selected_when()
+        context.update(
+            {
+                "search_query": search_query,
+                "selected_when": selected_when,
+                "time_filter_options": self.time_filter_options,
+                "filters_active": bool(
+                    search_query or selected_when != "all"
+                ),
+            }
+        )
+        return context
+
+    def _get_selected_when(self):
+        selected_when = self.request.GET.get("when", "all")
+        valid_values = {value for value, _ in self.time_filter_options}
+        if selected_when not in valid_values:
+            return "all"
+        return selected_when
+
+    def _get_date_range(self, selected_when):
+        if selected_when == "all":
+            return None
+
+        current_timezone = timezone.get_current_timezone()
+        today = timezone.localdate()
+        today_start = timezone.make_aware(
+            datetime.combine(today, time.min),
+            current_timezone,
+        )
+
+        if selected_when == "today":
+            return today_start, today_start + timedelta(days=1)
+
+        if selected_when == "this_week":
+            week_start = today_start - timedelta(days=today.weekday())
+            return week_start, week_start + timedelta(days=7)
+
+        if selected_when == "this_month":
+            month_start = today_start.replace(day=1)
+            if month_start.month == 12:
+                next_month_start = month_start.replace(
+                    year=month_start.year + 1,
+                    month=1,
+                )
+            else:
+                next_month_start = month_start.replace(
+                    month=month_start.month + 1,
+                )
+            return month_start, next_month_start
+
+        return None
 
 
 class EventDetailView(DetailView):

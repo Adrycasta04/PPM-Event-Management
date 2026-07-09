@@ -144,127 +144,211 @@ class Command(BaseCommand):
         event_data = [
             {
                 "key": "meetup",
+                "legacy_titles": ("Django Community Meetup Florence",),
                 "organizer": users["organizer_demo"],
-                "title": "Django Community Meetup Florence",
+                "title": "Django Workshop for Beginners",
                 "description": (
-                    "Open meetup for the Django community with short talks, "
-                    "a Q&A session and final networking."
+                    "Introductory workshop for students who want to build "
+                    "their first Django app with models, forms and templates."
                 ),
                 "starts_at": start + timedelta(days=10),
                 "ends_at": start + timedelta(days=10, hours=3),
-                "location": "Innovation Hub Firenze",
+                "location": "Computer Science Lab 2",
                 "capacity": 40,
                 "status": Event.Status.PUBLISHED,
             },
             {
                 "key": "full_workshop",
+                "legacy_titles": ("Urban Photography Workshop",),
                 "organizer": users["organizer_demo"],
-                "title": "Urban Photography Workshop",
+                "title": "CV and LinkedIn Lab",
                 "description": (
-                    "Practical workshop about composition, light and "
-                    "photographic storytelling in urban spaces."
+                    "Small career workshop for students who want feedback on "
+                    "their CV, LinkedIn profile and internship applications."
                 ),
                 "starts_at": start + timedelta(days=17),
-                "ends_at": start + timedelta(days=17, hours=4),
-                "location": "Santa Croce Creative Space",
+                "ends_at": start + timedelta(days=17, hours=2),
+                "location": "Career Services Room",
                 "capacity": 2,
                 "status": Event.Status.PUBLISHED,
             },
             {
                 "key": "empty_event",
+                "legacy_titles": ("Multimedia Production Open Day",),
                 "organizer": users["organizer_demo"],
-                "title": "Multimedia Production Open Day",
+                "title": "Erasmus Welcome Aperitivo",
                 "description": (
-                    "Presentation of multimedia projects, tools and learning "
-                    "opportunities with registration required."
+                    "Informal welcome event for Erasmus and international "
+                    "students with introductions, campus tips and networking."
                 ),
                 "starts_at": start + timedelta(days=24),
-                "ends_at": start + timedelta(days=24, hours=2),
-                "location": "Novoli Campus - Main Hall",
-                "capacity": 30,
+                "ends_at": start + timedelta(days=24, hours=3),
+                "location": "Student Union Terrace",
+                "capacity": 45,
                 "status": Event.Status.PUBLISHED,
             },
             {
                 "key": "second_organizer",
+                "legacy_titles": ("Summer Audiovisual Festival 2026",),
                 "organizer": users["organizer2_demo"],
-                "title": "Summer Audiovisual Festival 2026",
+                "title": "International Students Meetup",
                 "description": (
-                    "Evening with audiovisual performances, interactive "
-                    "installations and screenings curated by young authors."
+                    "Community meetup for international and local students "
+                    "with group activities and practical university advice."
                 ),
                 "starts_at": start + timedelta(days=31),
-                "ends_at": start + timedelta(days=31, hours=5),
-                "location": "Manifattura Tabacchi Florence",
+                "ends_at": start + timedelta(days=31, hours=3),
+                "location": "Student Community Center",
                 "capacity": 80,
                 "status": Event.Status.PUBLISHED,
             },
             {
                 "key": "design_conference",
+                "legacy_titles": ("Digital Design Conference",),
                 "organizer": users["organizer_demo"],
-                "title": "Digital Design Conference",
+                "title": "AI & Machine Learning Seminar",
                 "description": (
-                    "A one-day conference about interface design, accessibility "
-                    "and practical workflows for web projects."
+                    "University seminar introducing machine learning concepts, "
+                    "student project examples and ethical AI discussion."
                 ),
                 "starts_at": start + timedelta(days=34),
-                "ends_at": start + timedelta(days=34, hours=4),
-                "location": "Design Campus Florence",
+                "ends_at": start + timedelta(days=34, hours=2),
+                "location": "Engineering Auditorium",
                 "capacity": 60,
                 "status": Event.Status.PUBLISHED,
             },
             {
                 "key": "backend_bootcamp",
+                "legacy_titles": ("Backend Development Bootcamp",),
                 "organizer": users["organizer2_demo"],
-                "title": "Backend Development Bootcamp",
+                "title": "Hackathon: Build for Campus",
                 "description": (
-                    "Hands-on session focused on Django models, forms, "
-                    "permissions and deployment basics."
+                    "One-day student hackathon to design small digital tools "
+                    "that improve campus life and study organization."
                 ),
                 "starts_at": start + timedelta(days=36),
                 "ends_at": start + timedelta(days=36, hours=5),
-                "location": "Tech Lab Auditorium",
+                "location": "University Innovation Hub",
                 "capacity": 35,
                 "status": Event.Status.PUBLISHED,
             },
             {
-                "key": "career_day",
-                "organizer": users["organizer_demo"],
-                "title": "Creative Technology Career Day",
+                "key": "sports_tournament",
+                "legacy_titles": (),
+                "organizer": users["organizer2_demo"],
+                "title": "Student Five-a-Side Tournament",
                 "description": (
-                    "Cancelled demo event about professional paths across "
-                    "software, media production and digital events."
+                    "Friendly football tournament for student teams, with "
+                    "short matches and a final social gathering."
                 ),
-                "starts_at": start + timedelta(days=40),
-                "ends_at": start + timedelta(days=40, hours=3),
-                "location": "Student Center Hall",
+                "starts_at": start + timedelta(days=39),
+                "ends_at": start + timedelta(days=39, hours=4),
+                "location": "University Sports Center",
+                "capacity": 50,
+                "status": Event.Status.PUBLISHED,
+            },
+            {
+                "key": "study_group",
+                "legacy_titles": (),
+                "organizer": users["organizer_demo"],
+                "title": "Algorithms Study Group",
+                "description": (
+                    "Peer study session for students preparing algorithms and "
+                    "data structures exams with guided exercises."
+                ),
+                "starts_at": start + timedelta(days=41),
+                "ends_at": start + timedelta(days=41, hours=2),
+                "location": "Science Library Study Room",
+                "capacity": 25,
+                "status": Event.Status.PUBLISHED,
+            },
+            {
+                "key": "student_party",
+                "legacy_titles": (),
+                "organizer": users["organizer2_demo"],
+                "title": "Summer Student Party",
+                "description": (
+                    "End-of-semester social evening for students with music, "
+                    "informal networking and community activities."
+                ),
+                "starts_at": start + timedelta(days=43),
+                "ends_at": start + timedelta(days=43, hours=5),
+                "location": "Student Union Courtyard",
+                "capacity": 120,
+                "status": Event.Status.PUBLISHED,
+            },
+            {
+                "key": "photography_walk",
+                "legacy_titles": (),
+                "organizer": users["organizer_demo"],
+                "title": "Photography Walk in Florence",
+                "description": (
+                    "Creative activity for students interested in photography, "
+                    "urban observation and visual storytelling."
+                ),
+                "starts_at": start + timedelta(days=46),
+                "ends_at": start + timedelta(days=46, hours=3),
+                "location": "Piazza Santissima Annunziata",
+                "capacity": 20,
+                "status": Event.Status.PUBLISHED,
+            },
+            {
+                "key": "cinema_night",
+                "legacy_titles": (),
+                "organizer": users["organizer2_demo"],
+                "title": "Cinema Night at the Student Union",
+                "description": (
+                    "Cultural evening with a student-selected film screening "
+                    "and an open discussion after the movie."
+                ),
+                "starts_at": start + timedelta(days=48),
+                "ends_at": start + timedelta(days=48, hours=3),
+                "location": "Student Union Auditorium",
+                "capacity": 70,
+                "status": Event.Status.PUBLISHED,
+            },
+            {
+                "key": "career_day",
+                "legacy_titles": ("Creative Technology Career Day",),
+                "organizer": users["organizer_demo"],
+                "title": "UNIFI Career Day - Cancelled",
+                "description": (
+                    "Cancelled career event with companies, alumni and "
+                    "internship opportunities for university students."
+                ),
+                "starts_at": start + timedelta(days=50),
+                "ends_at": start + timedelta(days=50, hours=4),
+                "location": "Career Services Hall",
                 "capacity": 120,
                 "status": Event.Status.CANCELLED,
             },
             {
                 "key": "draft",
+                "legacy_titles": ("Podcast Lab - Draft",),
                 "organizer": users["organizer_demo"],
-                "title": "Podcast Lab - Draft",
+                "title": "Student Radio Podcast Lab - Draft",
                 "description": (
-                    "Event in preparation about writing, recording and "
-                    "editing a podcast episode."
+                    "Draft study activity about writing, recording and "
+                    "editing a podcast episode for student media."
                 ),
-                "starts_at": start + timedelta(days=38),
-                "ends_at": start + timedelta(days=38, hours=3),
-                "location": "Media Lab Firenze",
+                "starts_at": start + timedelta(days=52),
+                "ends_at": start + timedelta(days=52, hours=3),
+                "location": "Student Media Lab",
                 "capacity": 18,
                 "status": Event.Status.DRAFT,
             },
             {
                 "key": "cancelled",
+                "legacy_titles": ("Open-Air Cinema Review - Cancelled",),
                 "organizer": users["organizer2_demo"],
-                "title": "Open-Air Cinema Review - Cancelled",
+                "title": "Campus Volunteering Fair - Cancelled",
                 "description": (
-                    "Film screening cancelled because the venue is "
-                    "temporarily unavailable."
+                    "Cancelled fair for student associations and volunteering "
+                    "groups because the venue is temporarily unavailable."
                 ),
-                "starts_at": start + timedelta(days=45),
-                "ends_at": start + timedelta(days=45, hours=3),
-                "location": "Rose Garden",
+                "starts_at": start + timedelta(days=54),
+                "ends_at": start + timedelta(days=54, hours=3),
+                "location": "Main Campus Garden",
                 "capacity": 100,
                 "status": Event.Status.CANCELLED,
             },
@@ -273,12 +357,22 @@ class Command(BaseCommand):
         events = {}
         for data in event_data:
             key = data.pop("key")
+            legacy_titles = data.pop("legacy_titles")
             organizer = data.pop("organizer")
-            event, _ = Event.objects.update_or_create(
-                organizer=organizer,
-                title=data["title"],
-                defaults=data,
+            event = (
+                Event.objects.filter(
+                    organizer=organizer,
+                    title__in=(data["title"], *legacy_titles),
+                )
+                .order_by("pk")
+                .first()
             )
+            if event is None:
+                event = Event(organizer=organizer)
+            event.organizer = organizer
+            for field, value in data.items():
+                setattr(event, field, value)
+            event.save()
             events[key] = event
 
         return events

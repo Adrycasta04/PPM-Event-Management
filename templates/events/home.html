@@ -9,11 +9,12 @@
         <div class="col-lg-7">
             <p class="hero-eyebrow mb-2">Event Management System</p>
             <h1 class="display-4 fw-bold">
-                Publish events and manage registrations.
+                University events, organized in one place.
             </h1>
             <p class="lead text-white-50 mb-4">
-                PPM Events helps participants find published events and lets
-                organizers manage registrations, attendees and available seats.
+                PPM Events helps students discover workshops, seminars,
+                career activities, sport, culture and social events across
+                the university community.
             </p>
             <div class="d-flex flex-wrap gap-2">
                 <a class="btn btn-light btn-lg" href="{% url 'events:list' %}">
@@ -52,16 +53,16 @@
                 >
                 <dl class="hero-summary-list mb-0">
                     <div>
-                        <dt>Published events</dt>
-                        <dd>Public pages with date, venue and capacity.</dd>
+                        <dt>Student activities</dt>
+                        <dd>Workshops, seminars, study groups and meetups.</dd>
                     </div>
                     <div>
                         <dt>Online registrations</dt>
-                        <dd>Participants can register and cancel safely.</dd>
+                        <dd>Participants can join or cancel with one account.</dd>
                     </div>
                     <div>
                         <dt>Organizer tools</dt>
-                        <dd>Owners can update events and monitor attendees.</dd>
+                        <dd>Student groups can update events and monitor seats.</dd>
                     </div>
                 </dl>
             </div>
@@ -73,7 +74,7 @@
     <div class="d-flex flex-column flex-sm-row justify-content-between gap-3 mb-4">
         <div>
             <p class="page-kicker mb-2">Featured events</p>
-            <h2 class="h3 fw-bold mb-0">Upcoming published events</h2>
+            <h2 class="h3 fw-bold mb-0">Upcoming community events</h2>
         </div>
         <div>
             <a class="btn btn-outline-primary" href="{% url 'events:list' %}">
