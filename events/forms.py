@@ -1,6 +1,10 @@
 from django import forms
+from django.core.files.uploadedfile import UploadedFile
+from django.core.validators import FileExtensionValidator
 
+from .image_processing import optimize_event_image
 from .models import Category, Event, Review
+from .validators import ALLOWED_EVENT_IMAGE_EXTENSIONS
 
 
 class EventForm(forms.ModelForm):
@@ -9,6 +13,7 @@ class EventForm(forms.ModelForm):
         fields = [
             "title",
             "description",
+            "image",
             "category",
             "starts_at",
             "ends_at",
@@ -19,6 +24,7 @@ class EventForm(forms.ModelForm):
         labels = {
             "title": "Title",
             "description": "Description",
+            "image": "Cover image",
             "category": "Category",
             "starts_at": "Start date and time",
             "ends_at": "End date and time",
@@ -30,6 +36,9 @@ class EventForm(forms.ModelForm):
             "starts_at": "Select both the start date and time.",
             "ends_at": "Select both the end date and time.",
             "category": "Choose the area that best describes the event.",
+            "image": (
+                "Optional. Upload a JPEG, PNG or WebP image up to 5 MB."
+            ),
             "capacity": "Maximum number of attendees allowed.",
             "status": (
                 "Draft = not public; Published = visible to users; "
@@ -56,6 +65,9 @@ class EventForm(forms.ModelForm):
             ),
             "location": forms.TextInput(
                 attrs={"placeholder": "Venue or address"},
+            ),
+            "image": forms.ClearableFileInput(
+                attrs={"accept": "image/jpeg,image/png,image/webp"},
             ),
         }
 
@@ -86,6 +98,15 @@ class EventForm(forms.ModelForm):
                 "The location must contain at least 3 characters."
             )
         return location
+
+    def clean_image(self):
+        image = self.cleaned_data.get("image")
+        if isinstance(image, UploadedFile):
+            FileExtensionValidator(
+                allowed_extensions=ALLOWED_EVENT_IMAGE_EXTENSIONS
+            )(image)
+            return optimize_event_image(image)
+        return image
 
     def clean_capacity(self):
         capacity = self.cleaned_data["capacity"]

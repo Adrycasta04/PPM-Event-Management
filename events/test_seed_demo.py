@@ -47,6 +47,12 @@ class SeedDemoCommandTests(TestCase):
         self.assertEqual(Review.objects.count(), 3)
         self.assertFalse(Event.objects.filter(category__isnull=True).exists())
         self.assertEqual(
+            Event.objects.filter(status=Event.Status.PUBLISHED)
+            .exclude(image="")
+            .count(),
+            11,
+        )
+        self.assertEqual(
             set(Group.objects.values_list("name", flat=True)),
             {Role.ATTENDEE.value, Role.ORGANIZER.value},
         )
@@ -71,7 +77,7 @@ class SeedDemoCommandTests(TestCase):
             title="Erasmus Welcome Aperitivo"
         )
         available_event = Event.objects.get(
-            title="Django Workshop for Beginners"
+            title="Campus Cybersecurity Workshop"
         )
         organizer_demo_events = Event.objects.filter(
             organizer__username="organizer_demo",

@@ -173,13 +173,20 @@ class Command(BaseCommand):
         event_data = [
             {
                 "key": "meetup",
-                "legacy_titles": ("Django Community Meetup Florence",),
+                "legacy_titles": (
+                    "Django Community Meetup Florence",
+                    "Django Workshop for Beginners",
+                ),
                 "organizer": users["organizer_demo"],
                 "category": categories["technology"],
-                "title": "Django Workshop for Beginners",
+                "title": "Campus Cybersecurity Workshop",
                 "description": (
-                    "Introductory workshop for students who want to build "
-                    "their first Django app with models, forms and templates."
+                    "Practical workshop for students covering account "
+                    "security, phishing prevention and safe use of university "
+                    "digital services."
+                ),
+                "image": (
+                    "event_images/demo/campus-cybersecurity-workshop.jpg"
                 ),
                 "starts_at": start + timedelta(days=10),
                 "ends_at": start + timedelta(days=10, hours=3),
@@ -197,6 +204,7 @@ class Command(BaseCommand):
                     "Small career workshop for students who want feedback on "
                     "their CV, LinkedIn profile and internship applications."
                 ),
+                "image": "event_images/demo/cv-linkedin-lab.jpg",
                 "starts_at": start + timedelta(days=17),
                 "ends_at": start + timedelta(days=17, hours=2),
                 "location": "Career Services Room",
@@ -213,6 +221,7 @@ class Command(BaseCommand):
                     "Informal welcome event for Erasmus and international "
                     "students with introductions, campus tips and networking."
                 ),
+                "image": "event_images/demo/erasmus-welcome-aperitivo.jpg",
                 "starts_at": start + timedelta(days=24),
                 "ends_at": start + timedelta(days=24, hours=3),
                 "location": "Student Union Terrace",
@@ -228,6 +237,9 @@ class Command(BaseCommand):
                 "description": (
                     "Community meetup for international and local students "
                     "with group activities and practical university advice."
+                ),
+                "image": (
+                    "event_images/demo/international-students-meetup.jpg"
                 ),
                 "starts_at": start + timedelta(days=31),
                 "ends_at": start + timedelta(days=31, hours=3),
@@ -245,6 +257,9 @@ class Command(BaseCommand):
                     "University seminar introducing machine learning concepts, "
                     "student project examples and ethical AI discussion."
                 ),
+                "image": (
+                    "event_images/demo/ai-machine-learning-seminar.jpg"
+                ),
                 "starts_at": start + timedelta(days=34),
                 "ends_at": start + timedelta(days=34, hours=2),
                 "location": "Engineering Auditorium",
@@ -261,6 +276,7 @@ class Command(BaseCommand):
                     "One-day student hackathon to design small digital tools "
                     "that improve campus life and study organization."
                 ),
+                "image": "event_images/demo/hackathon-build-for-campus.jpg",
                 "starts_at": start + timedelta(days=36),
                 "ends_at": start + timedelta(days=36, hours=5),
                 "location": "University Innovation Hub",
@@ -276,6 +292,9 @@ class Command(BaseCommand):
                 "description": (
                     "Friendly football tournament for student teams, with "
                     "short matches and a final social gathering."
+                ),
+                "image": (
+                    "event_images/demo/student-five-a-side-tournament.jpg"
                 ),
                 "starts_at": start + timedelta(days=39),
                 "ends_at": start + timedelta(days=39, hours=4),
@@ -293,6 +312,7 @@ class Command(BaseCommand):
                     "Peer study session for students preparing algorithms and "
                     "data structures exams with guided exercises."
                 ),
+                "image": "event_images/demo/algorithms-study-group.jpg",
                 "starts_at": start + timedelta(days=41),
                 "ends_at": start + timedelta(days=41, hours=2),
                 "location": "Science Library Study Room",
@@ -309,6 +329,7 @@ class Command(BaseCommand):
                     "End-of-semester social evening for students with music, "
                     "informal networking and community activities."
                 ),
+                "image": "event_images/demo/summer-student-party.jpg",
                 "starts_at": start + timedelta(days=43),
                 "ends_at": start + timedelta(days=43, hours=5),
                 "location": "Student Union Courtyard",
@@ -325,6 +346,7 @@ class Command(BaseCommand):
                     "Creative activity for students interested in photography, "
                     "urban observation and visual storytelling."
                 ),
+                "image": "event_images/demo/photography-walk-florence.jpg",
                 "starts_at": start - timedelta(days=20),
                 "ends_at": start - timedelta(days=20) + timedelta(hours=3),
                 "location": "Piazza Santissima Annunziata",
@@ -341,6 +363,7 @@ class Command(BaseCommand):
                     "Cultural evening with a student-selected film screening "
                     "and an open discussion after the movie."
                 ),
+                "image": "event_images/demo/cinema-night-student-union.jpg",
                 "starts_at": start - timedelta(days=10),
                 "ends_at": start - timedelta(days=10) + timedelta(hours=3),
                 "location": "Student Union Auditorium",

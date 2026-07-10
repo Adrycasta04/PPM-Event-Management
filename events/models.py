@@ -1,10 +1,15 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
-from django.core.validators import MinValueValidator
+from django.core.validators import FileExtensionValidator, MinValueValidator
 from django.db import models
 from django.db.models import F, Q
 from django.urls import reverse
 from django.utils import timezone
+
+from .validators import (
+    ALLOWED_EVENT_IMAGE_EXTENSIONS,
+    validate_event_image_size,
+)
 
 
 class Category(models.Model):
@@ -44,6 +49,16 @@ class Event(models.Model):
     )
     title = models.CharField(max_length=200)
     description = models.TextField()
+    image = models.ImageField(
+        upload_to="event_images/%Y/%m/",
+        blank=True,
+        validators=[
+            FileExtensionValidator(
+                allowed_extensions=ALLOWED_EVENT_IMAGE_EXTENSIONS
+            ),
+            validate_event_image_size,
+        ],
+    )
     starts_at = models.DateTimeField()
     ends_at = models.DateTimeField()
     location = models.CharField(max_length=255)

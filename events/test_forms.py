@@ -43,6 +43,7 @@ class EventFormTests(TestCase):
             [
                 "title",
                 "description",
+                "image",
                 "category",
                 "starts_at",
                 "ends_at",

@@ -37,6 +37,7 @@ browser.
 - Django 5.2.15
 - Gunicorn 26.0.0
 - WhiteNoise 6.12.0
+- Pillow 12.3.0
 - SQLite
 - Bootstrap 5
 - Django Templates
@@ -51,6 +52,7 @@ browser.
 - search events by title, description or location;
 - filter events by category and time period;
 - open the detail page of a published event;
+- view optimized event cover images;
 - open an organizer profile and browse their published event history;
 - read participant reviews of completed events;
 - access the login and sign-up pages.
@@ -79,6 +81,7 @@ Attendees cannot access organizer CRUD pages or attendee lists.
 - login and logout;
 - use attendee features, including event registration;
 - create events;
+- optionally upload an event cover image;
 - view all owned events, including drafts and cancelled events;
 - update or delete only owned events;
 - view registrations and attendee details for owned events;
@@ -173,6 +176,7 @@ for personal or production accounts.
 The database contains:
 
 - 11 published events with varied student community activities;
+- 11 optimized 16:9 JPEG cover images for the published demo events;
 - published events with available capacity;
 - a published event at full capacity;
 - a published event without participants;
@@ -188,7 +192,7 @@ The database contains:
 
 Notable events:
 
-- `Django Workshop for Beginners`: published, places available, existing
+- `Campus Cybersecurity Workshop`: published, places available, existing
   attendees;
 - `AI & Machine Learning Seminar`: published university seminar;
 - `Hackathon: Build for Campus`: published with an organizer registration;
@@ -212,7 +216,7 @@ Notable events:
 ### Browser-based testing scenario
 
 1. Open the homepage and select `Events`.
-2. Search for `Django`, select the `Technology` category or filter by
+2. Search for `Cybersecurity`, select the `Technology` category or filter by
    `This month`, and verify that only matching published events appear.
 3. Verify that only published events appear.
 4. Open `CV and LinkedIn Lab` and verify that its capacity is full.
@@ -227,9 +231,9 @@ Notable events:
 11. Cancel the Erasmus Welcome registration.
 12. Log out and log in as `organizer_demo / organizer12345`.
 13. Open `Manage events`.
-14. Create a new draft event with a category, then update its title and
-    publish it.
-15. Open the attendee list for `Django Workshop for Beginners` and verify
+14. Create a new draft event with a category and cover image, then update its
+    title and publish it.
+15. Open the attendee list for `Campus Cybersecurity Workshop` and verify
     that the two demo attendees are listed.
 16. Open the public detail of `International Students Meetup`, which is
     owned by `organizer2_demo`, and verify that edit/delete actions are absent
@@ -254,7 +258,8 @@ python manage.py makemigrations --check
 The tests cover authentication, roles, permissions, ownership, forms, model
 constraints, event visibility, registration capacity, duplicate prevention,
 event search, category and time filtering, favorites, review eligibility,
-URL namespaces and representative query efficiency.
+image upload and optimization, URL namespaces and representative query
+efficiency.
 
 ## 🔒 Security and authorization
 
@@ -338,5 +343,27 @@ during the running instance, but they can be reset to the committed demo
 database after a restart or redeploy. This behavior is acceptable for the
 course demo and keeps the repository SQLite-based as required.
 
+The optimized demo covers are committed under `media/event_images/demo` and
+are therefore restored on every deployment. Images uploaded through the
+Organizer form at runtime use the same ephemeral filesystem and can be reset
+after a restart or redeploy.
+
 Persistent production data would require a paid Render persistent disk or a
 managed database. Neither is required for this academic deployment.
+
+## Use of Artificial Intelligence
+
+AI assistants were used as development support during this project for:
+
+- reviewing requirements and suggesting incremental implementation plans;
+- assisting with Django models, forms, views, templates and refactoring;
+- proposing and expanding automated tests for permissions, validation and
+  user workflows;
+- generating fictional demo content and event cover images;
+- improving the structure and readability of this README;
+- supporting debugging, deployment checks and UI/UX review.
+
+The event images are fictional AI-generated assets and were locally resized,
+cropped and compressed before inclusion. Project requirements, architectural
+choices, feature selection, manual browser testing, deployment and final
+review were managed and verified by the student.

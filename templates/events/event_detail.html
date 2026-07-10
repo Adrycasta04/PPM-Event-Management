@@ -10,6 +10,16 @@
 </div>
 
 <article class="card event-detail-card category-accent category-{{ event.category.slug|default:'other' }} shadow-sm">
+    {% if event.image %}
+        <div class="event-detail-media">
+            <img
+                src="{{ event.image.url }}"
+                alt="{{ event.title }}"
+                width="1600"
+                height="900"
+            >
+        </div>
+    {% endif %}
     <div class="card-body p-4 p-lg-5">
         <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
             <div>
