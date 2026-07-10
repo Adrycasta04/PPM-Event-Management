@@ -56,6 +56,7 @@ class RoleAndPermissionQualityTests(TestCase):
             reverse("events:create"),
             reverse("events:my_events"),
             reverse("events:my_registrations"),
+            reverse("events:my_favorites"),
             reverse("events:update", args=[self.event.pk]),
             reverse("events:delete", args=[self.event.pk]),
             reverse("events:attendees", args=[self.event.pk]),
@@ -127,6 +128,7 @@ class RoleAndPermissionQualityTests(TestCase):
         )
 
         self.assertContains(home_response, reverse("admin:index"))
+        self.assertContains(home_response, "Control Panel")
         self.assertEqual(organizer_response.status_code, 200)
         self.assertEqual(attendee_response.status_code, 200)
 
@@ -155,6 +157,11 @@ class NamespacedURLTests(TestCase):
         self.assertEqual(reverse("events:home"), "/")
         self.assertEqual(reverse("events:list"), "/events/")
         self.assertEqual(reverse("events:my_events"), "/events/mine/")
+        self.assertEqual(reverse("events:my_favorites"), "/favorites/mine/")
+        self.assertEqual(
+            reverse("events:organizer_history", args=[7]),
+            "/organizers/7/events/",
+        )
         self.assertEqual(
             reverse("events:my_registrations"),
             "/registrations/mine/",
@@ -170,6 +177,14 @@ class NamespacedURLTests(TestCase):
             "/events/7/register/",
         )
         self.assertEqual(
+            reverse("events:toggle_favorite", args=[7]),
+            "/events/7/favorite/",
+        )
+        self.assertEqual(
+            reverse("events:save_review", args=[7]),
+            "/events/7/review/",
+        )
+        self.assertEqual(
             reverse("events:update", args=[7]),
             "/events/7/edit/",
         )
@@ -180,6 +195,10 @@ class NamespacedURLTests(TestCase):
         self.assertEqual(
             reverse("events:cancel_registration", args=[9]),
             "/registrations/9/cancel/",
+        )
+        self.assertEqual(
+            reverse("events:delete_review", args=[9]),
+            "/reviews/9/delete/",
         )
 
     def test_account_urls_are_namespaced(self):
@@ -208,7 +227,7 @@ class PublicEventQueryEfficiencyTests(TestCase):
             )
 
     def test_public_list_avoids_per_event_queries(self):
-        with self.assertNumQueries(1):
+        with self.assertNumQueries(2):
             response = self.client.get(reverse("events:list"))
 
         self.assertEqual(response.status_code, 200)

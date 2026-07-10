@@ -7,7 +7,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import Event, Registration
+from .models import Category, Event, Favorite, Registration, Review
 
 
 class EventModelTests(TestCase):
@@ -147,3 +147,177 @@ class RegistrationModelTests(TestCase):
         self.event.delete()
 
         self.assertFalse(Registration.objects.exists())
+
+
+class CategoryModelTests(TestCase):
+    def test_string_representation_and_ordering(self):
+        Category.objects.create(name="Student Associations", slug="associations")
+        Category.objects.create(name="Academic Support", slug="academic-support")
+
+        self.assertEqual(
+            list(Category.objects.values_list("name", flat=True)),
+            [
+                "Academic Support",
+                "Career",
+                "Culture",
+                "Music & Nightlife",
+                "Other",
+                "Social",
+                "Sport",
+                "Student Associations",
+                "Study & Education",
+                "Technology",
+            ],
+        )
+        self.assertEqual(
+            str(Category.objects.get(slug="associations")),
+            "Student Associations",
+        )
+
+
+class FavoriteModelTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username="favorite-user")
+        cls.organizer = get_user_model().objects.create_user(
+            username="favorite-organizer"
+        )
+        starts_at = timezone.now() + timedelta(days=3)
+        cls.event = Event.objects.create(
+            organizer=cls.organizer,
+            title="Favorite model event",
+            description="Favorite constraint event.",
+            starts_at=starts_at,
+            ends_at=starts_at + timedelta(hours=2),
+            location="Campus",
+            capacity=20,
+            status=Event.Status.PUBLISHED,
+        )
+
+    def test_database_prevents_duplicate_favorite(self):
+        Favorite.objects.create(event=self.event, user=self.user)
+
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                Favorite.objects.create(event=self.event, user=self.user)
+
+
+class ReviewModelTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        cls.author = get_user_model().objects.create_user(username="review-author")
+        cls.other_user = get_user_model().objects.create_user(
+            username="review-other"
+        )
+        cls.organizer = get_user_model().objects.create_user(
+            username="review-organizer"
+        )
+        cls.past_event = Event.objects.create(
+            organizer=cls.organizer,
+            title="Past review event",
+            description="Completed event.",
+            starts_at=timezone.now() - timedelta(days=2),
+            ends_at=timezone.now() - timedelta(days=2, hours=-2),
+            location="Campus",
+            capacity=20,
+            status=Event.Status.PUBLISHED,
+        )
+        cls.future_event = Event.objects.create(
+            organizer=cls.organizer,
+            title="Future review event",
+            description="Future event.",
+            starts_at=timezone.now() + timedelta(days=2),
+            ends_at=timezone.now() + timedelta(days=2, hours=2),
+            location="Campus",
+            capacity=20,
+            status=Event.Status.PUBLISHED,
+        )
+        Registration.objects.create(event=cls.past_event, attendee=cls.author)
+        Registration.objects.create(event=cls.future_event, attendee=cls.author)
+
+    def test_registered_user_can_validate_review_of_past_event(self):
+        review = Review(
+            event=self.past_event,
+            author=self.author,
+            rating=5,
+            comment="A complete and useful review.",
+        )
+
+        review.full_clean()
+
+    def test_review_of_future_event_is_rejected(self):
+        review = Review(
+            event=self.future_event,
+            author=self.author,
+            rating=4,
+            comment="This event has not happened yet.",
+        )
+
+        with self.assertRaises(ValidationError) as error:
+            review.full_clean()
+
+        self.assertIn("event", error.exception.message_dict)
+
+    def test_unregistered_user_cannot_review_event(self):
+        review = Review(
+            event=self.past_event,
+            author=self.other_user,
+            rating=4,
+            comment="I was not registered for this event.",
+        )
+
+        with self.assertRaises(ValidationError) as error:
+            review.full_clean()
+
+        self.assertIn("author", error.exception.message_dict)
+
+    def test_non_public_event_cannot_be_reviewed(self):
+        draft_event = Event.objects.create(
+            organizer=self.organizer,
+            title="Completed draft event",
+            description="A private completed event.",
+            starts_at=timezone.now() - timedelta(days=3),
+            ends_at=timezone.now() - timedelta(days=3, hours=-2),
+            location="Campus",
+            capacity=20,
+            status=Event.Status.DRAFT,
+        )
+        Registration.objects.create(event=draft_event, attendee=self.author)
+        review = Review(
+            event=draft_event,
+            author=self.author,
+            rating=4,
+            comment="A private event cannot receive public reviews.",
+        )
+
+        with self.assertRaises(ValidationError) as error:
+            review.full_clean()
+
+        self.assertIn("event", error.exception.message_dict)
+
+    def test_database_prevents_duplicate_review(self):
+        Review.objects.create(
+            event=self.past_event,
+            author=self.author,
+            rating=5,
+            comment="First review for the event.",
+        )
+
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                Review.objects.create(
+                    event=self.past_event,
+                    author=self.author,
+                    rating=4,
+                    comment="Duplicate review for the event.",
+                )
+
+    def test_database_rejects_rating_outside_range(self):
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                Review.objects.create(
+                    event=self.past_event,
+                    author=self.author,
+                    rating=6,
+                    comment="Invalid rating.",
+                )

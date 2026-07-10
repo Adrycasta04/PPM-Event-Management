@@ -6,7 +6,7 @@
             <span class="brand-logo-wrap" aria-hidden="true">
                 <img
                     class="brand-logo"
-                    src="{% static 'img/ppm-events-logo.png' %}"
+                    src="{% static 'img/ppm-events-logo.png' %}?v=2"
                     alt=""
                 >
             </span>
@@ -36,9 +36,9 @@
                 </li>
                 <li class="nav-item">
                     <a
-                        class="nav-link{% if request.resolver_match.url_name == 'list' or request.resolver_match.url_name == 'detail' %} active{% endif %}"
+                        class="nav-link{% if request.resolver_match.url_name == 'list' or request.resolver_match.url_name == 'detail' or request.resolver_match.url_name == 'organizer_history' %} active{% endif %}"
                         href="{% url 'events:list' %}"
-                        {% if request.resolver_match.url_name == "list" or request.resolver_match.url_name == "detail" %}aria-current="page"{% endif %}
+                        {% if request.resolver_match.url_name == "list" or request.resolver_match.url_name == "detail" or request.resolver_match.url_name == "organizer_history" %}aria-current="page"{% endif %}
                     >
                         Events
                     </a>
@@ -54,44 +54,62 @@
                         </a>
                     </li>
                 {% endif %}
-                {% if user_is_attendee %}
-                    <li class="nav-item">
-                        <a
-                            class="nav-link{% if request.resolver_match.url_name == 'my_registrations' %} active{% endif %}"
-                            href="{% url 'events:my_registrations' %}"
-                            {% if request.resolver_match.url_name == "my_registrations" %}aria-current="page"{% endif %}
-                        >
-                            My registrations
-                        </a>
-                    </li>
-                {% endif %}
-                {% if user.is_staff %}
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'admin:index' %}">
-                            Admin
-                        </a>
-                    </li>
-                {% endif %}
                 {% if user.is_authenticated %}
-                    <li class="nav-item ms-lg-2">
-                        <span class="navbar-text user-chip">
+                    <li class="nav-item dropdown ms-lg-2">
+                        <a
+                            class="nav-link dropdown-toggle user-menu-toggle{% if request.resolver_match.url_name == 'my_favorites' or request.resolver_match.url_name == 'my_registrations' %} active{% endif %}"
+                            href="#"
+                            id="userNavigation"
+                            role="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
                             <span class="user-name">{{ user.get_username }}</span>
                             {% if user.is_superuser %}
-                                <span class="badge text-bg-warning">Admin</span>
+                                <span class="nav-role">Admin</span>
                             {% elif user_is_organizer %}
-                                <span class="badge text-bg-primary">Organizer</span>
+                                <span class="nav-role">Organizer</span>
                             {% elif user_is_attendee %}
-                                <span class="badge text-bg-info">Attendee</span>
+                                <span class="nav-role">Attendee</span>
                             {% endif %}
-                        </span>
-                    </li>
-                    <li class="nav-item">
-                        <form method="post" action="{% url 'accounts:logout' %}">
-                            {% csrf_token %}
-                            <button class="btn btn-outline-light btn-sm ms-lg-2" type="submit">
-                                Log out
-                            </button>
-                        </form>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userNavigation">
+                            {% if user_is_attendee %}
+                                <li>
+                                    <a
+                                        class="dropdown-item{% if request.resolver_match.url_name == 'my_favorites' %} active{% endif %}"
+                                        href="{% url 'events:my_favorites' %}"
+                                    >
+                                        Favorites
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        class="dropdown-item{% if request.resolver_match.url_name == 'my_registrations' %} active{% endif %}"
+                                        href="{% url 'events:my_registrations' %}"
+                                    >
+                                        My registrations
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if user.is_staff %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'admin:index' %}">
+                                        Control Panel
+                                    </a>
+                                </li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="post" action="{% url 'accounts:logout' %}">
+                                    {% csrf_token %}
+                                    <button class="dropdown-item" type="submit">
+                                        Log out
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
                     </li>
                 {% else %}
                     <li class="nav-item">

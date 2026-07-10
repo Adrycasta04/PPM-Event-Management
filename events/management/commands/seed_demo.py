@@ -8,7 +8,19 @@ from django.utils import timezone
 
 from accounts.models import Profile
 from accounts.roles import Role
-from events.models import Event, Registration
+from events.models import Category, Event, Favorite, Registration, Review
+
+
+DEMO_CATEGORIES = {
+    "technology": "Technology",
+    "study-education": "Study & Education",
+    "career": "Career",
+    "sport": "Sport",
+    "social": "Social",
+    "music-nightlife": "Music & Nightlife",
+    "culture": "Culture",
+    "other": "Other",
+}
 
 
 DEMO_USERS = {
@@ -83,6 +95,7 @@ class Command(BaseCommand):
         if options["reset"]:
             Registration.objects.all().delete()
             Event.objects.all().delete()
+            Category.objects.all().delete()
             Profile.objects.all().delete()
             get_user_model().objects.all().delete()
             self.stdout.write("Existing application data removed.")
@@ -92,15 +105,22 @@ class Command(BaseCommand):
             for role in Role
         }
         users = self._seed_users(groups)
-        events = self._seed_events(users)
+        categories = self._seed_categories()
+        events = self._seed_events(users, categories)
         self._seed_registrations(users, events)
+        self._seed_favorites(users, events)
+        self._seed_reviews(users, events)
 
         self.stdout.write(
             self.style.SUCCESS(
                 "Demo database ready: "
                 f"{len(users)} users, {len(events)} events, "
                 f"{Registration.objects.filter(event__in=events.values()).count()} "
-                "registrations."
+                "registrations, "
+                f"{Favorite.objects.filter(event__in=events.values()).count()} "
+                "favorites and "
+                f"{Review.objects.filter(event__in=events.values()).count()} "
+                "reviews."
             )
         )
 
@@ -134,7 +154,16 @@ class Command(BaseCommand):
 
         return users
 
-    def _seed_events(self, users):
+    def _seed_categories(self):
+        return {
+            slug: Category.objects.update_or_create(
+                slug=slug,
+                defaults={"name": name},
+            )[0]
+            for slug, name in DEMO_CATEGORIES.items()
+        }
+
+    def _seed_events(self, users, categories):
         start = timezone.localtime(timezone.now()).replace(
             hour=18,
             minute=0,
@@ -146,6 +175,7 @@ class Command(BaseCommand):
                 "key": "meetup",
                 "legacy_titles": ("Django Community Meetup Florence",),
                 "organizer": users["organizer_demo"],
+                "category": categories["technology"],
                 "title": "Django Workshop for Beginners",
                 "description": (
                     "Introductory workshop for students who want to build "
@@ -161,6 +191,7 @@ class Command(BaseCommand):
                 "key": "full_workshop",
                 "legacy_titles": ("Urban Photography Workshop",),
                 "organizer": users["organizer_demo"],
+                "category": categories["career"],
                 "title": "CV and LinkedIn Lab",
                 "description": (
                     "Small career workshop for students who want feedback on "
@@ -176,6 +207,7 @@ class Command(BaseCommand):
                 "key": "empty_event",
                 "legacy_titles": ("Multimedia Production Open Day",),
                 "organizer": users["organizer_demo"],
+                "category": categories["social"],
                 "title": "Erasmus Welcome Aperitivo",
                 "description": (
                     "Informal welcome event for Erasmus and international "
@@ -191,6 +223,7 @@ class Command(BaseCommand):
                 "key": "second_organizer",
                 "legacy_titles": ("Summer Audiovisual Festival 2026",),
                 "organizer": users["organizer2_demo"],
+                "category": categories["social"],
                 "title": "International Students Meetup",
                 "description": (
                     "Community meetup for international and local students "
@@ -206,6 +239,7 @@ class Command(BaseCommand):
                 "key": "design_conference",
                 "legacy_titles": ("Digital Design Conference",),
                 "organizer": users["organizer_demo"],
+                "category": categories["technology"],
                 "title": "AI & Machine Learning Seminar",
                 "description": (
                     "University seminar introducing machine learning concepts, "
@@ -221,6 +255,7 @@ class Command(BaseCommand):
                 "key": "backend_bootcamp",
                 "legacy_titles": ("Backend Development Bootcamp",),
                 "organizer": users["organizer2_demo"],
+                "category": categories["technology"],
                 "title": "Hackathon: Build for Campus",
                 "description": (
                     "One-day student hackathon to design small digital tools "
@@ -236,6 +271,7 @@ class Command(BaseCommand):
                 "key": "sports_tournament",
                 "legacy_titles": (),
                 "organizer": users["organizer2_demo"],
+                "category": categories["sport"],
                 "title": "Student Five-a-Side Tournament",
                 "description": (
                     "Friendly football tournament for student teams, with "
@@ -251,6 +287,7 @@ class Command(BaseCommand):
                 "key": "study_group",
                 "legacy_titles": (),
                 "organizer": users["organizer_demo"],
+                "category": categories["study-education"],
                 "title": "Algorithms Study Group",
                 "description": (
                     "Peer study session for students preparing algorithms and "
@@ -266,6 +303,7 @@ class Command(BaseCommand):
                 "key": "student_party",
                 "legacy_titles": (),
                 "organizer": users["organizer2_demo"],
+                "category": categories["music-nightlife"],
                 "title": "Summer Student Party",
                 "description": (
                     "End-of-semester social evening for students with music, "
@@ -281,13 +319,14 @@ class Command(BaseCommand):
                 "key": "photography_walk",
                 "legacy_titles": (),
                 "organizer": users["organizer_demo"],
+                "category": categories["culture"],
                 "title": "Photography Walk in Florence",
                 "description": (
                     "Creative activity for students interested in photography, "
                     "urban observation and visual storytelling."
                 ),
-                "starts_at": start + timedelta(days=46),
-                "ends_at": start + timedelta(days=46, hours=3),
+                "starts_at": start - timedelta(days=20),
+                "ends_at": start - timedelta(days=20) + timedelta(hours=3),
                 "location": "Piazza Santissima Annunziata",
                 "capacity": 20,
                 "status": Event.Status.PUBLISHED,
@@ -296,13 +335,14 @@ class Command(BaseCommand):
                 "key": "cinema_night",
                 "legacy_titles": (),
                 "organizer": users["organizer2_demo"],
+                "category": categories["culture"],
                 "title": "Cinema Night at the Student Union",
                 "description": (
                     "Cultural evening with a student-selected film screening "
                     "and an open discussion after the movie."
                 ),
-                "starts_at": start + timedelta(days=48),
-                "ends_at": start + timedelta(days=48, hours=3),
+                "starts_at": start - timedelta(days=10),
+                "ends_at": start - timedelta(days=10) + timedelta(hours=3),
                 "location": "Student Union Auditorium",
                 "capacity": 70,
                 "status": Event.Status.PUBLISHED,
@@ -311,6 +351,7 @@ class Command(BaseCommand):
                 "key": "career_day",
                 "legacy_titles": ("Creative Technology Career Day",),
                 "organizer": users["organizer_demo"],
+                "category": categories["career"],
                 "title": "UNIFI Career Day - Cancelled",
                 "description": (
                     "Cancelled career event with companies, alumni and "
@@ -326,6 +367,7 @@ class Command(BaseCommand):
                 "key": "draft",
                 "legacy_titles": ("Podcast Lab - Draft",),
                 "organizer": users["organizer_demo"],
+                "category": categories["culture"],
                 "title": "Student Radio Podcast Lab - Draft",
                 "description": (
                     "Draft study activity about writing, recording and "
@@ -341,6 +383,7 @@ class Command(BaseCommand):
                 "key": "cancelled",
                 "legacy_titles": ("Open-Air Cinema Review - Cancelled",),
                 "organizer": users["organizer2_demo"],
+                "category": categories["other"],
                 "title": "Campus Volunteering Fair - Cancelled",
                 "description": (
                     "Cancelled fair for student associations and volunteering "
@@ -386,6 +429,9 @@ class Command(BaseCommand):
             (events["second_organizer"], users["attendee_demo"]),
             (events["design_conference"], users["attendee2_demo"]),
             (events["backend_bootcamp"], users["organizer_demo"]),
+            (events["photography_walk"], users["attendee_demo"]),
+            (events["photography_walk"], users["attendee2_demo"]),
+            (events["cinema_night"], users["organizer_demo"]),
         ]
         desired_pairs = {
             (event.pk, attendee.pk)
@@ -401,7 +447,78 @@ class Command(BaseCommand):
                 registration.delete()
 
         for event, attendee in desired_registrations:
-            Registration.objects.get_or_create(
+            registration, _ = Registration.objects.get_or_create(
                 event=event,
                 attendee=attendee,
+            )
+            if event.has_ended:
+                Registration.objects.filter(pk=registration.pk).update(
+                    created_at=event.starts_at - timedelta(days=2)
+                )
+
+    def _seed_favorites(self, users, events):
+        desired_favorites = [
+            (events["sports_tournament"], users["attendee_demo"]),
+            (events["student_party"], users["attendee_demo"]),
+            (events["study_group"], users["attendee2_demo"]),
+            (events["empty_event"], users["organizer2_demo"]),
+        ]
+        desired_pairs = {
+            (event.pk, user.pk) for event, user in desired_favorites
+        }
+        demo_user_ids = [user.pk for user in users.values()]
+        for favorite in Favorite.objects.filter(
+            event__in=events.values(),
+            user_id__in=demo_user_ids,
+        ):
+            if (favorite.event_id, favorite.user_id) not in desired_pairs:
+                favorite.delete()
+        for event, user in desired_favorites:
+            Favorite.objects.get_or_create(event=event, user=user)
+
+    def _seed_reviews(self, users, events):
+        desired_reviews = [
+            (
+                events["photography_walk"],
+                users["attendee_demo"],
+                5,
+                "A relaxed and practical activity with useful feedback from "
+                "the group throughout the walk.",
+            ),
+            (
+                events["photography_walk"],
+                users["attendee2_demo"],
+                4,
+                "Well organized and suitable for beginners as well as "
+                "students with some photography experience.",
+            ),
+            (
+                events["cinema_night"],
+                users["organizer_demo"],
+                4,
+                "The screening and discussion created a welcoming student "
+                "community atmosphere.",
+            ),
+        ]
+        desired_pairs = {
+            (event.pk, author.pk)
+            for event, author, _, _ in desired_reviews
+        }
+        demo_user_ids = [user.pk for user in users.values()]
+        for review in Review.objects.filter(
+            event__in=events.values(),
+            author_id__in=demo_user_ids,
+        ):
+            if (review.event_id, review.author_id) not in desired_pairs:
+                review.delete()
+        for event, author, rating, comment in desired_reviews:
+            review, _ = Review.objects.update_or_create(
+                event=event,
+                author=author,
+                defaults={"rating": rating, "comment": comment},
+            )
+            reviewed_at = event.ends_at + timedelta(days=1)
+            Review.objects.filter(pk=review.pk).update(
+                created_at=reviewed_at,
+                updated_at=reviewed_at,
             )

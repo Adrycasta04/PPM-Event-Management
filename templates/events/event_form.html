@@ -27,25 +27,46 @@
                         </div>
                     {% endif %}
 
-                    {% for field in form %}
-                        <div class="mb-3">
-                            <label
-                                class="form-label"
-                                for="{{ field.id_for_label }}"
-                            >
-                                {{ field.label }}
-                            </label>
-                            {{ field }}
-                            {% if field.help_text %}
-                                <div class="form-text">{{ field.help_text }}</div>
-                            {% endif %}
-                            {% for error in field.errors %}
-                                <div class="invalid-feedback d-block">
-                                    {{ error }}
-                                </div>
-                            {% endfor %}
+                    <fieldset class="form-section">
+                        <legend class="form-section-title">Event information</legend>
+                        <p class="form-section-description">
+                            Give participants a clear overview of the activity.
+                        </p>
+                        {% include "includes/form_field.html" with field=form.title %}
+                        {% include "includes/form_field.html" with field=form.description %}
+                        {% include "includes/form_field.html" with field=form.category %}
+                    </fieldset>
+
+                    <fieldset class="form-section">
+                        <legend class="form-section-title">Schedule and venue</legend>
+                        <p class="form-section-description">
+                            Specify when and where participants should arrive.
+                        </p>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                {% include "includes/form_field.html" with field=form.starts_at %}
+                            </div>
+                            <div class="col-md-6">
+                                {% include "includes/form_field.html" with field=form.ends_at %}
+                            </div>
                         </div>
-                    {% endfor %}
+                        {% include "includes/form_field.html" with field=form.location %}
+                    </fieldset>
+
+                    <fieldset class="form-section mb-4">
+                        <legend class="form-section-title">Availability and visibility</legend>
+                        <p class="form-section-description">
+                            Set the available places and publication status.
+                        </p>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                {% include "includes/form_field.html" with field=form.capacity %}
+                            </div>
+                            <div class="col-md-6">
+                                {% include "includes/form_field.html" with field=form.status %}
+                            </div>
+                        </div>
+                    </fieldset>
 
                     <div class="d-flex flex-column-reverse flex-sm-row gap-2 pt-2">
                         <a

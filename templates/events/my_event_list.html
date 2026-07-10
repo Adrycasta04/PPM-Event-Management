@@ -27,6 +27,7 @@
                 <tr>
                     <th scope="col">Title</th>
                     <th scope="col">Starts</th>
+                    <th scope="col">Category</th>
                     <th scope="col">Status</th>
                     <th scope="col">Registered</th>
                     <th scope="col" class="text-end">Actions</th>
@@ -35,15 +36,16 @@
             <tbody>
                 {% for event in events %}
                     <tr>
-                        <td class="fw-semibold">{{ event.title }}</td>
-                        <td>{{ event.starts_at|date:"d/m/Y H:i" }}</td>
-                        <td>{% include "includes/event_status_badge.html" %}</td>
-                        <td>
+                        <td class="fw-semibold" data-label="Event">{{ event.title }}</td>
+                        <td data-label="Starts">{{ event.starts_at|date:"d/m/Y H:i" }}</td>
+                        <td data-label="Category">{{ event.category.name|default:"Other" }}</td>
+                        <td data-label="Status">{% include "includes/event_status_badge.html" %}</td>
+                        <td data-label="Registered">
                             <span class="badge {% if event.registration_count >= event.capacity %}text-bg-warning{% else %}text-bg-light{% endif %}">
                                 {{ event.registration_count }}/{{ event.capacity }}
                             </span>
                         </td>
-                        <td class="text-end">
+                        <td class="text-end table-actions-cell" data-label="Actions">
                             <div class="d-flex flex-wrap justify-content-end gap-1 responsive-actions">
                                 {% if event.is_public %}
                                     <a

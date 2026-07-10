@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Events by {{ organizer.get_username }} | PPM Events{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a class="link-secondary text-decoration-none" href="{% url 'events:list' %}">
+        &larr; Back to events
+    </a>
+</div>
+
+<header class="page-header organizer-profile-header">
+    <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
+        <div class="organizer-avatar" aria-hidden="true">
+            {{ organizer.get_username|slice:":1"|upper }}
+        </div>
+        <div>
+            <p class="page-kicker mb-2">Organizer profile</p>
+            <h1 class="display-6 fw-bold mb-2">
+                {{ organizer.get_username }}
+            </h1>
+            <p class="text-body-secondary mb-3">
+                Published events created by this organizer.
+            </p>
+            <div class="d-flex flex-wrap gap-2">
+                <span class="profile-stat">
+                    {{ current_events|length }} upcoming
+                </span>
+                <span class="profile-stat">
+                    {{ past_events|length }} completed
+                </span>
+            </div>
+        </div>
+    </div>
+</header>
+
+{% if current_events %}
+    <section class="mb-5" aria-labelledby="current-events-heading">
+        <div class="mb-3">
+            <p class="page-kicker mb-2">Available now</p>
+            <h2 class="h3 mb-0" id="current-events-heading">
+                Upcoming and ongoing events
+            </h2>
+        </div>
+        <div class="row g-4">
+            {% for event in current_events %}
+                <div class="col-md-6 col-xl-4">
+                    {% include "includes/event_card.html" with capacity_count=event.registration_count heading_level=3 %}
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}
+
+<section aria-labelledby="past-events-heading">
+    <div class="mb-3">
+        <p class="page-kicker mb-2">History</p>
+        <h2 class="h3 mb-0" id="past-events-heading">Past events</h2>
+    </div>
+    {% if past_events %}
+        <div class="row g-4">
+            {% for event in past_events %}
+                <div class="col-md-6 col-xl-4">
+                    {% include "includes/event_card.html" with capacity_count=event.registration_count heading_level=3 %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        {% include "includes/empty_state.html" with title="No past events" description="This organizer has no completed published events yet." action_url=None action_label=None %}
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Event
+from .models import Category, Event, Review
 
 
 class EventForm(forms.ModelForm):
@@ -9,6 +9,7 @@ class EventForm(forms.ModelForm):
         fields = [
             "title",
             "description",
+            "category",
             "starts_at",
             "ends_at",
             "location",
@@ -18,6 +19,7 @@ class EventForm(forms.ModelForm):
         labels = {
             "title": "Title",
             "description": "Description",
+            "category": "Category",
             "starts_at": "Start date and time",
             "ends_at": "End date and time",
             "location": "Location",
@@ -27,6 +29,7 @@ class EventForm(forms.ModelForm):
         help_texts = {
             "starts_at": "Select both the start date and time.",
             "ends_at": "Select both the end date and time.",
+            "category": "Choose the area that best describes the event.",
             "capacity": "Maximum number of attendees allowed.",
             "status": (
                 "Draft = not public; Published = visible to users; "
@@ -58,6 +61,8 @@ class EventForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["category"].required = False
+        self.fields["category"].empty_label = "Other"
         for field in self.fields.values():
             css_class = (
                 "form-select"
@@ -95,6 +100,12 @@ class EventForm(forms.ModelForm):
                 )
         return capacity
 
+    def clean_category(self):
+        category = self.cleaned_data.get("category")
+        if category is not None:
+            return category
+        return Category.objects.filter(slug="other").first()
+
     def clean(self):
         cleaned_data = super().clean()
         starts_at = cleaned_data.get("starts_at")
@@ -107,3 +118,38 @@ class EventForm(forms.ModelForm):
             )
 
         return cleaned_data
+
+
+class ReviewForm(forms.ModelForm):
+    rating = forms.TypedChoiceField(
+        choices=[(value, f"{value}/5") for value in range(5, 0, -1)],
+        coerce=int,
+        label="Rating",
+    )
+
+    class Meta:
+        model = Review
+        fields = ["rating", "comment"]
+        labels = {"comment": "Review"}
+        widgets = {
+            "comment": forms.Textarea(
+                attrs={
+                    "rows": 4,
+                    "maxlength": 1000,
+                    "placeholder": "Share a concise and useful experience.",
+                }
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["rating"].widget.attrs["class"] = "form-select"
+        self.fields["comment"].widget.attrs["class"] = "form-control"
+
+    def clean_comment(self):
+        comment = self.cleaned_data["comment"].strip()
+        if len(comment) < 10:
+            raise forms.ValidationError(
+                "The review must contain at least 10 characters."
+            )
+        return comment

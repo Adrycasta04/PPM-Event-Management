@@ -48,7 +48,7 @@
             <div class="hero-feature-panel hero-logo-panel rounded-4 p-4">
                 <img
                     class="hero-logo mb-4"
-                    src="{% static 'img/ppm-events-logo.png' %}"
+                    src="{% static 'img/ppm-events-logo.png' %}?v=2"
                     alt="PPM Events"
                 >
                 <dl class="hero-summary-list mb-0">
@@ -87,32 +87,7 @@
         <div class="row g-4">
             {% for event in featured_events %}
                 <div class="col-md-6 col-xl-4">
-                    <article class="card event-card h-100 shadow-sm">
-                        <div class="card-body d-flex flex-column p-4">
-                            <div class="d-flex justify-content-end gap-2 mb-3">
-                                <span class="badge rounded-pill {% if event.registration_count >= event.capacity %}text-bg-warning{% else %}text-bg-light{% endif %}">
-                                    {{ event.registration_count }}/{{ event.capacity }}
-                                    registered
-                                </span>
-                            </div>
-                            <h3 class="h5 card-title mb-3">{{ event.title }}</h3>
-                            <dl class="row event-meta small mb-4">
-                                <dt class="col-4">When</dt>
-                                <dd class="col-8">
-                                    {{ event.starts_at|date:"d/m/Y H:i" }}
-                                </dd>
-                                <dt class="col-4">Where</dt>
-                                <dd class="col-8">{{ event.location }}</dd>
-                            </dl>
-                            <a
-                                class="btn btn-outline-primary mt-auto stretched-link"
-                                href="{{ event.get_absolute_url }}"
-                                aria-label="View details for {{ event.title }}"
-                            >
-                                Event details
-                            </a>
-                        </div>
-                    </article>
+                    {% include "includes/event_card.html" with capacity_count=event.registration_count heading_level=3 button_label="Event details" %}
                 </div>
             {% endfor %}
         </div>

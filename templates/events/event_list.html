@@ -25,7 +25,7 @@
 <section class="filter-panel card shadow-sm mb-4">
     <div class="card-body p-4">
         <form method="get" class="row g-3 align-items-end">
-            <div class="col-lg-7">
+            <div class="col-lg-5">
                 <label class="form-label" for="event-search">
                     Search events
                 </label>
@@ -39,6 +39,26 @@
                 >
             </div>
             <div class="col-sm-6 col-lg-3">
+                <label class="form-label" for="event-category-filter">
+                    Category
+                </label>
+                <select
+                    class="form-select"
+                    id="event-category-filter"
+                    name="category"
+                >
+                    <option value="">All categories</option>
+                    {% for category in categories %}
+                        <option
+                            value="{{ category.slug }}"
+                            {% if selected_category == category %}selected{% endif %}
+                        >
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-sm-6 col-lg-2">
                 <label class="form-label" for="event-time-filter">
                     Time
                 </label>
@@ -77,36 +97,7 @@
     <div class="row g-4">
         {% for event in events %}
             <div class="col-md-6 col-xl-4">
-                <article class="card event-card h-100 shadow-sm">
-                    <div class="card-body d-flex flex-column p-4">
-                        <div class="d-flex justify-content-end gap-2 mb-3">
-                            <span class="badge rounded-pill {% if event.registration_count >= event.capacity %}text-bg-warning{% else %}text-bg-light{% endif %}">
-                                {{ event.registration_count }}/{{ event.capacity }}
-                                registered
-                            </span>
-                        </div>
-                        <h2 class="h4 card-title mb-3">{{ event.title }}</h2>
-                        <dl class="row event-meta small mb-4">
-                            <dt class="col-4">When</dt>
-                            <dd class="col-8">
-                                {{ event.starts_at|date:"d/m/Y H:i" }}
-                            </dd>
-                            <dt class="col-4">Where</dt>
-                            <dd class="col-8">{{ event.location }}</dd>
-                            <dt class="col-4">Organizer</dt>
-                            <dd class="col-8">
-                                {{ event.organizer.get_username }}
-                            </dd>
-                        </dl>
-                        <a
-                            class="btn btn-outline-primary mt-auto stretched-link"
-                            href="{{ event.get_absolute_url }}"
-                            aria-label="View details for {{ event.title }}"
-                        >
-                            View details
-                        </a>
-                    </div>
-                </article>
+                {% include "includes/event_card.html" with capacity_count=event.registration_count button_label="View details" %}
             </div>
         {% endfor %}
     </div>

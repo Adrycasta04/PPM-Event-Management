@@ -1,9 +1,10 @@
-from django.contrib import messages
-from django.contrib.auth.mixins import LoginRequiredMixin
 from datetime import datetime, time, timedelta
 
+from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
-from django.db.models import Count, Q
+from django.db.models import Avg, Count, Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -19,8 +20,8 @@ from django.views.generic import (
 
 from accounts.roles import is_attendee, is_organizer
 
-from .forms import EventForm
-from .models import Event, Registration
+from .forms import EventForm, ReviewForm
+from .models import Category, Event, Favorite, Registration, Review
 
 
 class OrganizerRequiredMixin(LoginRequiredMixin):
@@ -86,7 +87,7 @@ class HomeView(TemplateView):
         context = super().get_context_data(**kwargs)
         context["featured_events"] = (
             Event.objects.public()
-            .select_related("organizer")
+            .select_related("organizer", "category")
             .annotate(registration_count=Count("registrations"))[:3]
         )
         return context
@@ -94,6 +95,41 @@ class HomeView(TemplateView):
 
 class ContactView(TemplateView):
     template_name = "events/contact.html"
+
+
+class OrganizerEventHistoryView(TemplateView):
+    template_name = "events/organizer_event_history.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        organizer = get_object_or_404(
+            get_user_model().objects.filter(
+                organized_events__status=Event.Status.PUBLISHED,
+            ).distinct(),
+            pk=self.kwargs["pk"],
+        )
+        events = (
+            Event.objects.public()
+            .filter(organizer=organizer)
+            .select_related("category")
+            .annotate(
+                registration_count=Count("registrations", distinct=True),
+                review_count=Count("reviews", distinct=True),
+                average_rating=Avg("reviews__rating"),
+            )
+        )
+        now = timezone.now()
+        context.update(
+            {
+                "organizer": organizer,
+                "current_events": events.filter(ends_at__gte=now),
+                "past_events": events.filter(ends_at__lt=now).order_by(
+                    "-starts_at",
+                    "title",
+                ),
+            }
+        )
+        return context
 
 
 class EventListView(ListView):
@@ -110,7 +146,7 @@ class EventListView(ListView):
     def get_queryset(self):
         queryset = (
             Event.objects.public()
-            .select_related("organizer")
+            .select_related("organizer", "category")
             .annotate(registration_count=Count("registrations"))
         )
         search_query = self.request.GET.get("q", "").strip()
@@ -130,23 +166,40 @@ class EventListView(ListView):
                 starts_at__lt=ends_at,
             )
 
+        selected_category = self._get_selected_category()
+        if selected_category is not None:
+            queryset = queryset.filter(category=selected_category)
+
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         search_query = self.request.GET.get("q", "").strip()
         selected_when = self._get_selected_when()
+        selected_category = self._get_selected_category()
         context.update(
             {
                 "search_query": search_query,
                 "selected_when": selected_when,
+                "selected_category": selected_category,
+                "categories": Category.objects.all(),
                 "time_filter_options": self.time_filter_options,
                 "filters_active": bool(
-                    search_query or selected_when != "all"
+                    search_query
+                    or selected_when != "all"
+                    or selected_category is not None
                 ),
             }
         )
         return context
+
+    def _get_selected_category(self):
+        if not hasattr(self, "_selected_category"):
+            slug = self.request.GET.get("category", "").strip()
+            self._selected_category = (
+                Category.objects.filter(slug=slug).first() if slug else None
+            )
+        return self._selected_category
 
     def _get_selected_when(self):
         selected_when = self.request.GET.get("when", "all")
@@ -197,8 +250,13 @@ class EventDetailView(DetailView):
     def get_queryset(self):
         return (
             Event.objects.public()
-            .select_related("organizer")
-            .annotate(registration_count=Count("registrations"))
+            .select_related("organizer", "category")
+            .prefetch_related("reviews__author")
+            .annotate(
+                registration_count=Count("registrations", distinct=True),
+                review_count=Count("reviews", distinct=True),
+                average_rating=Avg("reviews__rating"),
+            )
         )
 
     def get_context_data(self, **kwargs):
@@ -213,6 +271,27 @@ class EventDetailView(DetailView):
             context["event_is_full"] = (
                 self.object.registration_count >= self.object.capacity
             )
+            context["is_favorite"] = Favorite.objects.filter(
+                event=self.object,
+                user=user,
+            ).exists()
+            user_review = next(
+                (
+                    review
+                    for review in self.object.reviews.all()
+                    if review.author_id == user.pk
+                ),
+                None,
+            )
+            context["user_review"] = user_review
+            context["can_review"] = bool(
+                registration and self.object.has_ended
+            )
+            context["review_form"] = ReviewForm(
+                instance=user_review
+                or Review(event=self.object, author=user)
+            )
+        context["registration_is_open"] = self.object.registration_is_open
         return context
 
 
@@ -222,7 +301,7 @@ class MyEventListView(OrganizerRequiredMixin, ListView):
     context_object_name = "events"
 
     def get_queryset(self):
-        queryset = Event.objects.all()
+        queryset = Event.objects.select_related("category")
         if not self.request.user.is_staff:
             queryset = queryset.filter(organizer=self.request.user)
         return queryset.annotate(registration_count=Count("registrations"))
@@ -289,8 +368,92 @@ class MyRegistrationListView(AttendeeRequiredMixin, ListView):
     def get_queryset(self):
         return (
             Registration.objects.filter(attendee=self.request.user)
-            .select_related("event", "event__organizer")
+            .select_related("event", "event__organizer", "event__category")
         )
+
+
+class MyFavoriteListView(AttendeeRequiredMixin, ListView):
+    model = Favorite
+    template_name = "events/my_favorite_list.html"
+    context_object_name = "favorites"
+
+    def get_queryset(self):
+        return (
+            Favorite.objects.filter(
+                user=self.request.user,
+                event__status=Event.Status.PUBLISHED,
+            )
+            .select_related("event", "event__organizer", "event__category")
+            .annotate(registration_count=Count("event__registrations"))
+        )
+
+
+class EventFavoriteToggleView(AttendeeRequiredMixin, View):
+    http_method_names = ["post"]
+
+    def post(self, request, pk):
+        event = get_object_or_404(Event.objects.public(), pk=pk)
+        favorite, created = Favorite.objects.get_or_create(
+            event=event,
+            user=request.user,
+        )
+        if created:
+            messages.success(request, "Event added to your favorites.")
+        else:
+            favorite.delete()
+            messages.success(request, "Event removed from your favorites.")
+        return redirect(event.get_absolute_url())
+
+
+class EventReviewSaveView(AttendeeRequiredMixin, View):
+    http_method_names = ["post"]
+
+    def post(self, request, pk):
+        event = get_object_or_404(Event.objects.public(), pk=pk)
+        if not event.has_ended:
+            messages.error(
+                request,
+                "Reviews are available only after the event ends.",
+            )
+            return redirect(event.get_absolute_url())
+        if not Registration.objects.filter(
+            event=event,
+            attendee=request.user,
+        ).exists():
+            messages.error(
+                request,
+                "Only registered participants can review this event.",
+            )
+            return redirect(event.get_absolute_url())
+
+        review = Review.objects.filter(
+            event=event,
+            author=request.user,
+        ).first() or Review(event=event, author=request.user)
+        form = ReviewForm(request.POST, instance=review)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your review has been saved.")
+        else:
+            for errors in form.errors.values():
+                for error in errors:
+                    messages.error(request, error)
+        return redirect(event.get_absolute_url())
+
+
+class EventReviewDeleteView(AttendeeRequiredMixin, View):
+    http_method_names = ["post"]
+
+    def post(self, request, pk):
+        review = get_object_or_404(
+            Review.objects.select_related("event"),
+            pk=pk,
+            author=request.user,
+        )
+        event = review.event
+        review.delete()
+        messages.success(request, "Your review has been deleted.")
+        return redirect(event.get_absolute_url())
 
 
 class EventRegistrationCreateView(AttendeeRequiredMixin, View):
@@ -306,6 +469,13 @@ class EventRegistrationCreateView(AttendeeRequiredMixin, View):
             )
             return redirect("events:list")
 
+        if not event.registration_is_open:
+            messages.error(
+                request,
+                "Registrations close when the event starts.",
+            )
+            return redirect(event.get_absolute_url())
+
         with transaction.atomic():
             event = Event.objects.select_for_update().get(pk=event.pk)
 
@@ -315,6 +485,12 @@ class EventRegistrationCreateView(AttendeeRequiredMixin, View):
                     "Registrations are available only for published events.",
                 )
                 return redirect("events:list")
+            if not event.registration_is_open:
+                messages.error(
+                    request,
+                    "Registrations close when the event starts.",
+                )
+                return redirect(event.get_absolute_url())
             if Registration.objects.filter(
                 event=event,
                 attendee=request.user,
@@ -353,6 +529,11 @@ class EventRegistrationDeleteView(AttendeeRequiredMixin, View):
             messages.error(
                 request,
                 "You cannot cancel registrations for other users.",
+            )
+        elif not registration.event.registration_is_open:
+            messages.error(
+                request,
+                "Registrations cannot be cancelled after the event starts.",
             )
         else:
             registration.delete()

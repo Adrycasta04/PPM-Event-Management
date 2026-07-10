@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}My favorites | PPM Events{% endblock %}
+
+{% block content %}
+<header class="page-header">
+    <p class="page-kicker mb-2">Personal area</p>
+    <h1 class="display-6 fw-bold mb-2">My favorites</h1>
+    <p class="text-body-secondary mb-0">
+        Keep interesting events in one place before deciding whether to register.
+    </p>
+</header>
+
+{% if favorites %}
+    <div class="row g-4">
+        {% for favorite in favorites %}
+            <div class="col-md-6 col-xl-4">
+                {% include "includes/event_card.html" with event=favorite.event capacity_count=favorite.registration_count button_label="View details" %}
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    {% url "events:list" as public_events_url %}
+    {% include "includes/empty_state.html" with title="No favorite events" description="Save events that interest you and find them here later." action_url=public_events_url action_label="Browse events" %}
+{% endif %}
+{% endblock %}

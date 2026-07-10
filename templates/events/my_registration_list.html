@@ -15,10 +15,15 @@
     <div class="row g-4">
         {% for registration in registrations %}
             <div class="col-md-6">
-                <article class="card event-card h-100 shadow-sm">
+                <article class="card event-card category-accent category-{{ registration.event.category.slug|default:'other' }} h-100 shadow-sm">
                     <div class="card-body d-flex flex-column p-4">
                         <div class="mb-3">
                             {% include "includes/event_status_badge.html" with event=registration.event %}
+                            {% if registration.event.category %}
+                                <span class="badge category-badge ms-1">
+                                    {{ registration.event.category.name }}
+                                </span>
+                            {% endif %}
                         </div>
                         <h2 class="h4">{{ registration.event.title }}</h2>
                         <dl class="row event-meta small mb-4">
@@ -29,6 +34,12 @@
                             <dt class="col-4">Location</dt>
                             <dd class="col-8">
                                 {{ registration.event.location }}
+                            </dd>
+                            <dt class="col-4">Organizer</dt>
+                            <dd class="col-8">
+                                <a href="{% url 'events:organizer_history' registration.event.organizer_id %}">
+                                    {{ registration.event.organizer.get_username }}
+                                </a>
                             </dd>
                             <dt class="col-4">Registered</dt>
                             <dd class="col-8">
@@ -44,18 +55,20 @@
                                     Details
                                 </a>
                             {% endif %}
-                            <form
-                                method="post"
-                                action="{% url 'events:cancel_registration' registration.pk %}"
-                            >
-                                {% csrf_token %}
-                                <button
-                                    class="btn btn-outline-danger"
-                                    type="submit"
+                            {% if registration.event.registration_is_open %}
+                                <form
+                                    method="post"
+                                    action="{% url 'events:cancel_registration' registration.pk %}"
                                 >
-                                    Cancel registration
-                                </button>
-                            </form>
+                                    {% csrf_token %}
+                                    <button
+                                        class="btn btn-outline-danger"
+                                        type="submit"
+                                    >
+                                        Cancel registration
+                                    </button>
+                                </form>
+                            {% endif %}
                         </div>
                     </div>
                 </article>

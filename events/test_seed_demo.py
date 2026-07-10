@@ -11,7 +11,7 @@ from accounts.models import Profile
 from accounts.roles import Role
 
 from .management.commands.seed_demo import DEMO_USERS
-from .models import Event, Registration
+from .models import Category, Event, Favorite, Registration, Review
 
 
 class SeedDemoCommandTests(TestCase):
@@ -41,7 +41,11 @@ class SeedDemoCommandTests(TestCase):
             Event.objects.filter(status=Event.Status.CANCELLED).count(),
             2,
         )
-        self.assertEqual(Registration.objects.count(), 7)
+        self.assertEqual(Category.objects.count(), 8)
+        self.assertEqual(Registration.objects.count(), 10)
+        self.assertEqual(Favorite.objects.count(), 4)
+        self.assertEqual(Review.objects.count(), 3)
+        self.assertFalse(Event.objects.filter(category__isnull=True).exists())
         self.assertEqual(
             set(Group.objects.values_list("name", flat=True)),
             {Role.ATTENDEE.value, Role.ORGANIZER.value},
@@ -98,6 +102,23 @@ class SeedDemoCommandTests(TestCase):
         )
         self.assertGreaterEqual(student_events.count(), 5)
         self.assertGreaterEqual(university_events.count(), 3)
+        self.assertEqual(
+            Event.objects.filter(
+                status=Event.Status.PUBLISHED,
+                ends_at__lt=timezone.now(),
+            ).count(),
+            2,
+        )
+        self.assertFalse(
+            Review.objects.filter(event__ends_at__gte=timezone.now()).exists()
+        )
+        for review in Review.objects.select_related("event", "author"):
+            self.assertTrue(
+                Registration.objects.filter(
+                    event=review.event,
+                    attendee=review.author,
+                ).exists()
+            )
 
     def test_reset_removes_existing_application_data(self):
         user_model = get_user_model()

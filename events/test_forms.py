@@ -4,8 +4,8 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils import timezone
 
-from .forms import EventForm
-from .models import Event, Registration
+from .forms import EventForm, ReviewForm
+from .models import Event, Registration, Review
 
 
 class EventFormTests(TestCase):
@@ -43,6 +43,7 @@ class EventFormTests(TestCase):
             [
                 "title",
                 "description",
+                "category",
                 "starts_at",
                 "ends_at",
                 "location",
@@ -51,6 +52,12 @@ class EventFormTests(TestCase):
             ],
         )
         self.assertNotIn("organizer", form.fields)
+
+    def test_missing_category_falls_back_to_other(self):
+        form = EventForm(data=self.valid_data())
+
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["category"].slug, "other")
 
     def test_valid_event_data_is_accepted(self):
         form = EventForm(data=self.valid_data())
@@ -163,3 +170,32 @@ class EventFormTests(TestCase):
 
         self.assertFalse(form.is_valid())
         self.assertIn("status", form.errors)
+
+
+class ReviewFormTests(TestCase):
+    def test_valid_review_is_trimmed(self):
+        form = ReviewForm(
+            data={"rating": 5, "comment": "  A useful student event.  "},
+            instance=Review(),
+        )
+
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data["comment"], "A useful student event.")
+
+    def test_review_comment_has_minimum_length(self):
+        form = ReviewForm(
+            data={"rating": 4, "comment": "Too short"},
+            instance=Review(),
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("comment", form.errors)
+
+    def test_rating_must_be_between_one_and_five(self):
+        form = ReviewForm(
+            data={"rating": 6, "comment": "A sufficiently long review."},
+            instance=Review(),
+        )
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("rating", form.errors)

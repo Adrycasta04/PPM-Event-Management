@@ -49,8 +49,10 @@ browser.
 - view the homepage;
 - browse published university and student community events;
 - search events by title, description or location;
-- filter events by time period;
+- filter events by category and time period;
 - open the detail page of a published event;
+- open an organizer profile and browse their published event history;
+- read participant reviews of completed events;
 - access the login and sign-up pages.
 
 Draft and cancelled events are not visible in the public event list.
@@ -59,10 +61,15 @@ Draft and cancelled events are not visible in the public event list.
 
 - login and logout;
 - browse published events;
-- use event search and time filtering;
+- use event search, category filtering and time filtering;
+- save and remove favorite events;
+- view the `My favorites` page;
+- browse an organizer's upcoming and past published events;
 - register for an event with available capacity;
 - cancel an owned registration;
 - view the `My registrations` page;
+- review a completed event after participating;
+- update or delete an owned review;
 - receive clear messages for duplicate registrations and full events.
 
 Attendees cannot access organizer CRUD pages or attendee lists.
@@ -85,7 +92,8 @@ another organizer.
 - access Django Admin;
 - use attendee and organizer features;
 - manage all events from the frontend;
-- manage users, groups, profiles, events and registrations from Django Admin.
+- manage users, groups, profiles, categories, events, registrations,
+  favorites and reviews from Django Admin.
 
 ## Local setup and demo data
 
@@ -170,10 +178,13 @@ The database contains:
 - a published event without participants;
 - university and student community activities across technology, study,
   career, sport, social and cultural contexts;
+- eight persisted event categories available in discovery and event forms;
 - a draft event;
 - two cancelled events;
 - events owned by two different organizers;
-- existing registrations for attendee accounts and one organizer account.
+- existing registrations for attendee accounts and one organizer account;
+- four demo favorites;
+- three reviews attached only to completed events and registered participants.
 
 Notable events:
 
@@ -186,10 +197,12 @@ Notable events:
 - `Student Five-a-Side Tournament`: published sport event;
 - `Algorithms Study Group`: published study activity;
 - `Summer Student Party`: published social evening;
-- `Photography Walk in Florence`: published creative activity;
+- `Photography Walk in Florence`: completed cultural activity with demo
+  registrations and reviews;
 - `International Students Meetup`: published and owned by
   `organizer2_demo`;
-- `Cinema Night at the Student Union`: published cultural event;
+- `Cinema Night at the Student Union`: completed cultural event with a demo
+  review;
 - `UNIFI Career Day - Cancelled`: not publicly visible;
 - `Student Radio Podcast Lab - Draft`: not publicly visible;
 - `Campus Volunteering Fair - Cancelled`: not publicly visible.
@@ -199,28 +212,34 @@ Notable events:
 ### Browser-based testing scenario
 
 1. Open the homepage and select `Events`.
-2. Search for `Django` or filter by `This month` and verify that only matching
-   published events appear.
+2. Search for `Django`, select the `Technology` category or filter by
+   `This month`, and verify that only matching published events appear.
 3. Verify that only published events appear.
 4. Open `CV and LinkedIn Lab` and verify that its capacity is full.
 5. Log in as `attendee_demo / attendee12345`.
 6. Open `Erasmus Welcome Aperitivo` and register.
-7. Open `My registrations` and verify that the new registration appears.
-8. Cancel the Erasmus Welcome registration.
-9. Log out and log in as `organizer_demo / organizer12345`.
-10. Open `Manage events`.
-11. Create a new draft event, then update its title and publish it.
-12. Open the attendee list for `Django Workshop for Beginners`.
-13. Verify that the two demo attendees are listed.
-14. Open the public detail of `International Students Meetup`, which is
+7. Add the event to favorites and verify it appears under `Favorites`.
+8. Open `My registrations` and verify that the new registration appears.
+9. Open the completed `Photography Walk in Florence` event and verify that
+   participant reviews are visible and the owned review can be updated.
+10. Select the organizer name and verify that their upcoming and past
+    published events appear while Draft and Cancelled events do not.
+11. Cancel the Erasmus Welcome registration.
+12. Log out and log in as `organizer_demo / organizer12345`.
+13. Open `Manage events`.
+14. Create a new draft event with a category, then update its title and
+    publish it.
+15. Open the attendee list for `Django Workshop for Beginners` and verify
+    that the two demo attendees are listed.
+16. Open the public detail of `International Students Meetup`, which is
     owned by `organizer2_demo`, and verify that edit/delete actions are absent
     for another non-admin organizer.
-15. Log out and log in as `organizer2_demo / organizer212345`.
-16. Verify that `International Students Meetup` appears in `Manage events`
+17. Log out and log in as `organizer2_demo / organizer212345`.
+18. Verify that `International Students Meetup` appears in `Manage events`
     while events owned by `organizer_demo` do not.
-17. Log in as `admin_demo / admin12345`, open `Manage events`, and verify that
+19. Log in as `admin_demo / admin12345`, open `Manage events`, and verify that
     all events are available from the frontend.
-18. Open `/admin/` to verify full Django administration access.
+20. Open `/admin/` to verify full Django administration access.
 
 ### Automated tests
 
@@ -234,8 +253,8 @@ python manage.py makemigrations --check
 
 The tests cover authentication, roles, permissions, ownership, forms, model
 constraints, event visibility, registration capacity, duplicate prevention,
-event search, time filtering, URL namespaces and representative query
-efficiency.
+event search, category and time filtering, favorites, review eligibility,
+URL namespaces and representative query efficiency.
 
 ## 🔒 Security and authorization
 
@@ -243,6 +262,8 @@ efficiency.
 - authentication uses Django built-in auth;
 - role and ownership checks are enforced server-side;
 - event registrations are protected by a database uniqueness constraint;
+- favorites and reviews are protected by database uniqueness constraints;
+- reviews require a completed event and an existing registration;
 - event capacity and date consistency are validated;
 - secrets are not committed;
 - internal URLs use Django URL names and reversing.

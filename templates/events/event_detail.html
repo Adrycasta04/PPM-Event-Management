@@ -9,11 +9,16 @@
     </a>
 </div>
 
-<article class="card shadow-sm">
+<article class="card event-detail-card category-accent category-{{ event.category.slug|default:'other' }} shadow-sm">
     <div class="card-body p-4 p-lg-5">
         <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
             <div>
                 <div class="d-flex flex-wrap gap-2 mb-3">
+                    {% if event.category %}
+                        <span class="badge rounded-pill category-badge">
+                            {{ event.category.name }}
+                        </span>
+                    {% endif %}
                     {% if user_is_organizer %}
                         {% include "includes/event_status_badge.html" %}
                     {% endif %}
@@ -39,6 +44,20 @@
                         Delete
                     </a>
                 </div>
+            {% elif user_is_attendee %}
+                <form
+                    method="post"
+                    action="{% url 'events:toggle_favorite' event.pk %}"
+                >
+                    {% csrf_token %}
+                    <button class="btn btn-outline-primary" type="submit">
+                        {% if is_favorite %}
+                            Remove from favorites
+                        {% else %}
+                            Add to favorites
+                        {% endif %}
+                    </button>
+                </form>
             {% endif %}
         </div>
 
@@ -54,24 +73,41 @@
                         {% if registration %}
                             <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
                                 <div>
-                                    <h2 class="h5 mb-1">Registration confirmed</h2>
+                                    <h2 class="h5 mb-1">
+                                        {% if event.has_ended %}
+                                            Event attended
+                                        {% else %}
+                                            Registration confirmed
+                                        {% endif %}
+                                    </h2>
                                     <p class="text-body-secondary mb-0">
-                                        You are registered for this event.
+                                        {% if event.has_ended %}
+                                            You can now share a review below.
+                                        {% else %}
+                                            You are registered for this event.
+                                        {% endif %}
                                     </p>
                                 </div>
-                                <form
-                                    method="post"
-                                    action="{% url 'events:cancel_registration' registration.pk %}"
-                                >
-                                    {% csrf_token %}
-                                    <button
-                                        class="btn btn-outline-danger"
-                                        type="submit"
+                                {% if registration_is_open %}
+                                    <form
+                                        method="post"
+                                        action="{% url 'events:cancel_registration' registration.pk %}"
                                     >
-                                        Cancel registration
-                                    </button>
-                                </form>
+                                        {% csrf_token %}
+                                        <button
+                                            class="btn btn-outline-danger"
+                                            type="submit"
+                                        >
+                                            Cancel registration
+                                        </button>
+                                    </form>
+                                {% endif %}
                             </div>
+                        {% elif not registration_is_open %}
+                            <h2 class="h5">Registrations closed</h2>
+                            <p class="text-body-secondary mb-0">
+                                This event has already started or ended.
+                            </p>
                         {% elif event_is_full %}
                             <h2 class="h5">Event full</h2>
                             <p class="text-body-secondary mb-0">
@@ -100,7 +136,7 @@
                 {% endif %}
             </div>
             <div class="col-lg-4">
-                <aside class="info-panel">
+                <aside class="info-panel event-details-panel">
                     <h2 class="h5 mb-3">Details</h2>
                     <dl class="mb-0">
                         <dt>Starts</dt>
@@ -116,11 +152,90 @@
                         <dd>{{ event.capacity }} attendees</dd>
 
                         <dt>Organizer</dt>
-                        <dd>{{ event.organizer.get_username }}</dd>
+                        <dd>
+                            <a href="{% url 'events:organizer_history' event.organizer_id %}">
+                                {{ event.organizer.get_username }}
+                            </a>
+                        </dd>
                     </dl>
                 </aside>
             </div>
         </div>
     </div>
 </article>
+
+<section class="card shadow-sm mt-4" aria-labelledby="reviews-heading">
+    <div class="card-body p-4 p-lg-5">
+        <div class="d-flex flex-column flex-sm-row justify-content-between gap-2 mb-4">
+            <div>
+                <p class="page-kicker mb-2">Participant feedback</p>
+                <h2 class="h3 mb-0" id="reviews-heading">Reviews</h2>
+            </div>
+            <div class="review-summary">
+                {% if event.review_count %}
+                    <strong>{{ event.average_rating|floatformat:"1u" }}/5</strong>
+                    <span>
+                        {{ event.review_count }} review{{ event.review_count|pluralize }}
+                    </span>
+                {% else %}
+                    <span>No ratings yet</span>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if can_review %}
+            <div class="info-panel mb-4">
+                <h3 class="h5">
+                    {% if user_review %}Update your review{% else %}Leave a review{% endif %}
+                </h3>
+                <form method="post" action="{% url 'events:save_review' event.pk %}">
+                    {% csrf_token %}
+                    {% for field in review_form %}
+                        <div class="mb-3">
+                            <label class="form-label" for="{{ field.id_for_label }}">
+                                {{ field.label }}
+                            </label>
+                            {{ field }}
+                        </div>
+                    {% endfor %}
+                    <div class="d-flex flex-wrap gap-2">
+                        <button class="btn btn-primary" type="submit">
+                            Save review
+                        </button>
+                        {% if user_review %}
+                            <button
+                                class="btn btn-outline-danger"
+                                type="submit"
+                                formaction="{% url 'events:delete_review' user_review.pk %}"
+                            >
+                                Delete review
+                            </button>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        {% endif %}
+
+        {% if event.reviews.all %}
+            <div class="vstack gap-3">
+                {% for review in event.reviews.all %}
+                    <article class="review-item">
+                        <div class="d-flex flex-wrap justify-content-between gap-2 mb-2">
+                            <h3 class="h6 mb-0">{{ review.author.get_username }}</h3>
+                            <span class="review-rating">{{ review.rating }}/5</span>
+                        </div>
+                        <p class="mb-2">{{ review.comment }}</p>
+                        <p class="small text-body-secondary mb-0">
+                            Updated {{ review.updated_at|date:"d/m/Y" }}
+                        </p>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-body-secondary mb-0">
+                No participant reviews have been published yet.
+            </p>
+        {% endif %}
+    </div>
+</section>
 {% endblock %}
