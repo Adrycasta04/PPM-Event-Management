@@ -26,7 +26,8 @@ class HomePageTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "events/contact.html")
-        self.assertContains(response, "Explore the demo")
+        self.assertContains(response, "Quick answers")
+        self.assertContains(response, "Share your feedback")
         self.assertContains(response, "Open GitHub Issues")
         self.assertNotContains(response, "example.com")
 

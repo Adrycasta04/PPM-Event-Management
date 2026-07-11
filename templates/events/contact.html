@@ -3,127 +3,65 @@
 {% block title %}Help & Feedback | PPM Events{% endblock %}
 
 {% block content %}
-<section class="page-header">
+<section class="page-header text-center help-page-header">
     <p class="page-kicker mb-2">Help & Feedback</p>
-    <h1 class="display-6 fw-bold">How can we help?</h1>
+    <h1 class="display-6 fw-bold">Questions or feedback?</h1>
     <p class="lead text-muted mb-0">
-        A concise guide to exploring the demo, understanding each role and
-        reporting project feedback.
+        Find a quick answer or share a suggestion about PPM Events.
     </p>
 </section>
 
-<div class="row g-4 help-grid">
-    <div class="col-lg-6">
-        <section class="card help-card h-100 shadow-sm">
-            <div class="card-body p-4">
-                <p class="page-kicker mb-2">Quick start</p>
-                <h2 class="h4 mb-3">Explore the demo</h2>
-                <ol class="help-steps mb-4">
-                    <li>Browse published events without creating an account.</li>
-                    <li>Use a demo account to test a specific role workflow.</li>
-                    <li>Open the README for credentials and the full walkthrough.</li>
-                </ol>
-                <div class="d-flex flex-wrap gap-2">
-                    <a class="btn btn-primary" href="{% url 'events:list' %}">
-                        Browse events
-                    </a>
-                    <a
-                        class="btn btn-outline-primary"
-                        href="https://github.com/Adrycasta04/PPM-Event-Management#demo-accounts"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        View demo accounts
-                    </a>
-                </div>
+<div class="help-page-content">
+    <section class="card help-card shadow-sm mb-4">
+        <div class="card-body p-4 p-lg-5">
+            <p class="page-kicker mb-2">Common questions</p>
+            <h2 class="h3 mb-4">Quick answers</h2>
+            <div class="help-questions">
+                <details>
+                    <summary>Why can I not register for an event?</summary>
+                    <p>
+                        Registration requires a published, upcoming event
+                        with at least one place available.
+                    </p>
+                </details>
+                <details>
+                    <summary>When can I leave a review?</summary>
+                    <p>
+                        Reviews become available after an event ends and
+                        only to users who registered for it.
+                    </p>
+                </details>
+                <details>
+                    <summary>Where do organizers manage events?</summary>
+                    <p>
+                        Log in with an Organizer account and open
+                        <strong>Manage events</strong> from the navbar.
+                    </p>
+                </details>
             </div>
-        </section>
-    </div>
+        </div>
+    </section>
 
-    <div class="col-lg-6">
-        <section class="card help-card h-100 shadow-sm">
-            <div class="card-body p-4">
-                <p class="page-kicker mb-2">Role guide</p>
-                <h2 class="h4 mb-3">What each account can do</h2>
-                <dl class="help-role-list mb-0">
-                    <div>
-                        <dt>Attendee</dt>
-                        <dd>Register, save favorites and review attended events.</dd>
-                    </div>
-                    <div>
-                        <dt>Organizer</dt>
-                        <dd>Use attendee features and manage owned events.</dd>
-                    </div>
-                    <div>
-                        <dt>Admin</dt>
-                        <dd>Manage all events and access the Django control panel.</dd>
-                    </div>
-                </dl>
-            </div>
-        </section>
-    </div>
-
-    <div class="col-12">
-        <section class="card help-card shadow-sm">
-            <div class="card-body p-4">
-                <div class="row g-4 align-items-start">
-                    <div class="col-lg-7">
-                        <p class="page-kicker mb-2">Common questions</p>
-                        <h2 class="h4 mb-3">Workflow help</h2>
-                        <div class="help-questions">
-                            <details>
-                                <summary>Why can I not register for an event?</summary>
-                                <p>
-                                    Registration requires a published, upcoming event
-                                    with at least one place available.
-                                </p>
-                            </details>
-                            <details>
-                                <summary>When can I leave a review?</summary>
-                                <p>
-                                    Reviews become available after an event ends and
-                                    only to users who registered for it.
-                                </p>
-                            </details>
-                            <details>
-                                <summary>Where do organizers manage events?</summary>
-                                <p>
-                                    Log in with an Organizer account and open
-                                    <strong>Manage events</strong> from the navbar.
-                                </p>
-                            </details>
-                        </div>
-                    </div>
-                    <div class="col-lg-5">
-                        <div class="feedback-panel">
-                            <h2 class="h5">Project feedback</h2>
-                            <p class="text-body-secondary">
-                                Review the source code or report a reproducible issue
-                                through the public GitHub repository.
-                            </p>
-                            <div class="d-grid gap-2">
-                                <a
-                                    class="btn btn-outline-primary"
-                                    href="https://github.com/Adrycasta04/PPM-Event-Management"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    View source code
-                                </a>
-                                <a
-                                    class="btn btn-outline-secondary"
-                                    href="https://github.com/Adrycasta04/PPM-Event-Management/issues"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Open GitHub Issues
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
+    <section class="feedback-panel text-center">
+        <p class="page-kicker mb-2">Feedback</p>
+        <h2 class="h3 mb-2">Share your feedback</h2>
+        <p class="text-body-secondary mb-4">
+            Found a problem or have a suggestion? Report it through the
+            project repository.
+        </p>
+        <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+            <a
+                class="btn btn-primary"
+                href="https://github.com/Adrycasta04/PPM-Event-Management/issues"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Open GitHub Issues
+            </a>
+            <a class="btn btn-outline-secondary" href="{% url 'events:home' %}">
+                Back to home
+            </a>
+        </div>
+    </section>
 </div>
 {% endblock %}
