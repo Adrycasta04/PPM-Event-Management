@@ -26,6 +26,9 @@ class HomePageTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "events/contact.html")
+        self.assertContains(response, "Explore the demo")
+        self.assertContains(response, "Open GitHub Issues")
+        self.assertNotContains(response, "example.com")
 
     def test_home_page_features_only_published_events(self):
         organizer = get_user_model().objects.create_user(
@@ -130,6 +133,8 @@ class PublicEventViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "events/event_detail.html")
         self.assertEqual(response.context["event"], self.published_event)
+        self.assertEqual(response.context["event"].available_capacity, 50)
+        self.assertContains(response, "50 of 50 places available")
 
     def test_non_public_event_details_return_not_found(self):
         for event in (self.draft_event, self.cancelled_event):

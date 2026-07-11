@@ -105,7 +105,7 @@ another organizer.
 ### Local installation
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Adrycasta04/PPM-Event-Management.git
 cd ppm-event-management
 python -m venv .venv
 ```
@@ -208,8 +208,8 @@ Notable events:
   registrations and reviews;
 - `International Students Meetup`: completed social event with participant
   reviews, owned by `organizer2_demo`;
-- `Cinema Night at the Student Union`: completed cultural event with a demo
-  review;
+- `Cinema Night at the Student Union`: completed cultural event with demo
+  reviews;
 - `UNIFI Career Day - Cancelled`: not publicly visible;
 - `Student Radio Podcast Lab - Draft`: not publicly visible;
 - `Campus Volunteering Fair - Cancelled`: not publicly visible.
@@ -244,8 +244,8 @@ Notable events:
 17. Log out and log in as `organizer2_demo / organizer212345`.
 18. Verify that `International Students Meetup` appears in `Manage events`
     while events owned by `organizer_demo` do not.
-19. Log in as `admin_demo / admin12345`, open `Manage events`, and verify that
-    all events are available from the frontend.
+19. Log out, then log in as `admin_demo / admin12345`. Open `Manage events`
+    and verify that all events are available from the frontend.
 20. Open `/admin/` to verify full Django administration access.
 
 ### Automated tests

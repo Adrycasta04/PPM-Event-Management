@@ -3,6 +3,7 @@ from io import StringIO
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.contrib.sessions.models import Session
 from django.core.management import call_command
 from django.test import TestCase
 from django.utils import timezone
@@ -132,7 +133,10 @@ class SeedDemoCommandTests(TestCase):
 
     def test_reset_removes_existing_application_data(self):
         user_model = get_user_model()
-        user_model.objects.create_user(username="temporary-user")
+        temporary_user = user_model.objects.create_user(
+            username="temporary-user"
+        )
+        self.client.force_login(temporary_user)
 
         call_command("seed_demo", reset=True, verbosity=0)
 
@@ -140,6 +144,7 @@ class SeedDemoCommandTests(TestCase):
             user_model.objects.filter(username="temporary-user").exists()
         )
         self.assertEqual(user_model.objects.count(), len(DEMO_USERS))
+        self.assertEqual(Session.objects.count(), 0)
 
     def test_seed_without_reset_preserves_unrelated_data(self):
         user_model = get_user_model()

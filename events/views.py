@@ -268,6 +268,10 @@ class EventDetailView(DetailView):
             .prefetch_related("reviews__author")
             .annotate(
                 registration_count=Count("registrations", distinct=True),
+                available_capacity=(
+                    F("capacity")
+                    - Count("registrations", distinct=True)
+                ),
                 review_count=Count("reviews", distinct=True),
                 average_rating=Avg("reviews__rating"),
             )

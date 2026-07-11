@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.contrib.sessions.models import Session
 from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
@@ -93,6 +94,7 @@ class Command(BaseCommand):
     @transaction.atomic
     def handle(self, *args, **options):
         if options["reset"]:
+            Session.objects.all().delete()
             Registration.objects.all().delete()
             Event.objects.all().delete()
             Category.objects.all().delete()
