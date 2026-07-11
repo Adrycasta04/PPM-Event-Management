@@ -225,6 +225,11 @@ class FavoriteWorkflowTests(TestCase):
         cls.organizer = get_user_model().objects.create_user(
             username="favorite-event-organizer"
         )
+        cls.admin = get_user_model().objects.create_superuser(
+            username="favorite-admin",
+            email="favorite-admin@example.com",
+            password="admin-password-123",
+        )
         cls.attendee.groups.add(attendee_group)
         cls.organizer.groups.add(organizer_group)
         starts_at = timezone.now() + timedelta(days=5)
@@ -261,6 +266,56 @@ class FavoriteWorkflowTests(TestCase):
         remove_response = self.client.post(url, follow=True)
         self.assertFalse(Favorite.objects.filter(event=self.event, user=self.attendee).exists())
         self.assertContains(remove_response, "Event removed from your favorites.")
+
+    def test_organizer_can_favorite_an_owned_event(self):
+        self.client.force_login(self.organizer)
+        detail_url = self.event.get_absolute_url()
+        favorite_url = reverse(
+            "events:toggle_favorite",
+            args=[self.event.pk],
+        )
+
+        detail_response = self.client.get(detail_url)
+        add_response = self.client.post(favorite_url, follow=True)
+        favorites_response = self.client.get(
+            reverse("events:my_favorites")
+        )
+
+        self.assertContains(detail_response, "Add to favorites")
+        self.assertContains(detail_response, "Edit")
+        self.assertTrue(
+            Favorite.objects.filter(
+                event=self.event,
+                user=self.organizer,
+            ).exists()
+        )
+        self.assertContains(add_response, "Event added to your favorites.")
+        self.assertContains(favorites_response, self.event.title)
+
+    def test_admin_can_favorite_an_event(self):
+        self.client.force_login(self.admin)
+        detail_url = self.event.get_absolute_url()
+        favorite_url = reverse(
+            "events:toggle_favorite",
+            args=[self.event.pk],
+        )
+
+        detail_response = self.client.get(detail_url)
+        add_response = self.client.post(favorite_url, follow=True)
+        favorites_response = self.client.get(
+            reverse("events:my_favorites")
+        )
+
+        self.assertContains(detail_response, "Add to favorites")
+        self.assertContains(detail_response, "Edit")
+        self.assertTrue(
+            Favorite.objects.filter(
+                event=self.event,
+                user=self.admin,
+            ).exists()
+        )
+        self.assertContains(add_response, "Event added to your favorites.")
+        self.assertContains(favorites_response, self.event.title)
 
     def test_anonymous_user_is_redirected_to_login(self):
         url = reverse("events:toggle_favorite", args=[self.event.pk])

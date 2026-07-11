@@ -39,35 +39,36 @@
                 </div>
                 <h1 class="display-6 fw-bold mb-0">{{ event.title }}</h1>
             </div>
-            {% if user == event.organizer or user.is_staff %}
+            {% if user_is_attendee %}
                 <div class="d-flex gap-2 align-items-start page-actions">
-                    <a
-                        class="btn btn-outline-primary"
-                        href="{% url 'events:update' event.pk %}"
+                    {% if user == event.organizer or user.is_staff %}
+                        <a
+                            class="btn btn-outline-primary"
+                            href="{% url 'events:update' event.pk %}"
+                        >
+                            Edit
+                        </a>
+                        <a
+                            class="btn btn-outline-danger"
+                            href="{% url 'events:delete' event.pk %}"
+                        >
+                            Delete
+                        </a>
+                    {% endif %}
+                    <form
+                        method="post"
+                        action="{% url 'events:toggle_favorite' event.pk %}"
                     >
-                        Edit
-                    </a>
-                    <a
-                        class="btn btn-outline-danger"
-                        href="{% url 'events:delete' event.pk %}"
-                    >
-                        Delete
-                    </a>
+                        {% csrf_token %}
+                        <button class="btn btn-outline-primary" type="submit">
+                            {% if is_favorite %}
+                                Remove from favorites
+                            {% else %}
+                                Add to favorites
+                            {% endif %}
+                        </button>
+                    </form>
                 </div>
-            {% elif user_is_attendee %}
-                <form
-                    method="post"
-                    action="{% url 'events:toggle_favorite' event.pk %}"
-                >
-                    {% csrf_token %}
-                    <button class="btn btn-outline-primary" type="submit">
-                        {% if is_favorite %}
-                            Remove from favorites
-                        {% else %}
-                            Add to favorites
-                        {% endif %}
-                    </button>
-                </form>
             {% endif %}
         </div>
 

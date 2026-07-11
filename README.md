@@ -79,7 +79,7 @@ Attendees cannot access organizer CRUD pages or attendee lists.
 ### Organizer
 
 - login and logout;
-- use attendee features, including event registration;
+- use attendee features, including event registration and personal favorites;
 - create events;
 - optionally upload an event cover image;
 - view all owned events, including drafts and cancelled events;
@@ -92,8 +92,8 @@ another organizer.
 
 ### Admin
 
-- access Django Admin;
-- use attendee and organizer features;
+- access the Django administration control panel;
+- use attendee and organizer features, including personal favorites;
 - manage all events from the frontend;
 - manage users, groups, profiles, categories, events, registrations,
   favorites and reviews from Django Admin.
@@ -363,7 +363,13 @@ AI assistants were used as development support during this project for:
 - improving the structure and readability of this README;
 - supporting debugging, deployment checks and UI/UX review.
 
-The event images are fictional AI-generated assets and were locally resized,
-cropped and compressed before inclusion. Project requirements, architectural
-choices, feature selection, manual browser testing, deployment and final
-review were managed and verified by the student.
+The event cover images are fictional AI-generated assets created specifically
+for this academic demo. They do not document real events or intentionally
+portray real individuals and were locally resized, cropped and compressed
+before inclusion. Their use remains subject to the terms of the
+image-generation service.
+
+All AI-assisted output was reviewed, adapted and validated before inclusion.
+Project requirements, architectural choices, feature selection, manual
+browser testing, deployment and final review remained under direct human
+control.
