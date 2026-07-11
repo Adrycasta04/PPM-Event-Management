@@ -7,14 +7,19 @@
 <section class="hero-section rounded-4 p-4 p-md-5">
     <div class="row align-items-center g-4">
         <div class="col-lg-7">
-            <p class="hero-eyebrow mb-2">Event Management System</p>
+            <p class="hero-eyebrow mb-2">Student life in Florence</p>
             <h1 class="display-4 fw-bold">
-                University events, organized in one place.
+                Find your next university experience in Florence.
             </h1>
-            <p class="lead text-white-50 mb-4">
-                PPM Events helps students discover workshops, seminars,
-                career activities, sport, culture and social events across
-                the university community.
+            <p class="lead hero-intro mb-3">
+                PPM Events brings workshops, seminars, study sessions,
+                sport, culture and social activities into one student
+                community calendar.
+            </p>
+            <p class="hero-supporting-copy mb-4">
+                Explore opportunities to learn new skills, prepare for your
+                career and meet people beyond the classroom. Organizers can
+                publish activities and keep registrations under control.
             </p>
             <div class="d-flex flex-wrap gap-2">
                 <a class="btn btn-light btn-lg" href="{% url 'events:list' %}">
@@ -46,26 +51,42 @@
         </div>
         <div class="col-lg-5">
             <div class="hero-feature-panel hero-logo-panel rounded-4 p-4">
-                <img
-                    class="hero-logo mb-4"
-                    src="{% static 'img/ppm-events-logo.png' %}?v=2"
-                    alt="PPM Events"
-                >
+                <div class="hero-logo-frame mb-4">
+                    <img
+                        class="hero-logo"
+                        src="{% static 'img/ppm-events-logo.png' %}?v=3"
+                        alt="PPM Events"
+                    >
+                </div>
                 <dl class="hero-summary-list mb-0">
                     <div>
-                        <dt>Student activities</dt>
-                        <dd>Workshops, seminars, study groups and meetups.</dd>
+                        <dt>Learn and build</dt>
+                        <dd>Join practical workshops, seminars and peer study sessions.</dd>
                     </div>
                     <div>
-                        <dt>Online registrations</dt>
-                        <dd>Participants can join or cancel with one account.</dd>
+                        <dt>Meet the community</dt>
+                        <dd>Discover sport, culture and international student activities.</dd>
                     </div>
                     <div>
-                        <dt>Organizer tools</dt>
-                        <dd>Student groups can update events and monitor seats.</dd>
+                        <dt>Plan with confidence</dt>
+                        <dd>Save favorites, register online and follow event availability.</dd>
                     </div>
                 </dl>
             </div>
+        </div>
+    </div>
+    <div class="hero-stats mt-4" aria-label="PPM Events community summary">
+        <div>
+            <strong>{{ community_stats.published_events }}</strong>
+            <span>published events</span>
+        </div>
+        <div>
+            <strong>{{ community_stats.upcoming_events }}</strong>
+            <span>upcoming activities</span>
+        </div>
+        <div>
+            <strong>{{ community_stats.active_categories }}</strong>
+            <span>areas of student life</span>
         </div>
     </div>
 </section>

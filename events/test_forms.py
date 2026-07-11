@@ -193,10 +193,29 @@ class ReviewFormTests(TestCase):
         self.assertIn("comment", form.errors)
 
     def test_rating_must_be_between_one_and_five(self):
-        form = ReviewForm(
-            data={"rating": 6, "comment": "A sufficiently long review."},
-            instance=Review(),
-        )
+        for rating in (0, 6):
+            with self.subTest(rating=rating):
+                form = ReviewForm(
+                    data={
+                        "rating": rating,
+                        "comment": "A sufficiently long review.",
+                    },
+                    instance=Review(),
+                )
 
-        self.assertFalse(form.is_valid())
-        self.assertIn("rating", form.errors)
+                self.assertFalse(form.is_valid())
+                self.assertIn("rating", form.errors)
+
+    def test_rating_choices_explain_the_star_scale(self):
+        form = ReviewForm(instance=Review())
+
+        self.assertEqual(
+            list(form.fields["rating"].choices),
+            [
+                (5, "★★★★★ - Excellent (5/5)"),
+                (4, "★★★★☆ - Very good (4/5)"),
+                (3, "★★★☆☆ - Good (3/5)"),
+                (2, "★★☆☆☆ - Fair (2/5)"),
+                (1, "★☆☆☆☆ - Poor (1/5)"),
+            ],
+        )

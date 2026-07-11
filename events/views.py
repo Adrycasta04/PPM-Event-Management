@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
-from django.db.models import Avg, Count, Q
+from django.db.models import Avg, Count, F, Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -85,10 +85,20 @@ class HomeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        now = timezone.now()
         context["featured_events"] = (
             Event.objects.public()
+            .filter(starts_at__gte=now)
             .select_related("organizer", "category")
             .annotate(registration_count=Count("registrations"))[:3]
+        )
+        context["community_stats"] = Event.objects.public().aggregate(
+            published_events=Count("pk"),
+            upcoming_events=Count(
+                "pk",
+                filter=Q(starts_at__gte=now),
+            ),
+            active_categories=Count("category", distinct=True),
         )
         return context
 
@@ -114,6 +124,10 @@ class OrganizerEventHistoryView(TemplateView):
             .select_related("category")
             .annotate(
                 registration_count=Count("registrations", distinct=True),
+                available_capacity=(
+                    F("capacity")
+                    - Count("registrations", distinct=True)
+                ),
                 review_count=Count("reviews", distinct=True),
                 average_rating=Avg("reviews__rating"),
             )

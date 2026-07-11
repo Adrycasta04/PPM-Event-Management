@@ -17,6 +17,9 @@ class HomePageTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "events/home.html")
+        self.assertContains(response, "static/js/navbar-scroll.js")
+        self.assertContains(response, "styles.css")
+        self.assertContains(response, "hero-logo-frame")
 
     def test_contact_page_is_available(self):
         response = self.client.get(reverse("events:contact"))
@@ -47,14 +50,33 @@ class HomePageTests(TestCase):
             status=Event.Status.DRAFT,
             **common_fields,
         )
+        past_event = Event.objects.create(
+            organizer=organizer,
+            title="Homepage past event",
+            description="Completed published event",
+            starts_at=timezone.now() - timedelta(days=2),
+            ends_at=timezone.now() - timedelta(days=2, hours=-2),
+            location="Florence",
+            capacity=20,
+            status=Event.Status.PUBLISHED,
+        )
 
         response = self.client.get(reverse("events:home"))
 
         self.assertContains(response, published_event.title)
         self.assertNotContains(response, draft_event.title)
+        self.assertNotContains(response, past_event.title)
         self.assertQuerySetEqual(
             response.context["featured_events"],
             [published_event],
+        )
+        self.assertEqual(
+            response.context["community_stats"],
+            {
+                "published_events": 2,
+                "upcoming_events": 1,
+                "active_categories": 0,
+            },
         )
 
 

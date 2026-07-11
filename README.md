@@ -21,10 +21,12 @@
 
 ## 📌 Project overview
 
-PPM Events is a server-rendered Django application for university and student
-community events. It supports publishing workshops, seminars, study
-activities, career events, sport, social and cultural activities while
-separating the workflows of attendees and organizers.
+PPM Events is a server-rendered Django application for the university and
+student community in Florence. It brings workshops, seminars, study
+activities, career events, sport, social and cultural experiences into one
+discovery and registration platform while separating the workflows of
+attendees and organizers. It is an independent academic demo and does not
+claim official affiliation with a university.
 
 The application uses Django ORM, Forms, Templates, built-in authentication,
 Groups, server-side authorization checks, Bootstrap 5 and SQLite. It does not
@@ -186,9 +188,10 @@ The database contains:
 - a draft event;
 - two cancelled events;
 - events owned by two different organizers;
-- existing registrations for attendee accounts and one organizer account;
+- 14 existing registrations across attendee and organizer accounts;
 - four demo favorites;
-- three reviews attached only to completed events and registered participants.
+- eight natural-language reviews across four completed events, attached only
+  to registered participants.
 
 Notable events:
 
@@ -199,12 +202,12 @@ Notable events:
 - `CV and LinkedIn Lab`: published and full;
 - `Erasmus Welcome Aperitivo`: published with no initial registrations;
 - `Student Five-a-Side Tournament`: published sport event;
-- `Algorithms Study Group`: published study activity;
+- `Algorithms Study Group`: completed study activity with participant reviews;
 - `Summer Student Party`: published social evening;
 - `Photography Walk in Florence`: completed cultural activity with demo
   registrations and reviews;
-- `International Students Meetup`: published and owned by
-  `organizer2_demo`;
+- `International Students Meetup`: completed social event with participant
+  reviews, owned by `organizer2_demo`;
 - `Cinema Night at the Student Union`: completed cultural event with a demo
   review;
 - `UNIFI Career Day - Cancelled`: not publicly visible;

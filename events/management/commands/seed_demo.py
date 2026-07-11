@@ -241,8 +241,8 @@ class Command(BaseCommand):
                 "image": (
                     "event_images/demo/international-students-meetup.jpg"
                 ),
-                "starts_at": start + timedelta(days=31),
-                "ends_at": start + timedelta(days=31, hours=3),
+                "starts_at": start - timedelta(days=30),
+                "ends_at": start - timedelta(days=30) + timedelta(hours=3),
                 "location": "Student Community Center",
                 "capacity": 80,
                 "status": Event.Status.PUBLISHED,
@@ -313,8 +313,8 @@ class Command(BaseCommand):
                     "data structures exams with guided exercises."
                 ),
                 "image": "event_images/demo/algorithms-study-group.jpg",
-                "starts_at": start + timedelta(days=41),
-                "ends_at": start + timedelta(days=41, hours=2),
+                "starts_at": start - timedelta(days=35),
+                "ends_at": start - timedelta(days=35) + timedelta(hours=2),
                 "location": "Science Library Study Room",
                 "capacity": 25,
                 "status": Event.Status.PUBLISHED,
@@ -455,6 +455,10 @@ class Command(BaseCommand):
             (events["photography_walk"], users["attendee_demo"]),
             (events["photography_walk"], users["attendee2_demo"]),
             (events["cinema_night"], users["organizer_demo"]),
+            (events["cinema_night"], users["attendee_demo"]),
+            (events["second_organizer"], users["attendee2_demo"]),
+            (events["study_group"], users["attendee_demo"]),
+            (events["study_group"], users["attendee2_demo"]),
         ]
         desired_pairs = {
             (event.pk, attendee.pk)
@@ -505,22 +509,63 @@ class Command(BaseCommand):
                 events["photography_walk"],
                 users["attendee_demo"],
                 5,
-                "A relaxed and practical activity with useful feedback from "
-                "the group throughout the walk.",
+                "I joined with only a phone camera and still learned a lot. "
+                "The route was relaxed, and the photo prompts made Florence "
+                "feel completely new.",
             ),
             (
                 events["photography_walk"],
                 users["attendee2_demo"],
                 4,
-                "Well organized and suitable for beginners as well as "
-                "students with some photography experience.",
+                "The group was welcoming and the stops were well chosen. I "
+                "would have liked a little more time for the final feedback, "
+                "but I came home with useful ideas.",
             ),
             (
                 events["cinema_night"],
                 users["organizer_demo"],
                 4,
-                "The screening and discussion created a welcoming student "
-                "community atmosphere.",
+                "The film choice worked well and the discussion afterwards "
+                "was the best part. A simple evening, but genuinely engaging.",
+            ),
+            (
+                events["cinema_night"],
+                users["attendee_demo"],
+                5,
+                "Good film, comfortable space and a friendly crowd. I liked "
+                "that the conversation stayed informal and everyone could "
+                "contribute.",
+            ),
+            (
+                events["second_organizer"],
+                users["attendee_demo"],
+                5,
+                "I met students from several courses and finally got answers "
+                "to practical questions about life in Florence. The small "
+                "group activities made introductions easy.",
+            ),
+            (
+                events["second_organizer"],
+                users["attendee2_demo"],
+                4,
+                "Friendly atmosphere and a useful mix of local and "
+                "international students. Starting with shorter introductions "
+                "would make the next meetup even better.",
+            ),
+            (
+                events["study_group"],
+                users["attendee_demo"],
+                5,
+                "Working through the dynamic programming exercises together "
+                "helped me understand where my solutions were going wrong. "
+                "The pace was focused without feeling rushed.",
+            ),
+            (
+                events["study_group"],
+                users["attendee2_demo"],
+                4,
+                "Clear exercises and a productive group. Sharing different "
+                "approaches was especially useful before the exam.",
             ),
         ]
         desired_pairs = {

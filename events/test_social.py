@@ -518,6 +518,7 @@ class ReviewWorkflowTests(TestCase):
 
         self.assertContains(response, "A visible review for other students.")
         self.assertContains(response, "4/5")
+        self.assertContains(response, "★★★★☆")
 
     def test_registration_and_cancellation_are_blocked_after_event(self):
         self.client.force_login(self.other_attendee)

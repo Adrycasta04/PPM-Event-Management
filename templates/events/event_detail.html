@@ -1,8 +1,10 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block title %}{{ event.title }} | PPM Events{% endblock %}
 
 {% block content %}
+{% language "en" %}
 <div class="mb-3">
     <a class="link-secondary text-decoration-none" href="{% url 'events:list' %}">
         &larr; Back to events
@@ -72,9 +74,10 @@
             {% endif %}
         </div>
 
-        <div class="row g-4">
-            <div class="col-lg-8">
-                <h2 class="h4 mb-3">Event information</h2>
+        <div class="event-content-stack">
+            <section>
+                <p class="page-kicker mb-2">About the event</p>
+                <h2 class="h3 mb-3">What to expect</h2>
                 <div class="event-description">
                     {{ event.description|linebreaks }}
                 </div>
@@ -145,32 +148,50 @@
                         {% endif %}
                     </div>
                 {% endif %}
-            </div>
-            <div class="col-lg-4">
-                <aside class="info-panel event-details-panel">
-                    <h2 class="h5 mb-3">Details</h2>
-                    <dl class="mb-0">
-                        <dt>Starts</dt>
-                        <dd>{{ event.starts_at|date:"d/m/Y H:i" }}</dd>
-
-                        <dt>Ends</dt>
-                        <dd>{{ event.ends_at|date:"d/m/Y H:i" }}</dd>
-
-                        <dt>Location</dt>
-                        <dd>{{ event.location }}</dd>
-
-                        <dt>Capacity</dt>
-                        <dd>{{ event.capacity }} attendees</dd>
-
-                        <dt>Organizer</dt>
-                        <dd>
-                            <a href="{% url 'events:organizer_history' event.organizer_id %}">
-                                {{ event.organizer.get_username }}
-                            </a>
-                        </dd>
+            </section>
+            <aside class="info-panel event-details-panel">
+                    <p class="page-kicker mb-2">Event details</p>
+                    <h2 class="h4 mb-3">At a glance</h2>
+                    <dl class="event-facts mb-0">
+                        <div>
+                            <dt>Date</dt>
+                            <dd>{{ event.starts_at|date:"l, d F Y" }}</dd>
+                        </div>
+                        <div>
+                            <dt>Time</dt>
+                            <dd>
+                                {{ event.starts_at|date:"H:i" }}&ndash;{{ event.ends_at|date:"H:i" }}
+                                <span class="event-fact-note">
+                                    {{ event.starts_at|timesince:event.ends_at }}
+                                </span>
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>Location</dt>
+                            <dd>{{ event.location }}</dd>
+                        </div>
+                        <div>
+                            <dt>Availability</dt>
+                            <dd>
+                                {% if event.has_ended %}
+                                    Event completed
+                                {% elif event.available_capacity <= 0 %}
+                                    Fully booked
+                                {% else %}
+                                    {{ event.available_capacity }} of {{ event.capacity }} places available
+                                {% endif %}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt>Organized by</dt>
+                            <dd>
+                                <a href="{% url 'events:organizer_history' event.organizer_id %}">
+                                    {{ event.organizer.get_username }}
+                                </a>
+                            </dd>
+                        </div>
                     </dl>
-                </aside>
-            </div>
+            </aside>
         </div>
     </div>
 </article>
@@ -184,7 +205,10 @@
             </div>
             <div class="review-summary">
                 {% if event.review_count %}
-                    <strong>{{ event.average_rating|floatformat:"1u" }}/5</strong>
+                    <strong>
+                        <span class="review-summary-star" aria-hidden="true">★</span>
+                        {{ event.average_rating|floatformat:"1u" }}/5
+                    </strong>
                     <span>
                         {{ event.review_count }} review{{ event.review_count|pluralize }}
                     </span>
@@ -231,14 +255,32 @@
             <div class="vstack gap-3">
                 {% for review in event.reviews.all %}
                     <article class="review-item">
-                        <div class="d-flex flex-wrap justify-content-between gap-2 mb-2">
-                            <h3 class="h6 mb-0">{{ review.author.get_username }}</h3>
-                            <span class="review-rating">{{ review.rating }}/5</span>
+                        <div class="d-flex align-items-start gap-3">
+                            <span class="review-avatar" aria-hidden="true">
+                                {{ review.author.get_username|first|upper }}
+                            </span>
+                            <div class="flex-grow-1 min-w-0">
+                                <div class="d-flex flex-wrap justify-content-between gap-2 mb-2">
+                                    <div>
+                                        <h3 class="h6 mb-1">{{ review.author.get_username }}</h3>
+                                        <span class="verified-reviewer">Verified participant</span>
+                                    </div>
+                                    <span
+                                        class="review-rating"
+                                        aria-label="Rated {{ review.rating }} out of 5"
+                                    >
+                                        <span class="review-stars" aria-hidden="true">
+                                            {% if review.rating >= 1 %}★{% else %}☆{% endif %}{% if review.rating >= 2 %}★{% else %}☆{% endif %}{% if review.rating >= 3 %}★{% else %}☆{% endif %}{% if review.rating >= 4 %}★{% else %}☆{% endif %}{% if review.rating >= 5 %}★{% else %}☆{% endif %}
+                                        </span>
+                                        <span>{{ review.rating }}/5</span>
+                                    </span>
+                                </div>
+                                <p class="review-comment mb-2">{{ review.comment }}</p>
+                                <p class="small text-body-secondary mb-0">
+                                    Reviewed {{ review.updated_at|date:"d F Y" }}
+                                </p>
+                            </div>
                         </div>
-                        <p class="mb-2">{{ review.comment }}</p>
-                        <p class="small text-body-secondary mb-0">
-                            Updated {{ review.updated_at|date:"d/m/Y" }}
-                        </p>
                     </article>
                 {% endfor %}
             </div>
@@ -249,4 +291,5 @@
         {% endif %}
     </div>
 </section>
+{% endlanguage %}
 {% endblock %}

@@ -143,7 +143,13 @@ class EventForm(forms.ModelForm):
 
 class ReviewForm(forms.ModelForm):
     rating = forms.TypedChoiceField(
-        choices=[(value, f"{value}/5") for value in range(5, 0, -1)],
+        choices=[
+            (5, "★★★★★ - Excellent (5/5)"),
+            (4, "★★★★☆ - Very good (4/5)"),
+            (3, "★★★☆☆ - Good (3/5)"),
+            (2, "★★☆☆☆ - Fair (2/5)"),
+            (1, "★☆☆☆☆ - Poor (1/5)"),
+        ],
         coerce=int,
         label="Rating",
     )

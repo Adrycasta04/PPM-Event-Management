@@ -42,9 +42,9 @@ class SeedDemoCommandTests(TestCase):
             2,
         )
         self.assertEqual(Category.objects.count(), 8)
-        self.assertEqual(Registration.objects.count(), 10)
+        self.assertEqual(Registration.objects.count(), 14)
         self.assertEqual(Favorite.objects.count(), 4)
-        self.assertEqual(Review.objects.count(), 3)
+        self.assertEqual(Review.objects.count(), 8)
         self.assertFalse(Event.objects.filter(category__isnull=True).exists())
         self.assertEqual(
             Event.objects.filter(status=Event.Status.PUBLISHED)
@@ -113,7 +113,11 @@ class SeedDemoCommandTests(TestCase):
                 status=Event.Status.PUBLISHED,
                 ends_at__lt=timezone.now(),
             ).count(),
-            2,
+            4,
+        )
+        self.assertEqual(
+            Review.objects.values("event_id").distinct().count(),
+            4,
         )
         self.assertFalse(
             Review.objects.filter(event__ends_at__gte=timezone.now()).exists()
