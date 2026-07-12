@@ -54,6 +54,13 @@
                         </a>
                     </li>
                 {% endif %}
+                {% if user.is_staff %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin:index' %}">
+                            Control Panel
+                        </a>
+                    </li>
+                {% endif %}
                 {% if user.is_authenticated %}
                     <li class="nav-item dropdown ms-lg-2">
                         <a
@@ -89,14 +96,6 @@
                                         href="{% url 'events:my_registrations' %}"
                                     >
                                         My registrations
-                                    </a>
-                                </li>
-                            {% endif %}
-                            {% if user.is_staff %}
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <a class="dropdown-item" href="{% url 'admin:index' %}">
-                                        Control Panel
                                     </a>
                                 </li>
                             {% endif %}
