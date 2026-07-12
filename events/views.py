@@ -113,11 +113,15 @@ class OrganizerEventHistoryView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         organizer = get_object_or_404(
-            get_user_model().objects.filter(
+            get_user_model()
+            .objects.select_related("profile")
+            .filter(
                 organized_events__status=Event.Status.PUBLISHED,
-            ).distinct(),
+            )
+            .distinct(),
             pk=self.kwargs["pk"],
         )
+        organizer_profile = getattr(organizer, "profile", None)
         events = (
             Event.objects.public()
             .filter(organizer=organizer)
@@ -136,6 +140,9 @@ class OrganizerEventHistoryView(TemplateView):
         context.update(
             {
                 "organizer": organizer,
+                "organizer_bio": (
+                    organizer_profile.bio if organizer_profile else ""
+                ),
                 "current_events": events.filter(ends_at__gte=now),
                 "past_events": events.filter(ends_at__lt=now).order_by(
                     "-starts_at",
@@ -151,10 +158,12 @@ class EventListView(ListView):
     template_name = "events/event_list.html"
     context_object_name = "events"
     time_filter_options = (
-        ("all", "All events"),
+        ("all", "All published events"),
+        ("upcoming", "Upcoming"),
         ("today", "Today"),
         ("this_week", "This week"),
         ("this_month", "This month"),
+        ("past", "Past events"),
     )
 
     def get_queryset(self):
@@ -172,13 +181,9 @@ class EventListView(ListView):
             )
 
         selected_when = self._get_selected_when()
-        date_range = self._get_date_range(selected_when)
-        if date_range is not None:
-            starts_at, ends_at = date_range
-            queryset = queryset.filter(
-                starts_at__gte=starts_at,
-                starts_at__lt=ends_at,
-            )
+        time_filter = self._get_time_filter(selected_when)
+        if time_filter is not None:
+            queryset = queryset.filter(time_filter)
 
         selected_category = self._get_selected_category()
         if selected_category is not None:
@@ -222,9 +227,15 @@ class EventListView(ListView):
             return "all"
         return selected_when
 
-    def _get_date_range(self, selected_when):
+    def _get_time_filter(self, selected_when):
         if selected_when == "all":
             return None
+
+        now = timezone.now()
+        if selected_when == "upcoming":
+            return Q(starts_at__gt=now)
+        if selected_when == "past":
+            return Q(ends_at__lt=now)
 
         current_timezone = timezone.get_current_timezone()
         today = timezone.localdate()
@@ -234,11 +245,18 @@ class EventListView(ListView):
         )
 
         if selected_when == "today":
-            return today_start, today_start + timedelta(days=1)
+            return Q(
+                ends_at__gte=now,
+                starts_at__lt=today_start + timedelta(days=1),
+            )
 
         if selected_when == "this_week":
-            week_start = today_start - timedelta(days=today.weekday())
-            return week_start, week_start + timedelta(days=7)
+            week_end = (
+                today_start
+                - timedelta(days=today.weekday())
+                + timedelta(days=7)
+            )
+            return Q(ends_at__gte=now, starts_at__lt=week_end)
 
         if selected_when == "this_month":
             month_start = today_start.replace(day=1)
@@ -251,7 +269,7 @@ class EventListView(ListView):
                 next_month_start = month_start.replace(
                     month=month_start.month + 1,
                 )
-            return month_start, next_month_start
+            return Q(ends_at__gte=now, starts_at__lt=next_month_start)
 
         return None
 

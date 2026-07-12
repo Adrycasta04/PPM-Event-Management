@@ -6,6 +6,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 
+from accounts.models import Profile
 from accounts.roles import Role
 
 from .models import Category, Event, Favorite, Registration, Review
@@ -102,6 +103,10 @@ class OrganizerPublicHistoryTests(TestCase):
         cls.organizer = get_user_model().objects.create_user(
             username="history-organizer"
         )
+        Profile.objects.create(
+            user=cls.organizer,
+            bio="Student activities and community events.",
+        )
         cls.other_organizer = get_user_model().objects.create_user(
             username="history-other-organizer"
         )
@@ -171,6 +176,12 @@ class OrganizerPublicHistoryTests(TestCase):
             response.context["past_events"],
             [self.past_event],
         )
+        self.assertEqual(
+            response.context["organizer_bio"],
+            "Student activities and community events.",
+        )
+        self.assertContains(response, "@history-organizer")
+        self.assertContains(response, "Student activities and community events.")
 
     def test_history_excludes_private_and_other_organizer_events(self):
         response = self.client.get(

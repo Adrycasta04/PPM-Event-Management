@@ -150,13 +150,13 @@ class EventDiscoveryFilterTests(TestCase):
         cls.organizer = get_user_model().objects.create_user(
             username="discovery-organizer",
         )
+        now = timezone.now()
         today = timezone.localdate()
         current_timezone = timezone.get_current_timezone()
         today_start = timezone.make_aware(
             datetime.combine(today, time.min),
             current_timezone,
         )
-        week_start = today_start - timedelta(days=today.weekday())
         month_start = today_start.replace(day=1)
         if month_start.month == 12:
             next_month_start = month_start.replace(
@@ -168,33 +168,26 @@ class EventDiscoveryFilterTests(TestCase):
                 month=month_start.month + 1,
             )
 
-        week_candidate = week_start + timedelta(days=1)
-        if week_candidate.date() == today:
-            week_candidate = week_start + timedelta(days=2)
-        if week_candidate >= week_start + timedelta(days=7):
-            week_candidate = week_start
-
-        month_candidate = week_start + timedelta(days=8)
-        if month_candidate >= next_month_start:
-            month_candidate = month_start
-
         cls.today_event = cls.create_event(
             title="AI Campus Workshop",
             description="Hands-on session about artificial intelligence.",
             location="Innovation Classroom",
-            starts_at=today_start + timedelta(hours=12),
+            starts_at=now - timedelta(hours=1),
+            ends_at=now + timedelta(hours=1),
         )
         cls.week_event = cls.create_event(
             title="Study Group Sprint",
             description="Collaborative exam preparation for students.",
             location="Library Room B",
-            starts_at=week_candidate + timedelta(hours=14),
+            starts_at=now - timedelta(hours=2),
+            ends_at=now + timedelta(hours=2),
         )
         cls.month_event = cls.create_event(
             title="Career CV Clinic",
             description="Career services workshop for student resumes.",
             location="Career Hub",
-            starts_at=month_candidate + timedelta(hours=10),
+            starts_at=now - timedelta(hours=3),
+            ends_at=now + timedelta(hours=3),
         )
         cls.next_month_event = cls.create_event(
             title="Next Month Seminar",
@@ -206,15 +199,22 @@ class EventDiscoveryFilterTests(TestCase):
             title="Hidden AI Draft",
             description="Draft event matching the search keyword.",
             location="Innovation Classroom",
-            starts_at=today_start + timedelta(hours=15),
+            starts_at=now + timedelta(days=1),
             status=Event.Status.DRAFT,
         )
         cls.cancelled_event = cls.create_event(
             title="Cancelled AI Event",
             description="Cancelled event matching the search keyword.",
             location="Innovation Classroom",
-            starts_at=today_start + timedelta(hours=16),
+            starts_at=now + timedelta(days=1),
             status=Event.Status.CANCELLED,
+        )
+        cls.past_event = cls.create_event(
+            title="Completed Student Meetup",
+            description="A completed event for the public history filter.",
+            location="Student Union",
+            starts_at=now - timedelta(days=3),
+            ends_at=now - timedelta(days=3, hours=-2),
         )
 
     @classmethod
@@ -224,6 +224,7 @@ class EventDiscoveryFilterTests(TestCase):
         description,
         location,
         starts_at,
+        ends_at=None,
         status=Event.Status.PUBLISHED,
     ):
         return Event.objects.create(
@@ -231,7 +232,7 @@ class EventDiscoveryFilterTests(TestCase):
             title=title,
             description=description,
             starts_at=starts_at,
-            ends_at=starts_at + timedelta(hours=2),
+            ends_at=ends_at or starts_at + timedelta(hours=2),
             location=location,
             capacity=30,
             status=status,
@@ -272,7 +273,27 @@ class EventDiscoveryFilterTests(TestCase):
             {"when": "today"},
         )
 
-        self.assert_events(response, [self.today_event])
+        self.assertIn(self.today_event, response.context["events"])
+        self.assertIn(self.week_event, response.context["events"])
+        self.assertNotIn(self.past_event, response.context["events"])
+
+    def test_upcoming_filter_excludes_ongoing_and_past_events(self):
+        response = self.client.get(
+            reverse("events:list"),
+            {"when": "upcoming"},
+        )
+
+        self.assertIn(self.next_month_event, response.context["events"])
+        self.assertNotIn(self.today_event, response.context["events"])
+        self.assertNotIn(self.past_event, response.context["events"])
+
+    def test_past_filter_returns_only_completed_events(self):
+        response = self.client.get(
+            reverse("events:list"),
+            {"when": "past"},
+        )
+
+        self.assert_events(response, [self.past_event])
 
     def test_this_week_filter(self):
         response = self.client.get(

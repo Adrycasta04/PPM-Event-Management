@@ -651,6 +651,10 @@ button:focus-visible,
     box-shadow: 0 0.5rem 1.5rem rgba(15, 23, 42, 0.05);
 }
 
+.organizer-profile-copy {
+    min-width: 0;
+}
+
 .organizer-avatar {
     display: grid;
     flex: 0 0 5rem;
@@ -665,13 +669,43 @@ button:focus-visible,
     box-shadow: 0 0.75rem 1.5rem rgba(37, 99, 235, 0.18);
 }
 
-.profile-stat {
-    padding: 0.35rem 0.65rem;
-    color: #334155;
-    font-size: 0.8rem;
-    font-weight: 600;
-    background: #f1f5f9;
+.organizer-role-badge {
+    padding: 0.3rem 0.65rem;
+    color: #1d4ed8;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    background: #dbeafe;
     border-radius: 999px;
+    text-transform: uppercase;
+}
+
+.organizer-stat-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.organizer-stat {
+    display: flex;
+    min-width: 6rem;
+    padding: 0.55rem 0.8rem;
+    flex-direction: column;
+    background: #f8fafc;
+    border: 1px solid var(--ppm-border);
+    border-radius: 0.75rem;
+}
+
+.organizer-stat strong {
+    color: var(--ppm-navy);
+    font-size: 1.1rem;
+    line-height: 1.1;
+}
+
+.organizer-stat span {
+    color: var(--ppm-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
 }
 
 .table-card {

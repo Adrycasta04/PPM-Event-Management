@@ -14,21 +14,30 @@
         <div class="organizer-avatar" aria-hidden="true">
             {{ organizer.get_username|slice:":1"|upper }}
         </div>
-        <div>
+        <div class="organizer-profile-copy">
             <p class="page-kicker mb-2">Organizer profile</p>
-            <h1 class="display-6 fw-bold mb-2">
-                {{ organizer.get_username }}
-            </h1>
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                <h1 class="display-6 fw-bold mb-0">
+                    @{{ organizer.get_username }}
+                </h1>
+                <span class="organizer-role-badge">Organizer</span>
+            </div>
             <p class="text-body-secondary mb-3">
-                Published events created by this organizer.
+                {% if organizer_bio %}
+                    {{ organizer_bio }}
+                {% else %}
+                    This organizer publishes activities for the student community.
+                {% endif %}
             </p>
-            <div class="d-flex flex-wrap gap-2">
-                <span class="profile-stat">
-                    {{ current_events|length }} upcoming
-                </span>
-                <span class="profile-stat">
-                    {{ past_events|length }} completed
-                </span>
+            <div class="organizer-stat-grid">
+                <div class="organizer-stat">
+                    <strong>{{ current_events|length }}</strong>
+                    <span>upcoming</span>
+                </div>
+                <div class="organizer-stat">
+                    <strong>{{ past_events|length }}</strong>
+                    <span>completed</span>
+                </div>
             </div>
         </div>
     </div>
